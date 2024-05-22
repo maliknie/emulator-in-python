@@ -21,15 +21,22 @@ class displayWindow(Window):
             buttonframe = tk.Frame(newwindow)
             buttonframe.columnconfigure(0)
             buttonframe.rowconfigure(0)
-            exitbutton = tk.Button(newwindow, text="exit", command=lambda: self.close(newwindow), height=10, width=10)         
+            exitbuttonframe = tk.Frame(newwindow)
+            exitbuttonframe.columnconfigure(1)
+            exitbuttonframe.rowconfigure(0)
+            exitbutton = tk.Button(exitbuttonframe, text="exit", command=lambda: self.close(newwindow), height=1, width=3)
+            exitbutton.grid(row=0, column=0, sticky="nw")
+            exitbuttonframe.pack()
             pixelframe = tk.Frame(newwindow, height=1, width=1)
+            
             for i in range(self.resolution):
                 pixelframe.columnconfigure(i, weight=0)
                 pixelframe.rowconfigure(i, weight=0)
                 for j in range(self.resolution):
-                    button = tk.Button(pixelframe, image=tk.PhotoImage(), height=1, width=1, background="black")
+                    button = tk.Button(pixelframe, text="", height=1, width=1, background="black")
                     button.grid(row=i, column=j, sticky="wens")
-            pixelframe.pack(fill="x")
+            pixelframe.pack(fill="x") 
+            
     def close(self, newwindow):
         if not isinstance(newwindow, tk.Tk):
             exit()
