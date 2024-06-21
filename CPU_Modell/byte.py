@@ -47,4 +47,4 @@ class Byte():
         return new_bit
     
     def add(self, value):
-        
+        pass
