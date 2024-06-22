@@ -1,59 +1,41 @@
 import RAM
 import byte
 class CPU():
-    def __init__(self):
-        pass
+    def __init__(self, mainmemory, controlunit, alunit):
+        if not isinstance(mainmemory, RAM.RAM) or not isinstance(controlunit, CU) or not isinstance(alunit, ALU):
+            raise Exception("CPU Error: Arguments given arem't the correct objects.")
+        self.mm = mainmemory
+        self.cu = controlunit
+        self.alu = alunit
 
     def NOP(self):
         pass
-    def LDA(self, alu, memory, adress):
-        if not isinstance(alu, ALU) or not isinstance(memory, RAM.RAM):
-            Exception("LDA Error")
-        alu.accumulator = memory[adress]
-    def STA(self, alu, memory, adress):
-        if not isinstance(alu, ALU) or not isinstance(memory, RAM.RAM):
-            Exception("STA Error")
-        memory[adress] = alu.accumulator
-    def ADD(self, alu, memory, adress):
-        if not isinstance(alu, ALU) or not isinstance(memory, RAM.RAM):
-            Exception("ADD Error")
-        alu.accumulator += memory[adress]
-    def SUB(self, alu, memory, adress):
-        if not isinstance(alu, ALU) or not isinstance(memory, RAM.RAM):
-            Exception("SUB Error")
-        alu.accumulator -= memory[adress]
-    def JMP(self, cu, value):
-        if not isinstance(cu, CU):
-            Exception("JMP Error")
-        cu.PC = value
-    def JZ(self, cu, value, alu):
-        if not isinstance(cu, CU) or not isinstance(alu, ALU):
-            Exception("JZ Error")
-        if alu.accumulator == 0:   
-            cu.PC = value
-    def JNZ(self, cu, value, alu):
-        if not isinstance(cu, CU) or not isinstance(alu, ALU):
-            Exception("JZ Error")
-        if alu.accumulator != 0:   
-            cu.PC = value
-    def AND(self, alu, memory, adresse):
-        if not isinstance(alu, ALU) or not isinstance(memory, RAM.RAM):
-            Exception("AND Error")
-        if not isinstance(alu.accumulator, byte.Byte) or not isinstance(memory[adresse]):
-            Exception("Accumulator doesn't contain byte")
-        alu.accumulator = alu.accumulator.bitwise_and(memory[adresse])
-    def OR(self, alu, memory, adresse):
-        if not isinstance(alu, ALU) or not isinstance(memory, RAM.RAM):
-            Exception("AND Error")
-        if not isinstance(alu.accumulator, byte.Byte) or not isinstance(memory[adresse], byte.Byte):
-            Exception("Accumulator doesn't contain byte")
-        alu.accumulator = alu.accumulator.bitwise_or(memory[adresse])
+    def LDA(self, adress):
+        self.alu.accumulator = self.mm[adress]
+    def STA(self, adress):
+        self.mm[adress] = self.alu.accumulator
+    def ADD(self, adress):
+        self.alu.accumulator += self.mm[adress]
+    def SUB(self, adress):
+        self.alu.accumulator -= self.mm[adress]
+    def JMP(self, value):
+        self.cu.PC = value
+    def JZ(self, value):
+        if self.alu.accumulator == 0:   
+            self.cu.PC = value
+    def JNZ(self, value):
+        if self.alu.accumulator != 0:   
+            self.cu.PC = value
+    def AND(self, adress):
+        if not isinstance(self.alu.accumulator, byte.Byte) or not isinstance(self.mm[adress]):
+            raise Exception("Accumulator or adresse in main memory doesn't contain byte")
+        self.alu.accumulator = self.alu.accumulator.bitwise_and(self.mm[adress])
+    def OR(self, adress):
+        if not isinstance(self.alu.accumulator, byte.Byte) or not isinstance(self.mm[adress], byte.Byte):
+            raise Exception("Accumulator or adresse in main memory doesn't contain byte")
+        self.alu.accumulator = self.alu.accumulator.bitwise_or(self.mm[adress])
     def HLT(self):
-        pass
-        
-    
-
-
+        exit()       
 
 class CU(CPU):
     def __init__(self):
@@ -65,7 +47,7 @@ class CU(CPU):
         self.IR = ""
     def fetch(self, memory):
         if not isinstance(memory, RAM.RAM):
-            Exception("Fetch Error")
+            raise Exception("Fetch Error")
         self.IR = memory[self.PC]
         self.PC += 1
         
