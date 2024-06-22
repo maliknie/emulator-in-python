@@ -1,9 +1,9 @@
 import RAM
 import CPU
 import byte
-
-mainmemory = RAM.RAM()
+"""
+mainmemory = RAM.RAM(1024)
 controlunit = CPU.CU()
-alunit = CPU.ALU()
-cpunit = CPU.CPU()
+arithmeticandlogicunit = CPU.ALU()
+cpu = CPU.CPU(mainmemory, controlunit, arithmeticandlogicunit)"""
 
