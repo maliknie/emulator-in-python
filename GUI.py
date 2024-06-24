@@ -75,10 +75,12 @@ root = tk.Tk()
 root.title("root")
 root.geometry("500x500")
 
+"""
 heading = tk.Label(root, text="Heading")
 heading.pack()
 textbox = tk.Text(root, height=3, width=18)
 textbox.pack()
+"""
 
 buttonframe = tk.Frame(root)
 buttonframe.columnconfigure(0,weight=1)

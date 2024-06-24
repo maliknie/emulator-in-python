@@ -1,9 +1,9 @@
 import RAM
 import byte
+import register
+
 class CPU():
-    def __init__(self, mainmemory, controlunit, alunit):
-        if not isinstance(mainmemory, RAM.RAM) or not isinstance(controlunit, CU) or not isinstance(alunit, ALU):
-            raise Exception("CPU Error: Arguments given aren't the correct objects.")
+    def __init__(self, mainmemory: "RAM.RAM", controlunit: "CU", alunit: "ALU"):
         self.mm = mainmemory
         self.cu = controlunit
         self.alu = alunit
@@ -18,11 +18,11 @@ class CPU():
                 case "00000000":
                     self.NOP()
                 case "00000001":
-                    self.LDA(self.mm.getValueAtIndex(self.cu.PC.getInt()))
-                    self.cu.inc_pc()
+                    self.LDA(byte.joinBytesToInt(self.mm.getValueAtIndex(self.cu.PC.getInt()), self.mm.getValueAtIndex(self.cu.PC.getInt() + 1)))
+                    self.cu.inc_pc(2)
                 case "00000010":
-                    self.STA(self.mm.getValueAtIndex(self.cu.PC.getInt()))
-                    self.cu.inc_pc()
+                    self.STA(byte.joinBytesToInt(self.mm.getValueAtIndex(self.cu.PC.getInt()), self.mm.getValueAtIndex(self.cu.PC.getInt() + 1)))
+                    self.cu.inc_pc(2)
                 case "00000011":
                     self.ADD(self.mm.getValueAtIndex(self.cu.PC.getInt()))
                     self.cu.inc_pc()
@@ -45,6 +45,7 @@ class CPU():
                     self.OR(self.mm.getValueAtIndex(self.cu.PC.getInt()))
                     self.cu.inc_pc()
                 case "00001010":
+                    print("HLT reached")
                     break
                 case _:
                     print("Problematic Byte: ", self.cu.IR.getByte())
@@ -89,19 +90,19 @@ class CPU():
         exit()
 
 class CU():
-    def __init__(self):
-        self.PC = byte.Byte()
+    def __init__(self) -> None:
+        self.PC = register.Register()
         self.IR = byte.Byte()
-    def reset(self):
-        self.PC = byte.Byte()
+    def reset(self) -> None:
+        self.PC = register.Register()
         self.IR = byte.Byte()
-    def fetch(self, memory: "RAM.RAM"):
+    def fetch(self, memory: "RAM.RAM") -> None:
         if not isinstance(memory, RAM.RAM):
             raise Exception("Fetch Error")
         self.IR = memory.getValueAtIndex(self.PC.getInt())
         print("Fetched: ", self.IR.getByte())
-    def inc_pc(self):
-        self.PC = self.PC.inc()
+    def inc_pc(self, amount: int = 1) -> "byte.Byte":
+        self.PC = self.PC.add(byte.Byte().setByte(bin(amount)[2:]))        
         return self.PC
             
 class ALU():
