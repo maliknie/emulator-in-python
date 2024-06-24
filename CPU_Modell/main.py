@@ -11,19 +11,18 @@ cpu = CPU.CPU(mainmemory, controlunit, arithmeticandlogicunit)
 
 mainmemory.setValueAtIndex(byte.Byte().setByte('00000001'), 0)
 mainmemory.setValueAtIndex(byte.Byte().setByte('00000010'), 1)
-controlunit.PC = 2
-mainmemory.setValueAtIndex(byte.Byte().setByte('00110000'), 2)
-mainmemory.setValueAtIndex(byte.Byte().setByte('00110001'), 3)
-mainmemory.setValueAtIndex(byte.Byte().setByte('00101111'), 4)
-mainmemory.setValueAtIndex(byte.Byte().setByte('10100000'), 5)
-for value in mainmemory.registers:
-    print(value.getByte())
-
-print("")
-print("")
-print("")
+controlunit.PC = byte.Byte().setByte('00000010')
+mainmemory.setValueAtIndex(byte.Byte().setByte('00000011'), 2) # ADD
+mainmemory.setValueAtIndex(byte.Byte().setByte('00000000'), 3) # Operand
+mainmemory.setValueAtIndex(byte.Byte().setByte('00000011'), 4) # ADD
+mainmemory.setValueAtIndex(byte.Byte().setByte('00000001'), 5) # Operand
+mainmemory.setValueAtIndex(byte.Byte().setByte('00000010'), 6) # STA
+mainmemory.setValueAtIndex(byte.Byte().setByte('00001111'), 7) # Operand
+mainmemory.setValueAtIndex(byte.Byte().setByte('00001010'), 8) # HLT
 
 cpu.run()
 
+k = 0
 for value in mainmemory.registers:
-    print((int(value.getByte(), 2)))
+    print(k, (int(value.getByte(), 2)))
+    k += 1

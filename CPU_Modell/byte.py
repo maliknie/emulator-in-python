@@ -21,6 +21,9 @@ class Byte():
             byte_string += str(bit)
         return byte_string
     
+    def getInt(self):
+        return int(self.getByte(), 2)
+    
     def setByte(self, byte_string: str):
         byte_list = []
         byte_string = byte_string[::-1]
@@ -29,12 +32,12 @@ class Byte():
         self.bits = byte_list
         return self
     
-    def setBitInPos(self, bit, pos):
+    def setBitInPos(self, bit: int, pos: int):
         current = self.bits[::-1]
         current[pos] = bit
         self.bits = current[::-1]
         
-    def bitwise_and(self, value):
+    def bitwise_and(self, value: "Byte"):
         if not isinstance(value, Byte):
             Exception("Bitwise and Error")
         new_bit = Byte()
@@ -42,7 +45,7 @@ class Byte():
             new_bit.setBitInPos(AND(int(self.getByte()[i]), int(value.getByte()[i])), i)
         return new_bit
     
-    def bitwise_or(self, value):
+    def bitwise_or(self, value: "Byte"):
         if not isinstance(value, Byte):
             Exception("Bitwise or Error")
         new_bit = Byte()
@@ -50,7 +53,7 @@ class Byte():
             new_bit.setBitInPos(OR(int(self.getByte()[i]), int(value.getByte()[i])), i)
         return new_bit
     
-    def add(self, byte):
+    def add(self, byte: "Byte"):
         if not isinstance(byte, Byte):
             raise Exception("Byte class: Add Error")
         
@@ -64,9 +67,7 @@ class Byte():
             result = "0" + result
         return Byte().setByte(result)
 
-        
-
-    def substract(self, byte):
+    def substract(self, byte: "Byte"):
         if not isinstance(byte, Byte):
             raise Exception("Byte class: Add Error")
 
@@ -85,7 +86,7 @@ class Byte():
         new_byte.setByte(result)
         return new_byte
 
-    def compare(self, byte):
+    def compare(self, byte: "Byte"):
         if not isinstance(byte, Byte):
             raise Exception("Byte class: Compare Error")
         
@@ -95,8 +96,9 @@ class Byte():
             return 1
         else:
             return 2
-
-
+    
+    def inc(self):
+        return self.add(Byte().setByte("00000001"))
 
 if __name__ == "__main__":
     testbyte1 = Byte()
