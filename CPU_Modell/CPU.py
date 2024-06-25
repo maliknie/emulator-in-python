@@ -168,6 +168,7 @@ class CPU():
             self.mm.setValueAtIndex(from_byte, to_adress_byte.getInt())
             self.cu.incPC(2)
             return
+        # Dieser Teil ist kompliziert, Erklärungsskizze in ../anderes/BilderUndSkizzen/mov.jpg
         print("Test1: ok")
         aaf1 = self.mm.getValueAtIndex(pc.getInt())
         aaf2 = self.mm.getValueAtIndex(pc.getInt() + 1)
