@@ -54,8 +54,9 @@ class Byte():
         num2 = int(byte.getByte(), 2)
         result = num1 + num2
         result = str(bin(result)[2:]) # 0b weg schneiden
+        """
         if len(result) > 8:
-            raise Exception("Overflow Error (Add)")
+            raise Exception("Overflow Error (Add to Byte)")"""
         for i in range(8-len(result)):
             result = "0" + result
         return Byte().setByte(result)

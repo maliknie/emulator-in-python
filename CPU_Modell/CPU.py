@@ -12,38 +12,36 @@ class CPU():
         print("Running CPU")
         while True:
             self.cu.fetch(self.mm)
-            self.cu.inc_pc()
+            self.cu.incPC()
 
             match self.cu.IR.getByte():
                 case "00000000":
                     self.NOP()
                 case "00000001":
-                    self.LDA(byte.joinBytesToInt(self.mm.getValueAtIndex(self.cu.PC.getInt()), self.mm.getValueAtIndex(self.cu.PC.getInt() + 1)))
-                    self.cu.inc_pc(2)
+                    self.LDA()
                 case "00000010":
-                    self.STA(byte.joinBytesToInt(self.mm.getValueAtIndex(self.cu.PC.getInt()), self.mm.getValueAtIndex(self.cu.PC.getInt() + 1)))
-                    self.cu.inc_pc(2)
+                    self.STA()
                 case "00000011":
                     self.ADD(self.mm.getValueAtIndex(self.cu.PC.getInt()))
-                    self.cu.inc_pc()
+                    self.cu.incPC()
                 case "00000100":
                     self.SUB(self.mm.getValueAtIndex(self.cu.PC.getInt()))
-                    self.cu.inc_pc()
+                    self.cu.incPC()
                 case "00000101":
                     self.JMP(self.mm.getValueAtIndex(self.cu.PC.getInt()))
-                    self.cu.inc_pc()
+                    self.cu.incPC()
                 case "00000110":
                     self.JZ(self.mm.getValueAtIndex(self.cu.PC.getInt()))
-                    self.cu.inc_pc()
+                    self.cu.incPC()
                 case "00000111":
                     self.JNZ(self.mm.getValueAtIndex(self.cu.PC.getInt()))
-                    self.cu.inc_pc()
+                    self.cu.incPC()
                 case "00001000":
                     self.AND(self.mm.getValueAtIndex(self.cu.PC.getInt()))
-                    self.cu.inc_pc()
+                    self.cu.incPC()
                 case "00001001":
                     self.OR(self.mm.getValueAtIndex(self.cu.PC.getInt()))
-                    self.cu.inc_pc()
+                    self.cu.incPC()
                 case "00001010":
                     print("HLT reached")
                     break
@@ -54,30 +52,37 @@ class CPU():
 
     def NOP(self):
         pass
-    def LDA(self, adress: "byte.Byte"):
-        self.alu.accumulator = self.mm.getValueAtIndex(adress.getInt())
-    def STA(self, adress: "byte.Byte"):
-        self.mm.setValueAtIndex(self.alu.accumulator, adress.getInt())
+    def LDA(self):
+        pc = self.cu.PC
+        big_adress_byte = self.mm.getValueAtIndex(pc.getInt())
+        small_adress_byte = self.mm.getValueAtIndex(pc.getInt() + 1)
+        self.alu.accumulator = self.mm.getValueAtIndex(byte.joinBytesToInt(big_adress_byte, small_adress_byte))
+        self.cu.incPC(2)
+    def STA(self):
+        pc = self.cu.PC
+        big_adress_byte = self.mm.getValueAtIndex(pc.getInt())
+        small_adress_byte = self.mm.getValueAtIndex(pc.getInt() + 1)
+        print("adress: ", big_adress_byte.getByte(), small_adress_byte.getByte())
+        self.mm.setValueAtIndex(self.alu.accumulator, byte.joinBytesToInt(big_adress_byte, small_adress_byte))
+        self.cu.incPC(2)
     def ADD(self, adress: "byte.Byte"):
-        if not isinstance(self.alu.accumulator, byte.Byte) or not isinstance(self.mm.getValueAtIndex(adress.getInt()), byte.Byte):
-            raise Exception("Accumulator or adresse in main memory doesn't contain byte")
         self.alu.accumulator = (self.alu.accumulator).add(self.mm.getValueAtIndex(adress.getInt()))
     def SUB(self, adress: "byte.Byte"):
         if not isinstance(self.alu.accumulator, byte.Byte) or not isinstance(self.mm.getValueAtIndex(adress.getInt()), byte.Byte):
             raise Exception("Accumulator or adresse in main memory doesn't contain byte")
         self.alu.accumulator = (self.alu.accumulator).substract(self.mm.getValueAtIndex(adress.getInt()))
     def JMP(self, adress: "byte.Byte"):
-        self.cu.PC = adress
+        self.cu.PC = register.Register(self.mm.getValueAtIndex(adress.getInt()), self.mm.getValueAtIndex(adress.getInt() + 1))
     def JZ(self, adress: "byte.Byte"):
         if not isinstance(self.alu.accumulator, byte.Byte):
             raise Exception("Accumulator doesn't contain byte")
         if self.alu.accumulator.getInt() == 0:
-            self.cu.PC = adress
+            self.cu.PC = register.Register(self.mm.getValueAtIndex(adress.getInt()), self.mm.getValueAtIndex(adress.getInt() + 1))
     def JNZ(self, adress: "byte.Byte"):
         if not isinstance(self.alu.accumulator, byte.Byte):
             raise Exception("Accumulator doesn't contain byte")
         if self.alu.accumulator.getInt() != 0:
-            self.cu.PC = adress
+            self.cu.PC = register.Register(self.mm.getValueAtIndex(adress.getInt()), self.mm.getValueAtIndex(adress.getInt() + 1))
     def AND(self, adress: "byte.Byte"):
         if not isinstance(self.alu.accumulator, byte.Byte) or not isinstance(self.mm.getValueAtIndex(adress.getInt()), byte.Byte):
             raise Exception("Accumulator or adresse in main memory doesn't contain byte")
@@ -101,8 +106,8 @@ class CU():
             raise Exception("Fetch Error")
         self.IR = memory.getValueAtIndex(self.PC.getInt())
         print("Fetched: ", self.IR.getByte())
-    def inc_pc(self, amount: int = 1) -> "byte.Byte":
-        self.PC = self.PC.add(byte.Byte().setByte(bin(amount)[2:]))        
+    def incPC(self, amount: int = 1) -> "byte.Byte":
+        self.PC.incRegister(amount)     
         return self.PC
             
 class ALU():

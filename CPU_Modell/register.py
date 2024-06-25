@@ -23,7 +23,7 @@ class Register():
     def addByteToRegister(self, byte: byte.Byte) -> "Register":
         result = self.getInt() + byte.getInt()
         if result > 65535:
-            raise Exception("Overflow Error (Add)")
+            raise Exception("Overflow Error (Add to Register)")
         self.setRegisterFromString(bin(result)[2:])
         return self
     def incRegister(self, amount: int = 1) -> "Register":
