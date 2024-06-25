@@ -22,26 +22,19 @@ class CPU():
                 case "00000010":
                     self.STA()
                 case "00000011":
-                    self.ADD(self.mm.getValueAtIndex(self.cu.PC.getInt()))
-                    self.cu.incPC()
+                    self.ADD()
                 case "00000100":
-                    self.SUB(self.mm.getValueAtIndex(self.cu.PC.getInt()))
-                    self.cu.incPC()
+                    self.SUB()
                 case "00000101":
-                    self.JMP(self.mm.getValueAtIndex(self.cu.PC.getInt()))
-                    self.cu.incPC()
+                    self.JMP()
                 case "00000110":
-                    self.JZ(self.mm.getValueAtIndex(self.cu.PC.getInt()))
-                    self.cu.incPC()
+                    self.JZ()
                 case "00000111":
-                    self.JNZ(self.mm.getValueAtIndex(self.cu.PC.getInt()))
-                    self.cu.incPC()
+                    self.JNZ()
                 case "00001000":
-                    self.AND(self.mm.getValueAtIndex(self.cu.PC.getInt()))
-                    self.cu.incPC()
+                    self.AND()
                 case "00001001":
-                    self.OR(self.mm.getValueAtIndex(self.cu.PC.getInt()))
-                    self.cu.incPC()
+                    self.OR()
                 case "00001010":
                     print("HLT reached")
                     break
@@ -55,7 +48,7 @@ class CPU():
     def LDA(self):
         pc = self.cu.PC
         big_adress_byte = self.mm.getValueAtIndex(pc.getInt())
-        small_adress_byte = self.mm.getValueAtIndex(pc.getInt() + 1)
+        small_adress_byte = self.mm.getValueAtIndex(pc.getInt() + 1) # Bytes im nächsten und übernächsten Speicherplatz werden zusammengefügt
         self.alu.accumulator = self.mm.getValueAtIndex(byte.joinBytesToInt(big_adress_byte, small_adress_byte))
         self.cu.incPC(2)
     def STA(self):
@@ -65,32 +58,47 @@ class CPU():
         print("adress: ", big_adress_byte.getByte(), small_adress_byte.getByte())
         self.mm.setValueAtIndex(self.alu.accumulator, byte.joinBytesToInt(big_adress_byte, small_adress_byte))
         self.cu.incPC(2)
-    def ADD(self, adress: "byte.Byte"):
-        self.alu.accumulator = (self.alu.accumulator).add(self.mm.getValueAtIndex(adress.getInt()))
-    def SUB(self, adress: "byte.Byte"):
-        if not isinstance(self.alu.accumulator, byte.Byte) or not isinstance(self.mm.getValueAtIndex(adress.getInt()), byte.Byte):
-            raise Exception("Accumulator or adresse in main memory doesn't contain byte")
-        self.alu.accumulator = (self.alu.accumulator).substract(self.mm.getValueAtIndex(adress.getInt()))
-    def JMP(self, adress: "byte.Byte"):
-        self.cu.PC = register.Register(self.mm.getValueAtIndex(adress.getInt()), self.mm.getValueAtIndex(adress.getInt() + 1))
-    def JZ(self, adress: "byte.Byte"):
-        if not isinstance(self.alu.accumulator, byte.Byte):
-            raise Exception("Accumulator doesn't contain byte")
+    def ADD(self):
+        pc = self.cu.PC
+        next_byte = self.mm.getValueAtIndex(pc.getInt())
+        self.alu.accumulator = self.alu.accumulator.add(next_byte)
+        self.cu.incPC()
+    def SUB(self):
+        pc = self.cu.PC
+        next_byte = self.mm.getValueAtIndex(pc.getInt())
+        self.alu.accumulator = self.alu.accumulator.substract(next_byte)
+        self.cu.incPC()
+    def JMP(self):
+        pc = self.cu.PC
+        big_adress_byte = self.mm.getValueAtIndex(pc.getInt())
+        small_adress_byte = self.mm.getValueAtIndex(pc.getInt() + 1)
+        self.cu.PC.setRegisterFromBytes(big_adress_byte, small_adress_byte)
+    def JZ(self):
+        pc = self.cu.PC
         if self.alu.accumulator.getInt() == 0:
-            self.cu.PC = register.Register(self.mm.getValueAtIndex(adress.getInt()), self.mm.getValueAtIndex(adress.getInt() + 1))
-    def JNZ(self, adress: "byte.Byte"):
-        if not isinstance(self.alu.accumulator, byte.Byte):
-            raise Exception("Accumulator doesn't contain byte")
+            big_adress_byte = self.mm.getValueAtIndex(pc.getInt())
+            small_adress_byte = self.mm.getValueAtIndex(pc.getInt() + 1)
+            self.cu.PC.setRegisterFromBytes(big_adress_byte, small_adress_byte)
+        else:
+            self.cu.incPC(2)
+    def JNZ(self):
+        pc = self.cu.PC
         if self.alu.accumulator.getInt() != 0:
-            self.cu.PC = register.Register(self.mm.getValueAtIndex(adress.getInt()), self.mm.getValueAtIndex(adress.getInt() + 1))
-    def AND(self, adress: "byte.Byte"):
-        if not isinstance(self.alu.accumulator, byte.Byte) or not isinstance(self.mm.getValueAtIndex(adress.getInt()), byte.Byte):
-            raise Exception("Accumulator or adresse in main memory doesn't contain byte")
-        self.alu.accumulator = self.alu.accumulator.bitwise_and(self.mm.getValueAtIndex(adress.getInt()))
-    def OR(self, adress: "byte.Byte"):
-        if not isinstance(self.alu.accumulator, byte.Byte) or not isinstance(self.mm.getValueAtIndex(adress.getInt()), byte.Byte):
-            raise Exception("Accumulator or adresse in main memory doesn't contain byte")
-        self.alu.accumulator = self.alu.accumulator.bitwise_or(self.mm.getValueAtIndex(adress.getInt()))
+            big_adress_byte = self.mm.getValueAtIndex(pc.getInt())
+            small_adress_byte = self.mm.getValueAtIndex(pc.getInt() + 1)
+            self.cu.PC.setRegisterFromBytes(big_adress_byte, small_adress_byte)
+        else:
+            self.cu.incPC(2)
+    def AND(self):
+        pc = self.cu.PC
+        next_byte = self.mm.getValueAtIndex(pc.getInt())
+        self.alu.accumulator = self.alu.accumulator.bitwise_and(next_byte)
+        self.cu.incPC()
+    def OR(self):
+        pc = self.cu.PC
+        next_byte = self.mm.getValueAtIndex(pc.getInt())
+        self.alu.accumulator = self.alu.accumulator.bitwise_or(next_byte)
+        self.cu.incPC()
     def HLT(self):
         exit()
 
