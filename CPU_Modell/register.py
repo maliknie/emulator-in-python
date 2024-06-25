@@ -32,3 +32,5 @@ class Register():
             raise Exception("Overflow Error (Inc)")
         self.setRegisterFromString(bin(result)[2:])
         return self
+    def getBytes(self) -> tuple:
+        return self.bytes
