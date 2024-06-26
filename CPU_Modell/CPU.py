@@ -255,8 +255,6 @@ class CU():
         self.PC = register.Register()
         self.IR = byte.Byte()
     def fetch(self, memory: "RAM.RAM") -> None:
-        if not isinstance(memory, RAM.RAM):
-            raise Exception("Fetch Error")
         self.IR = memory.getValueAtIndex(self.PC.getInt())
         print("Fetched: ", self.IR.getByte())
     def incPC(self, amount: int = 1) -> "byte.Byte":
