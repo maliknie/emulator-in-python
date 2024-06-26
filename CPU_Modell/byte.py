@@ -24,20 +24,21 @@ class Byte():
             return int(self.getByte(), 2) * -1
         return int(self.getByte(), 2)
     
-    def setByte(self, byte_string: str) -> "Byte":
+    def setByte(self, byte_string: str, negative: bool = False) -> "Byte":
         # Keine Ahnung warum da immer ein b drin ist, aber jetzt funktioniert es
         if 'b' in byte_string:
             byte_string = byte_string[:2]
             for i in range(8-len(byte_string)):
                 byte_string = "0" + byte_string
-
         if len(byte_string) != 8:
             raise Exception("Byte must be 8 bits long")
+        
         byte_list = []
         byte_string = byte_string[::-1]
         for bit in byte_string:
             byte_list.append(int(bit))
         self.bits = byte_list
+        self.negative = negative
         return self
     
     def setBitInPos(self, bit: int, pos: int) -> None:
@@ -57,35 +58,57 @@ class Byte():
             new_bit.setBitInPos(OR(int(self.getByte()[i]), int(value.getByte()[i])), i)
         return new_bit
     
-    def add(self, byte: "Byte") -> "Byte":        
+    def add(self, byte: "Byte") -> "Byte":
+
         num1 = int(self.getByte(), 2)
         num2 = int(byte.getByte(), 2)
+        if self.negative:
+            num1 = num1 * -1
+        if byte.negative:
+            num2 = num2 * -1
         result = num1 + num2
+        if result < 0:
+            result = result * -1
+            result = str(bin(result)[2:])
+            for i in range(8-len(result)):
+                result = "0" + result
+            return Byte().setByte(result, True)
         result = str(bin(result)[2:]) # 0b weg schneiden
         for i in range(8-len(result)):
             result = "0" + result
         return Byte().setByte(result)
 
     def substract(self, byte: "Byte") -> "Byte":
-        num1 = int(self.getByte(), 2)
-        num2 = int(byte.getByte(), 2)
-        result = num1 - num2
         new_byte = Byte()
+        num1 = self.getInt()
+        print("num1: ", num1)
+        num2 = byte.getInt()
+        print("num2: ", num2)
+        result = num1 - num2
+        print("result: ", result)
         if result < 0:
-            new_byte.negative = True
+            print("result is negative")
             result = result * -1
-
+            result = str(bin(result)[2:])
+            for i in range(8-len(result)):
+                result = "0" + result
+            return new_byte.setByte(result, True)
         result = str(bin(result)[2:])
         for i in range(8-len(result)):
             result = "0" + result
+        return new_byte.setByte(result)
         
-        new_byte.setByte(result)
-        return new_byte
 
-    def compare(self, byte: "Byte") -> int:      
-        if int(self.getByte) > int(byte.getByte):
+    def compare(self, byte: "Byte") -> int:
+        num1 = int(self.getByte(), 2)
+        num2 = int(byte.getByte(), 2)
+        if self.negative:
+            num1 = num1 * -1
+        if byte.negative:
+            num2 = num2 * -1   
+        if num1 > num2:
             return 0
-        elif int(self.getByte) < int(byte.getByte):
+        elif num1 < num2:
             return 1
         else:
             return 2
@@ -94,17 +117,22 @@ class Byte():
         return self.add(Byte().setByte("00000001"))
     
 def joinBytesToInt(byte1: "Byte", byte2: "Byte") -> int:
-    return int((byte1.getByte() + byte2.getByte()), 2)
+    result = int((byte1.getByte() + byte2.getByte()), 2)
+    if byte1.negative:
+        result = result * -1
+    return result
 
-if __name__ == "__main__":
+def testByte():
     testbyte1 = Byte()
-    testbyte1.setByte("00000001")
+    testbyte1.setByte("00000001", True)
 
     testbyte2 = Byte()
-    testbyte2.setByte("10000000")
+    testbyte2.setByte("00000001", True)
 
     result = testbyte1.add(testbyte2)
     result2 = testbyte1.substract(testbyte2)
-    print(result.getByte())
-    print(result2.getByte())
-    print(result2.negative)
+
+    print(result.getByte(), result.negative)
+    print(result2.getByte(), result2.negative)
+if __name__ == "__main__":
+    testByte()

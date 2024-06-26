@@ -213,6 +213,36 @@ class CPU():
         from_byte = self.mm.getValueAtIndex(full_from_adress)
         self.mm.setValueAtIndex(from_byte, full_to_adress)
         self.cu.incPC(2)
+    def MOVT(self):
+        pc = self.cu.PC
+        big_from_adress_byte = self.mm.getValueAtIndex(pc.getInt())
+        small_from_adress_byte = self.mm.getValueAtIndex(pc.getInt() + 1)
+        full_from_adress = byte.joinBytesToInt(big_from_adress_byte, small_from_adress_byte)
+        big_index_byte = self.mm.getValueAtIndex(pc.getInt() + 2)
+        small_index_byte = self.mm.getValueAtIndex(pc.getInt() + 3)
+        index = byte.joinBytesToInt(big_index_byte, small_index_byte)
+        big_to_adress_byte = self.mm.getValueAtIndex(index)
+        small_to_adress_byte = self.mm.getValueAtIndex(index + 1)
+        full_to_adress = byte.joinBytesToInt(big_to_adress_byte, small_to_adress_byte)
+        from_byte = self.mm.getValueAtIndex(full_from_adress)
+        self.mm.setValueAtIndex(from_byte, full_to_adress)
+        self.cu.incPC(4)
+    def MOVF(self):
+        pc = self.cu.PC
+        big_to_adress_byte = self.mm.getValueAtIndex(pc.getInt())
+        small_to_adress_byte = self.mm.getValueAtIndex(pc.getInt() + 1)
+        full_to_adress = byte.joinBytesToInt(big_to_adress_byte, small_to_adress_byte)
+        big_index_byte = self.mm.getValueAtIndex(pc.getInt() + 2)
+        small_index_byte = self.mm.getValueAtIndex(pc.getInt() + 3)
+        index = byte.joinBytesToInt(big_index_byte, small_index_byte)
+        big_from_adress_byte = self.mm.getValueAtIndex(index)
+        small_from_adress_byte = self.mm.getValueAtIndex(index + 1)
+        full_from_adress = byte.joinBytesToInt(big_from_adress_byte, small_from_adress_byte)
+        from_byte = self.mm.getValueAtIndex(full_from_adress)
+        self.mm.setValueAtIndex(from_byte, full_to_adress)
+        self.cu.incPC(4)
+    def CLR(self):
+        self.alu.accumulator.setRegisterFromBytes(byte.Byte().setByte('00000000'), byte.Byte().setByte('00000000'))
     def HLT(self):
         exit()
 

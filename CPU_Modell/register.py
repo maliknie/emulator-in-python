@@ -2,13 +2,11 @@ import byte
 
 # 16 Bit register class
 class Register():
-    def __init__(self, big_byte: byte.Byte=byte.Byte(), small_byte: byte.Byte=byte.Byte(), negative_flag: bool=False) -> None:
+    def __init__(self, big_byte: byte.Byte=byte.Byte(), small_byte: byte.Byte=byte.Byte(), negative: bool=False) -> None:
         self.bytes = (big_byte, small_byte)
-        self.negative = negative_flag
+        self.negative = negative
     def getRegister(self) -> str:
         register_string = ""
-        if self.negative:
-            register_string += "-"
         register_string += self.bytes[0].getByte() + self.bytes[1].getByte()
         return register_string
     def getInt(self) -> int:
