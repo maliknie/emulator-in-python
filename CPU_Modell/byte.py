@@ -15,27 +15,25 @@ class Byte():
         
     def getByte(self) -> str:
         byte_string = ""
-        if self.negative:
-            byte_string += "-"
         for bit in self.bits[::-1]:
             byte_string += str(bit)
         return byte_string
     
     def getInt(self) -> int:
         if self.negative:
-            return int(self.getByte(), 2)
+            return int(self.getByte(), 2) * -1
         return int(self.getByte(), 2)
     
     def setByte(self, byte_string: str) -> "Byte":
-        # print("byte string: ", byte_string)
+        # Keine Ahnung warum da immer ein b drin ist, aber jetzt funktioniert es
+        if 'b' in byte_string:
+            byte_string = byte_string[:2]
+            for i in range(8-len(byte_string)):
+                byte_string = "0" + byte_string
+
+        if len(byte_string) != 8:
+            raise Exception("Byte must be 8 bits long")
         byte_list = []
-        if "b" in byte_string:
-            print("b in byte string: ", byte_string)
-            byte_string = byte_string[2:]
-        if not len(byte_string) == 0:
-            if byte_string[0] == "-":
-                self.negative = True
-                byte_string = byte_string[1:]
         byte_string = byte_string[::-1]
         for bit in byte_string:
             byte_list.append(int(bit))
@@ -64,9 +62,6 @@ class Byte():
         num2 = int(byte.getByte(), 2)
         result = num1 + num2
         result = str(bin(result)[2:]) # 0b weg schneiden
-        """
-        if len(result) > 8:
-            raise Exception("Overflow Error (Add to Byte)")"""
         for i in range(8-len(result)):
             result = "0" + result
         return Byte().setByte(result)

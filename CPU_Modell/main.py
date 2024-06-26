@@ -21,16 +21,15 @@ controlunit.PC = register.Register(byte.Byte().setByte('00000000'), byte.Byte().
 
 # Move x0 to xaaaa
 mainmemory.setValueAtIndex(byte.Byte().setByte('10000100'), 2) # SUB
-mainmemory.setValueAtIndex(byte.Byte().setByte('00000001'), 3) # Operand
-print(mainmemory.getValueAtIndex(3).getByte())
-mainmemory.setValueAtIndex(byte.Byte().setByte('10000011'), 4) # Operand
-mainmemory.setValueAtIndex(byte.Byte().setByte('00000010'), 5) # Operand
-mainmemory.setValueAtIndex(byte.Byte().setByte('10000010'), 6) # STA
-mainmemory.setValueAtIndex(byte.Byte().setByte('00000000'), 7) # Operand
-mainmemory.setValueAtIndex(byte.Byte().setByte('11111111'), 8) # Operand
-mainmemory.setValueAtIndex(byte.Byte().setByte('00001010'), 9) # HLT
-mainmemory.setValueAtIndex(byte.Byte().setByte('00000000'), 255) # 0x0
-mainmemory.setValueAtIndex(byte.Byte().setByte('00000000'), 256) # 0x0
+mainmemory.setValueAtIndex(byte.Byte().setByte('00000000'), 3) # Operand
+mainmemory.setValueAtIndex(byte.Byte().setByte('00000001'), 4) # Operand
+mainmemory.setValueAtIndex(byte.Byte().setByte('10000011'), 5) # ADD
+mainmemory.setValueAtIndex(byte.Byte().setByte('00000000'), 6) # Operand
+mainmemory.setValueAtIndex(byte.Byte().setByte('00000010'), 7) # Operand
+mainmemory.setValueAtIndex(byte.Byte().setByte('10000010'), 8) # STA
+mainmemory.setValueAtIndex(byte.Byte().setByte('00000000'), 9) # Operand
+mainmemory.setValueAtIndex(byte.Byte().setByte('00000000'), 10) # Operand
+mainmemory.setValueAtIndex(byte.Byte().setByte('00001010'), 11) # HLT
 
 cpu.run()
 
