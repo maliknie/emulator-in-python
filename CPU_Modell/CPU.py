@@ -58,18 +58,23 @@ class CPU():
             return
         big_adress_byte = self.mm.getValueAtIndex(pc.getInt())
         small_adress_byte = self.mm.getValueAtIndex(pc.getInt() + 1) # Bytes im nächsten und übernächsten Speicherplatz werden zusammengefügt
-        self.alu.accumulator = self.mm.getValueAtIndex(byte.joinBytesToInt(big_adress_byte, small_adress_byte))
+        full_adress = byte.joinBytesToInt(big_adress_byte, small_adress_byte)
+        self.alu.accumulator = self.mm.getValueAtIndex(full_adress)
         self.cu.incPC(2)
     def STA(self, msb: int):
         pc = self.cu.PC
         if msb:
-            self.mm.setValueAtIndex(self.alu.accumulator, pc.getInt())
-            self.cu.incPC()
+            big_adress_byte = self.mm.getValueAtIndex(pc.getInt())
+            small_adress_byte = self.mm.getValueAtIndex(pc.getInt() + 1)
+            self.mm.setValueAtIndex(self.alu.accumulator, byte.joinBytesToInt(big_adress_byte, small_adress_byte))
+            self.cu.incPC(2)
             return
         big_adress_byte = self.mm.getValueAtIndex(pc.getInt())
         small_adress_byte = self.mm.getValueAtIndex(pc.getInt() + 1)
-        print("adress: ", big_adress_byte.getByte(), small_adress_byte.getByte())
-        self.mm.setValueAtIndex(self.alu.accumulator, byte.joinBytesToInt(big_adress_byte, small_adress_byte))
+        start_index = byte.joinBytesToInt(big_adress_byte, small_adress_byte)
+        big_destination_byte = self.mm.getValueAtIndex(start_index)
+        small_destination_byte = self.mm.getValueAtIndex(start_index + 1)
+        self.mm.setValueAtIndex(self.alu.accumulator, byte.joinBytesToInt(big_destination_byte, small_destination_byte))
         self.cu.incPC(2)
     def ADD(self, msb: int):
         pc = self.cu.PC
@@ -169,37 +174,17 @@ class CPU():
             self.cu.incPC(2)
             return
         # Dieser Teil ist kompliziert, Erklärungsskizze in ../anderes/BilderUndSkizzen/mov.jpg
-        print("Test1: ok")
         aaf1 = self.mm.getValueAtIndex(pc.getInt())
         aaf2 = self.mm.getValueAtIndex(pc.getInt() + 1)
-        print("aaf1, aaf2: ", aaf1.getByte(), aaf2.getByte())
         start_index = byte.joinBytesToInt(aaf1, aaf2)
-        print("Start Index: ", hex(start_index))
         af1 = self.mm.getValueAtIndex(start_index)
         af2 = self.mm.getValueAtIndex(start_index + 1)
-        print("af1, af2: ", af1.getByte(), af2.getByte())
         at1 = self.mm.getValueAtIndex(start_index + 2)
         at2 = self.mm.getValueAtIndex(start_index + 3)
-        print("at1, at2: ", at1.getByte(), at2.getByte())
         value_to = byte.joinBytesToInt(at1, at2)
-        print("Value to: ", value_to)
         value_from = self.mm.getValueAtIndex(byte.joinBytesToInt(af1, af2))
-        print("Value from: ", value_from.getByte())
         self.mm.setValueAtIndex(value_from, value_to)
-        print("Value : ", value_from.getByte(), " should now be in: ", hex(value_to))
         self.cu.incPC(2)
-        """
-        from_adress_big = self.mm.getValueAtIndex(pc.getInt())
-        print("Program Counter: ", self.cu.PC.getRegister())
-        print("pc variable: ", pc.getRegister())
-        from_adress_small = from_adress_big.add(byte.Byte().setByte('00000001'))
-        to_adress_big = from_adress_big.add(byte.Byte().setByte('00000010'))
-        to_adress_small = from_adress_big.add(byte.Byte().setByte('00000011'))
-        value_to = self.mm.getValueAtIndex(byte.joinBytesToInt(to_adress_big, to_adress_small))
-        value_from = self.mm.getValueAtIndex(byte.joinBytesToInt(from_adress_big, from_adress_small))
-        self.mm.setValueAtIndex(value_from, value_to.getInt())
-        self.cu.incPC(2)"""
-
     def HLT(self):
         exit()
 

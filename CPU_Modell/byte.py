@@ -22,10 +22,20 @@ class Byte():
         return byte_string
     
     def getInt(self) -> int:
+        if self.negative:
+            return int(self.getByte(), 2)
         return int(self.getByte(), 2)
     
     def setByte(self, byte_string: str) -> "Byte":
+        # print("byte string: ", byte_string)
         byte_list = []
+        if "b" in byte_string:
+            print("b in byte string: ", byte_string)
+            byte_string = byte_string[2:]
+        if not len(byte_string) == 0:
+            if byte_string[0] == "-":
+                self.negative = True
+                byte_string = byte_string[1:]
         byte_string = byte_string[::-1]
         for bit in byte_string:
             byte_list.append(int(bit))

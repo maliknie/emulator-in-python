@@ -12,7 +12,9 @@ class Register():
         register_string += self.bytes[0].getByte() + self.bytes[1].getByte()
         return register_string
     def getInt(self) -> int:
-        return int(self.getRegister(), 2)
+        if self.negative == False:
+            return int(self.getRegister(), 2)
+        return int(self.getRegister(), 2) * -1
     def setRegisterFromString(self, register_string: str) -> "Register":
         self.bytes[0].setByte(register_string[:8])
         self.bytes[1].setByte(register_string[8:])
