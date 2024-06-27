@@ -28,10 +28,9 @@ class Byte():
         # Keine Ahnung warum da immer ein b drin ist, aber jetzt funktioniert es
         if 'b' in byte_string:
             byte_string = byte_string[:2]
-            for i in range(8-len(byte_string)):
-                byte_string = "0" + byte_string
-        if len(byte_string) != 8:
-            raise Exception("Byte must be 8 bits long")
+
+        for i in range(8-len(byte_string)):
+            byte_string = "0" + byte_string
         
         byte_list = []
         byte_string = byte_string[::-1]

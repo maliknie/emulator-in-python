@@ -1,4 +1,7 @@
 import tkinter as tk
+import display
+import RAM
+import threading
 
 
 class Window():
@@ -12,14 +15,24 @@ class Window():
         print("Class: Window")
 
 class displayWindow(Window):
-    def __init__(self, title, geometry):
+    def __init__(self, title, geometry, ram: RAM.RAM):
         super().__init__(title, geometry)
+        self.mm = ram
+        self.window = None
     def build(self):
         newwindow = openWindow(self)
+        self.window = newwindow
         if not self.isbuilt:
             self.isbuilt = True
             exitbutton = tk.Button(newwindow, text="exit", command=lambda: self.close(newwindow), height=1, width=3)
             exitbutton.pack()
+            canvas = tk.Canvas(newwindow, width=1024, height=1024)
+
+            screen = display.Display(self.mm, newwindow, canvas)
+
+            update_thread = threading.Thread(target=screen.thread)
+            update_thread.daemon = True
+            update_thread.start()
              
             
     def close(self, newwindow):
@@ -79,10 +92,13 @@ def openWindow(window):
         window.isopen = True
         return newwindow
 
-if __name__ == "__main__":
-    root = tk.Tk()
-    displaywindow = displayWindow("Pixel Display", "1080x1080")
+def build_gui(mainmemory: RAM.RAM):
+    displaywindow = displayWindow("Pixel Display", "1080x1080", mainmemory)
     clockwindow = clockWindow("Clock", "200x200")
-    rootwindow = rootWindow("CPU Modell", "500x500", root, displaywindow, clockwindow)
-    rootwindow.build()
-    root.mainloop()
+    root = rootWindow("CPU Modell", "500x500", tk.Tk(), displaywindow, clockwindow)
+    root.build()
+
+    root.tkwindow.mainloop()
+if __name__ == "__main__":
+    mainmemory = RAM.RAM(65536)
+    build_gui(mainmemory)

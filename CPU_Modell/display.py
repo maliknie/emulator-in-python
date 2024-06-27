@@ -6,7 +6,9 @@ import tkinter as tk
 import random
 
 class Display():
-    def __init__(self, ram: RAM.RAM, canvas: tk.Canvas) -> None:
+    def __init__(self, ram: RAM.RAM, parentwindow: tk.Tk, canvas: tk.Canvas) -> None:
+        self.parentwindow = parentwindow
+
         self.mm = ram
         self.canvas = canvas
 
@@ -45,6 +47,7 @@ class Display():
                 bottom_right_x = top_left_x + 8
                 bottom_right_y = top_left_y + 8
                 self.canvas.create_rectangle(top_left_x, top_left_y, bottom_right_x, bottom_right_y, fill=pixel_color, outline="")
+        self.canvas.pack()
     def thread(self):
         print("Starting Thread...")
         
@@ -62,5 +65,16 @@ class Display():
 
 if __name__ == "__main__":
     mainmemory = RAM.RAM(65536)
-    test_display = Display(mainmemory)
-    test_display.translateRamToColor()
+
+    window = tk.Tk()
+    window.title("Pixel Display")
+    window.geometry("1080x1080")
+
+    canvas = tk.Canvas(window, width=1024, height=1024)
+
+    screen = Display(mainmemory, window, canvas)
+    update_thread = threading.Thread(target=screen.thread)
+    update_thread.daemon = True
+    update_thread.start()
+
+    window.mainloop()

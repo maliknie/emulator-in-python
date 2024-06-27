@@ -35,7 +35,9 @@ def load_program(mainmemory: RAM.RAM):
     mainmemory.setValueAtIndex(byte.Byte().setByte('10000010'), 8)
     mainmemory.setValueAtIndex(byte.Byte().setByte('00000000'), 9)
     mainmemory.setValueAtIndex(byte.Byte().setByte('00000000'), 10)
-    mainmemory.setValueAtIndex(byte.Byte().setByte('00001010'), 11)
+    mainmemory.setValueAtIndex(byte.Byte().setByte('10000101'), 11)
+    mainmemory.setValueAtIndex(byte.Byte().setByte('00000000'), 12)
+    mainmemory.setValueAtIndex(byte.Byte().setByte('00000010'), 13)
     mainmemory.setValueAtIndex(byte.Byte().setByte('00000000'), 16)
     mainmemory.setValueAtIndex(byte.Byte().setByte('00000001'), 17)
 
@@ -44,26 +46,25 @@ def set_pc(controlunit: CPU.CU, start_index: int):
     new_register.setRegisterFromInt(start_index)
     controlunit.PC = new_register
 
-def build_gui():
-    displaywindow = GUI.displayWindow("Pixel Display", "1080x1080")
-    clockwindow = GUI.clockWindow("Clock", "200x200")
-    root = GUI.rootWindow("CPU Modell", "500x500")
-    root.build(displaywindow, clockwindow)
+def run_gui():
+    GUI.build_gui()
 
-    canvas = tk.Canvas(displaywindow, width=1024, height=1024)
-    canvas.pack()
+"""
+INITIALIZE THREADS
+"""
 
-    screen = display.Display(mainmemory, canvas)
-
+gui_thread = threading.Thread(target=run_gui, daemon=True)
 
 """
 RUN PROGRAM
 """
 
+
+
 mainmemory, controlunit, arithmeticandlogicunit, cpu = build_computer(RAM_SIZE)
 set_pc(controlunit, 2)
 load_program(mainmemory)
-build_gui()
+gui_thread.start()
 cpu.run()
 
 
