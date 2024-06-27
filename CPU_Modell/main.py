@@ -5,7 +5,7 @@ import threading
 import time
 
 # custom libraries
-import RAM
+import CPU_V1.RAM as RAM
 import CPU
 import byte
 import register
@@ -46,14 +46,12 @@ def set_pc(controlunit: CPU.CU, start_index: int):
     new_register.setRegisterFromInt(start_index)
     controlunit.PC = new_register
 
-def run_gui():
-    GUI.build_gui()
+def run_gui(mm: RAM.RAM):
+    GUI.build_gui(mm)
 
-"""
-INITIALIZE THREADS
-"""
 
-gui_thread = threading.Thread(target=run_gui, daemon=True)
+
+
 
 """
 RUN PROGRAM
@@ -61,18 +59,21 @@ RUN PROGRAM
 
 
 
-mainmemory, controlunit, arithmeticandlogicunit, cpu = build_computer(RAM_SIZE)
+mainmemory1, controlunit, arithmeticandlogicunit, cpu = build_computer(RAM_SIZE)
 set_pc(controlunit, 2)
-load_program(mainmemory)
+load_program(mainmemory1)
+cpu_thread = threading.Thread(target=cpu.run, daemon=True)
+cpu_thread.start()
+gui_thread = threading.Thread(target=run_gui, args=(mainmemory1,), daemon=True)
 gui_thread.start()
-cpu.run()
+gui_thread.join()
 
 
 """
 DEBUG OUTPUT
 """
 k = 0
-for value in mainmemory.registers:
+for value in mainmemory1.registers:
     if (value.getByte() != "00000000" and PRINT_RAM) or (k < FIRST_K and PRINT_FIRST_K):
         if value.negative:
             print(hex(k), value.getByte(), value.getInt(), "negative")

@@ -3,7 +3,7 @@ import random
 import threading
 import time
 import display
-import RAM
+import CPU_V1.RAM as RAM
 
 GRID_SIZE = 64
 mainmemory = RAM.RAM(65536)

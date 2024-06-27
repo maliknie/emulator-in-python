@@ -1,6 +1,6 @@
 import tkinter as tk
 import display
-import RAM
+import CPU_V1.RAM as RAM
 import threading
 import time
 import queue
@@ -27,12 +27,14 @@ class displayWindow(Window):
             self.isbuilt = True
             exitbutton = tk.Button(newwindow, text="exit", command=lambda: self.close(newwindow), height=1, width=3)
             exitbutton.pack()
+            """
             canvas = tk.Canvas(newwindow, width=1024, height=1024)
 
             screen = display.Display(self.mm, newwindow, canvas)
             update_thread = threading.Thread(target=screen.thread)
             update_thread.daemon = True
             update_thread.start()
+            """
 
             
     def close(self, newwindow):
@@ -99,6 +101,7 @@ def build_gui(mainmemory: RAM.RAM):
     root.build()
 
     root.tkwindow.mainloop()
+
 if __name__ == "__main__":
     mainmemory = RAM.RAM(65536)
     build_gui(mainmemory)

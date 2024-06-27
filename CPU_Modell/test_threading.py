@@ -3,6 +3,8 @@ import threading
 import random
 import tkinter as tk
 
+SLEEP_TIME = 0.1
+
 class Pixel():
     def __init__(self, color: str, top_left_x: int, top_left_y: int, bottom_right_x: int, bottom_right_y: int) -> None:
         self.color = color
@@ -17,7 +19,7 @@ pixels = [Pixel("#000000", 0, 0, 8, 8) for i in range(4096)]
 
 def preparePixels():
     while True:
-        time.sleep(2)
+        time.sleep(SLEEP_TIME)
         pixel_color = "#000000"
         pixel_top_left_x = 0
         pixel_top_left_y = 0
@@ -35,20 +37,22 @@ def preparePixels():
                 pixel = Pixel(pixel_color, pixel_top_left_x, pixel_top_left_y, pixel_bottom_right_x, pixel_bottom_right_y)
                 pixel_color = "#" + "".join(random.choices("0123456789ABCDEF", k=6))
                 pixels[pixel_index] = pixel
-        #        canvas.create_rectangle(pixel_top_left_x, pixel_top_left_y, pixel_bottom_right_x, pixel_bottom_right_y, fill=pixel_color, outline="")
-        #canvas.pack()
+        refresh()
         print("Pixels prepared")
-        draw(canvas)
         
 
-def draw(canvas: tk.Canvas):
+def refresh():
+    global current_canvas
+    current_canvas.destroy()
+    current_canvas = tk.Canvas(root, width=1024, height=1024)
     start = time.time()
     for pixel in pixels:
-        canvas.create_rectangle(pixel.top_left_x, pixel.top_left_y, pixel.bottom_right_x, pixel.bottom_right_y, fill=pixel.color, outline="")
-    canvas.pack()
+        current_canvas.create_rectangle(pixel.top_left_x, pixel.top_left_y, pixel.bottom_right_x, pixel.bottom_right_y, fill=pixel.color, outline="")
+    current_canvas.pack()
     time_elapsed = time.time() - start
     print("Time elapsed: ", time_elapsed)
-    time.sleep(1)
+    time.sleep(SLEEP_TIME)
+    
     
 
 
@@ -63,10 +67,11 @@ def draw(canvas: tk.Canvas):
 
 root = tk.Tk()
 root.title("Test")
+root.geometry("1060x1060")
 
-canvas = tk.Canvas(root, width=1024, height=1024)
+current_canvas = tk.Canvas(root, width=1024, height=1024)
 
-draw_button = tk.Button(root, text="Draw", command=lambda: draw(canvas))
+draw_button = tk.Button(root, text="Draw", command=lambda: refresh())
 draw_button.pack()
 
 prepare_thread = threading.Thread(target=preparePixels)

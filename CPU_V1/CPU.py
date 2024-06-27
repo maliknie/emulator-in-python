@@ -1,4 +1,4 @@
-import CPU_V1.RAM as RAM
+import RAM as RAM
 import byte
 import register
 import time
