@@ -72,6 +72,10 @@ class CPU():
             small_adress_byte = self.mm.getValueAtIndex(pc.getInt() + 1)
             full_adress = byte.joinBytesToInt(big_adress_byte, small_adress_byte)
             bytes_to_store = self.alu.accumulator.getBytes()
+            for b in bytes_to_store:
+                if not isinstance(b, byte.Byte):
+                    pass
+                print(b.getByte())
             self.mm.setValueAtIndex(bytes_to_store[0], full_adress)
             self.mm.setValueAtIndex(bytes_to_store[1], full_adress + 1)
             self.cu.incPC(2)

@@ -38,7 +38,7 @@ def continuous_update():
         for _ in range(100):
             pixel_index = random.randint(0, AMOUNT_OF_PIXELS**2 - 1)
             color = "#" + "".join(random.choices("0123456789ABCDEF", k=6))
-            set_pixel_color(pixel_index, color)
+        set_pixel_color(pixel_index, color)
         update_display()
         time.sleep(1)
 

@@ -15,17 +15,17 @@ cpu = CPU.CPU(mainmemory, controlunit, arithmeticandlogicunit)
 
 
 
-mainmemory.setValueAtIndex(byte.Byte().setByte('00000001'), 16)
-mainmemory.setValueAtIndex(byte.Byte().setByte('00000011'), 17) 
+mainmemory.setValueAtIndex(byte.Byte().setByte('00000000'), 16)
+mainmemory.setValueAtIndex(byte.Byte().setByte('00000001'), 17) 
 mainmemory.setValueAtIndex(byte.Byte().setByte('00000011'), 2)
 mainmemory.setValueAtIndex(byte.Byte().setByte('00000000'), 3)
 mainmemory.setValueAtIndex(byte.Byte().setByte('00010000'), 4)
 mainmemory.setValueAtIndex(byte.Byte().setByte('00000011'), 5)
 mainmemory.setValueAtIndex(byte.Byte().setByte('00000000'), 6)
-mainmemory.setValueAtIndex(byte.Byte().setByte('00010001'), 7)
+mainmemory.setValueAtIndex(byte.Byte().setByte('00010000'), 7)
 mainmemory.setValueAtIndex(byte.Byte().setByte('10000010'), 8)
-mainmemory.setValueAtIndex(byte.Byte().setByte('11111111'), 9)
-mainmemory.setValueAtIndex(byte.Byte().setByte('11111110'), 10)
+mainmemory.setValueAtIndex(byte.Byte().setByte('00000000'), 9)
+mainmemory.setValueAtIndex(byte.Byte().setByte('00000000'), 10)
 mainmemory.setValueAtIndex(byte.Byte().setByte('00001010'), 11) 
 
 cpu.run()
