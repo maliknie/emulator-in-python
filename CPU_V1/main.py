@@ -3,6 +3,7 @@ from CPU import CPU
 from CPU import CU
 from CPU import ALU
 from RAM import RAM
+from screen import pygameDisplay
 from controller import AppController
 
 if __name__ == "__main__":
@@ -10,5 +11,6 @@ if __name__ == "__main__":
     cu_instance = CU()
     alu_instance = ALU()
     cpu_instance = CPU(ram_instance, cu_instance, alu_instance)
-    controller = AppController(GUI, cpu_instance)
-    controller.gui.main_loop()  
+    pygame_instance = pygameDisplay(ram_instance)
+    controller = AppController(GUI, cpu_instance, pygame_instance)
+    controller.gui.main_loop()
