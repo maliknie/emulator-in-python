@@ -16,6 +16,14 @@ class Register():
             register_string = register_string[1:]
             return int(register_string, 2) * -1
         return int(self.getRegister(), 2)
+    def setRegisterFromInt(self, value: int) -> "Register":
+        if value < 0:
+            self.negative = True
+        value = str(bin(value)[2:])
+        for i in range(16-len(value)):
+            value = "0" + value
+        self.setRegisterFromString(value[:8], value[8:])
+        return self
     def setRegisterFromString(self, big_byte_string: str, small_byte_string: str) -> "Register":
         self.bytes[0].setByte(big_byte_string)
         self.bytes[1].setByte(small_byte_string)

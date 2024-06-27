@@ -40,6 +40,14 @@ class CPU():
                     self.OR(msb)
                 case "0001011":
                     self.MOV(msb)
+                case "0001100":
+                    self.MOVT()
+                case "0001101":
+                    self.MOVF()
+                case "0001110":
+                    self.CLR()
+                case "0001111":
+                    self.STAS(msb)
                 case "0001010":
                     print("HLT reached")
                     break
@@ -90,6 +98,24 @@ class CPU():
         self.mm.setValueAtIndex(bytes_to_store[0], full_adress)
         self.mm.setValueAtIndex(bytes_to_store[1], full_adress + 1)
         self.cu.incPC(2)
+    def STAS(self, msb: int):
+        pc = self.cu.PC
+        if msb:
+            big_adress_byte = self.mm.getValueAtIndex(pc.getInt())
+            small_adress_byte = self.mm.getValueAtIndex(pc.getInt() + 1)
+            full_adress = byte.joinBytesToInt(big_adress_byte, small_adress_byte)
+            bytes_to_store = self.alu.accumulator.getBytes()
+            self.mm.setValueAtIndex(bytes_to_store[1], full_adress)
+            self.cu.incPC(2)
+            return
+        big_index_byte = self.mm.getValueAtIndex(pc.getInt())
+        small_index_byte = self.mm.getValueAtIndex(pc.getInt() + 1)
+        index = byte.joinBytesToInt(big_index_byte, small_index_byte)
+        big_destination_byte = self.mm.getValueAtIndex(index)
+        small_destination_byte = self.mm.getValueAtIndex(index + 1)
+        full_adress = byte.joinBytesToInt(big_destination_byte, small_destination_byte)
+        bytes_to_store = self.alu.accumulator.getBytes()
+        self.mm.setValueAtIndex(bytes_to_store[1], full_adress)
     def ADD(self, msb: int):
         pc = self.cu.PC
         if msb:
