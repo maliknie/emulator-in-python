@@ -14,8 +14,12 @@ class AppController:
         self.screen_thread = threading.Thread(target=self.pygamedisplay.run, daemon=True)
         self.screen_thread.start()
 
-    def load_program(self):
-        self.cpu.loadProgram()
+    def load_program(self, program):
+        self.cpu.loadProgram(program)
+    
+    def test_screen(self):
+        self.test_screen_thread = threading.Thread(target=self.cpu.testScreen, daemon=True)
+        self.test_screen_thread.start()
     
     def update_gui(self, data):
         pass

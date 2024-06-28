@@ -2,6 +2,7 @@ import RAM as RAM
 import byte
 import register
 import time
+import random
 
 class CPU():
     def __init__(self, mainmemory: "RAM.RAM", controlunit: "CU", alunit: "ALU"):
@@ -9,9 +10,21 @@ class CPU():
         self.cu = controlunit
         self.alu = alunit
     
-    def loadProgram(self, filename: str = "binary_files/program.bin") -> None:
+    def testScreen(self):
+        k = 0
+        while True:
+            k += 1
+            print("Test Screen cycle: ", k)
+            for i in range(len(self.mm.registers)):
+                my_bytestring = "".join(random.choices("01", k=8))
+                self.mm.registers[i] = byte.Byte().setByte(my_bytestring)
+
+        
+            
+    
+    def loadProgram(self, filename: str = "colortest.bin") -> None:
         print("Loading program...")
-        with open(filename, "r") as file:
+        with open("binary_files/" + filename, "r") as file:
             lines = file.readlines()
             for i, line in enumerate(lines):
                 line = line[:8]
@@ -63,15 +76,19 @@ class CPU():
                     self.STAS(msb)
                 case "0001010":
                     print("HLT reached")
+                    self.cu.PC.setRegisterFromInt(0)
                     break
                 case _:
                     print("Problematic Byte: ", self.cu.IR.getByte())
+                    print("PC: ", self.cu.PC.getInt())
                     raise Exception("CPU Error: Unknown command")
             
 
     def NOP(self):
+        print("NOP")
         pass
     def LDA(self, msb: int):
+        print("LDA")
         pc = self.cu.PC
         if msb:
             big_byte = self.mm.getValueAtIndex(pc.getInt())
@@ -87,6 +104,7 @@ class CPU():
         self.alu.accumulator.setRegisterFromBytes(big_byte, small_byte)
         self.cu.incPC(2)
     def STA(self, msb: int):
+        print("STA")
         pc = self.cu.PC
         if msb:
             big_adress_byte = self.mm.getValueAtIndex(pc.getInt())
@@ -111,6 +129,7 @@ class CPU():
         self.mm.setValueAtIndex(bytes_to_store[1], full_adress + 1)
         self.cu.incPC(2)
     def STAS(self, msb: int):
+        print("STAS")
         pc = self.cu.PC
         if msb:
             big_adress_byte = self.mm.getValueAtIndex(pc.getInt())
@@ -129,6 +148,7 @@ class CPU():
         bytes_to_store = self.alu.accumulator.getBytes()
         self.mm.setValueAtIndex(bytes_to_store[1], full_adress)
     def ADD(self, msb: int):
+        print("ADD")
         pc = self.cu.PC
         if msb:
             big_byte = self.mm.getValueAtIndex(pc.getInt())
@@ -144,6 +164,7 @@ class CPU():
         self.alu.accumulator = self.alu.accumulator.addDoubleByteToRegister(big_byte, small_byte)
         self.cu.incPC(2)
     def SUB(self, msb: int):
+        print("SUB")
         pc = self.cu.PC
         if msb:
             big_byte = self.mm.getValueAtIndex(pc.getInt())
@@ -158,6 +179,7 @@ class CPU():
         small_byte = self.mm.getValueAtIndex(full_adress + 1)
         self.alu.accumulator = self.alu.accumulator.subByteFromRegister(big_byte, small_byte)
     def JMP(self, msb: int):
+        print("JMP")
         pc = self.cu.PC
         if msb:
             big_adress_byte = self.mm.getValueAtIndex(pc.getInt())
@@ -170,6 +192,7 @@ class CPU():
         destination_small_byte = self.mm.getValueAtIndex(byte.joinBytesToInt(big_adress_byte, small_adress_byte) + 1)
         self.cu.PC.setRegisterFromBytes(destination_big_byte, destination_small_byte)
     def JZ(self, msb: int):
+        print("JZ")
         if self.alu.accumulator.getInt() == 0:
             pc = self.cu.PC
             if msb:
@@ -185,6 +208,7 @@ class CPU():
         else:
             self.cu.incPC(2)
     def JNZ(self, msb: int):
+        print("JNZ")
         if self.alu.accumulator.getInt() != 0:
             pc = self.cu.PC
             if msb:
@@ -200,6 +224,7 @@ class CPU():
         else:
             self.cu.incPC(2)
     def AND(self, msb: int):
+        print("AND")
         pc = self.cu.PC
         if msb:
             big_byte = self.mm.getValueAtIndex(pc.getInt())
@@ -215,6 +240,7 @@ class CPU():
         self.alu.accumulator = self.alu.accumulator.bitwiseAndWithDoubleByte(big_byte, small_byte)
         self.cu.incPC(2)
     def OR(self, msb: int):
+        print("OR")
         pc = self.cu.PC
         if msb:
             big_byte = self.mm.getValueAtIndex(pc.getInt())
@@ -230,6 +256,7 @@ class CPU():
         self.alu.accumulator = self.alu.accumulator.bitwiseOrWithDoubleByte(big_byte, small_byte)
         self.cu.incPC(2)
     def MOV(self, msb: int):
+        print("MOV")
         pc = self.cu.PC
         if msb:
             big_from_adress_byte = self.mm.getValueAtIndex(pc.getInt())
@@ -256,6 +283,7 @@ class CPU():
         self.mm.setValueAtIndex(from_byte, full_to_adress)
         self.cu.incPC(2)
     def MOVT(self):
+        print("MOVT")
         pc = self.cu.PC
         big_from_adress_byte = self.mm.getValueAtIndex(pc.getInt())
         small_from_adress_byte = self.mm.getValueAtIndex(pc.getInt() + 1)
@@ -270,6 +298,7 @@ class CPU():
         self.mm.setValueAtIndex(from_byte, full_to_adress)
         self.cu.incPC(4)
     def MOVF(self):
+        print("MOVF")
         pc = self.cu.PC
         big_to_adress_byte = self.mm.getValueAtIndex(pc.getInt())
         small_to_adress_byte = self.mm.getValueAtIndex(pc.getInt() + 1)
@@ -284,8 +313,10 @@ class CPU():
         self.mm.setValueAtIndex(from_byte, full_to_adress)
         self.cu.incPC(4)
     def CLR(self):
+        print("CLR")
         self.alu.accumulator.setRegisterFromBytes(byte.Byte().setByte('00000000'), byte.Byte().setByte('00000000'))
     def HLT(self):
+        print("HLT")
         exit()
 
 
