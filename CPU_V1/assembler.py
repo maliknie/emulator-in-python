@@ -1,7 +1,9 @@
 import os
 
-input_file = "assembly.txt"
-output_file = "program.bin"
+CREATE_FILE = True
+
+input_file = "colortest.txt"
+output_file = "colortest.bin"
 
 input_file = "assembly_files/" + input_file
 output_file = "binary_files/" + output_file
@@ -86,9 +88,9 @@ def assemble_from_string(assembly, output_file):
             continue
         if tokens[0] in instruction_set:
             instruction = instruction_set[tokens[0]]
-            if tokens[1] == "#":
+            if tokens[1] == "@":
                 instruction = "0" + instruction
-            elif tokens[1] == "@":
+            elif tokens[1] == "#":
                 instruction = "1" + instruction
             elif tokens[1] == "-":
                 instruction = "0" + instruction
@@ -117,9 +119,15 @@ def assemble_from_file(input_file, output_file):
 
 if __name__ == "__main__":
     code, output_file = assemble_from_file(input_file, output_file)
+
+    if CREATE_FILE:
     
-    with open(output_file, 'w', encoding='utf-8') as file:
+        with open(output_file, 'w', encoding='utf-8') as file:
+            for line in code:
+                # Write each line to the file and add a newline character
+                file.write(line + '\n')
+    
+    else:
         for line in code:
-            # Write each line to the file and add a newline character
-            file.write(line + '\n')
+            print(line)
     
