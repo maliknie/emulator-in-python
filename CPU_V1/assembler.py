@@ -1,5 +1,7 @@
+import os
+
 input_file = "assembly.txt"
-output_file = "program.txt"
+output_file = "program.bin"
 
 input_file = "assembly_files/" + input_file
 output_file = "binary_files/" + output_file
@@ -79,15 +81,17 @@ def assemble_from_string(assembly, output_file):
             continue
         print(tokens)
         if tokens[0] in no_args:
-            instruction = instruction_set[tokens[0]] + "0"
+            instruction = "0" + instruction_set[tokens[0]]
             code.append(instruction)
             continue
         if tokens[0] in instruction_set:
             instruction = instruction_set[tokens[0]]
             if tokens[1] == "#":
-                instruction += "0"
+                instruction = "0" + instruction
             elif tokens[1] == "@":
-                instruction += "1"
+                instruction = "1" + instruction
+            elif tokens[1] == "-":
+                instruction = "0" + instruction
             else:
                 print("Expected # or @, got: ", tokens[1])
                 continue
@@ -113,6 +117,9 @@ def assemble_from_file(input_file, output_file):
 
 if __name__ == "__main__":
     code, output_file = assemble_from_file(input_file, output_file)
-    with open(output_file, 'w') as f:
+    
+    with open(output_file, 'w', encoding='utf-8') as file:
         for line in code:
-            f.write(line + "\n")
+            # Write each line to the file and add a newline character
+            file.write(line + '\n')
+    

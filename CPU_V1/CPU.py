@@ -9,7 +9,7 @@ class CPU():
         self.cu = controlunit
         self.alu = alunit
     
-    def loadProgram(self, filename: str = "CPU_V1/default.txt") -> None:
+    def loadProgram(self, filename: str = "binary_files/program.bin") -> None:
         print("Loading program...")
         with open(filename, "r") as file:
             lines = file.readlines()
