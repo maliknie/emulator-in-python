@@ -1,0 +1,13 @@
+; This is a comment
+LDA # 5
+ADD # 3
+STA # 100
+NOP
+CLR
+LDA # 10
+ADD @ 100
+STA # 100
+MOV # 100,200
+CLR
+JNZ # 0
+HLT

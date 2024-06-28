@@ -9,6 +9,9 @@ class GUI:
         self.setup_ui()
     
     def setup_ui(self):
+        self.load_program_button = tk.Button(self.root, text="Load Program", command=self.controller.load_program)
+        self.load_program_button.pack()
+
         self.start_cpu_button = tk.Button(self.root, text="Start CPU", command=self.start_cpu)
         self.start_cpu_button.pack()
 

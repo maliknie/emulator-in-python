@@ -13,7 +13,7 @@ class pygameDisplay:
         for i, color_byte in enumerate(color_bytes):
             match color_byte.getByte()[:4]:
                 case "0000":
-                    first_color = (random.randint(0, 255), 0, 0)  
+                    first_color = (0, 0, 0)  
                 case "1111":
                     first_color = (255, 255, 255)  
                 case _:

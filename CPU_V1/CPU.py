@@ -8,12 +8,20 @@ class CPU():
         self.mm = mainmemory
         self.cu = controlunit
         self.alu = alunit
+    
+    def loadProgram(self, filename: str = "CPU_V1/default.txt") -> None:
+        print("Loading program...")
+        with open(filename, "r") as file:
+            lines = file.readlines()
+            for i, line in enumerate(lines):
+                line = line[:8]
+                self.mm.setValueAtIndex(byte.Byte().setByte(line), i)
+        print("Program loaded")
 
     def run(self):
         print("Running CPU")
         k = 0
         while True:
-            time.sleep(1)
             k += 1
             print("Cycle: ", k)
             self.cu.fetch(self.mm)
