@@ -9,6 +9,9 @@ class AppController:
     def start_cpu(self):
         self.cpu_thread = threading.Thread(target=self.cpu.run, daemon=True)
         self.cpu_thread.start()
+    
+    def stop_cpu(self):
+        self.cpu.stop()
 
     def start_screen(self):
         self.screen_thread = threading.Thread(target=self.pygamedisplay.run, daemon=True)

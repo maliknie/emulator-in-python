@@ -2,8 +2,8 @@ import os
 
 CREATE_FILE = True
 
-input_file = "colortest.txt"
-output_file = "colortest.bin"
+input_file = "colordemo2.txt"
+output_file = "colordemo2.bin"
 
 input_file = "assembly_files/" + input_file
 output_file = "binary_files/" + output_file

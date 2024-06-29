@@ -6,6 +6,7 @@ class GUI:
         self.root = tk.Tk()
         self.root.title("CPU Emulator")
         self.root.geometry("200x200")
+        self.root.iconphoto(True, tk.PhotoImage(file='anderes/images/tk.png'))
 
         self.setup_ui()
     
@@ -19,6 +20,9 @@ class GUI:
         self.start_cpu_button = tk.Button(self.root, text="Start CPU", command=self.start_cpu)
         self.start_cpu_button.pack()
 
+        self.stop_cpu_button = tk.Button(self.root, text="Stop CPU", command=self.controller.stop_cpu)
+        self.stop_cpu_button.pack()
+
         self.open_display_window_button = tk.Button(self.root, text="Open Display Window", command=self.open_display_window)
         self.open_display_window_button.pack()
 
@@ -31,6 +35,9 @@ class GUI:
         self.controller.load_program(program)
     def start_cpu(self):
         self.controller.start_cpu()
+    
+    def stop_cpu(self):
+        self.controller.stop_cpu()
     
     def update_gui(self, data):
         pass

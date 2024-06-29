@@ -26,8 +26,9 @@ class Byte():
     
     def setByte(self, byte_string: str, negative: bool = False) -> "Byte":
         # Keine Ahnung warum da immer ein b drin ist, aber jetzt funktioniert es
-        if 'b' in byte_string:
-            byte_string = byte_string[:2]
+        for char in byte_string:
+            if char != "0" and char != "1":
+                byte_string = byte_string.replace(char, "")
 
         for i in range(8-len(byte_string)):
             byte_string = "0" + byte_string

@@ -40,7 +40,7 @@ def color_picker(string: str):
             print("Color out of bounds (color_picker)")
             return (255, 0, 255)
 
-class pygameDisplay:
+class pixelDisplay:
     def __init__(self, ram):
         self.ram = ram
         self.colors = ["#000000" for i in range(4096)]
@@ -62,6 +62,7 @@ class pygameDisplay:
         screen = pygame.display.set_mode(display_size)
         clock = pygame.time.Clock()
         pygame.display.set_caption('Pixelbased Display')
+        pygame.display.set_icon(pygame.image.load("anderes/images/icon.png"))
         
         running = True
         while running:

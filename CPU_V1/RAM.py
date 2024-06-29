@@ -12,3 +12,7 @@ class RAM():
     def getValueAtIndex(self, index: int):
         with self.lock:
             return self.registers[index]
+    def reset(self):
+        with self.lock:
+            self.registers = [byte.Byte() for x in range(len(self.registers))]
+        return True

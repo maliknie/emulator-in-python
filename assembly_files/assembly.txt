@@ -1,10 +1,10 @@
 LDA # 63484
 STA # 100
-LDA # 21000
+LDA # 0
 STA # 200
 
-LDA @ 200
-ADD # 1
+LDA @ 200 ; 15. Memory Adresse
+ADD # 800
 STA # 200
 
 LDA @ 100
@@ -13,4 +13,18 @@ STA # 100
 
 LDA @ 200
 STA @ 100
+
+LDA # 100
+SUB # 65536
+JZ # 51
+
+JMP # 15 ; 48. Memory Adresse
+
+HLT
+
+LDA # 63484
+STA # 100
+LDA # 64000
+STA # 200
+
 JMP # 15

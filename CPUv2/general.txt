@@ -26,6 +26,12 @@ Assembly language:
             INT: INT <INTERRUPT_NUMBER> - Triggers a software interrupt, transferring control to the interrupt handler specified by <INTERRUPT_NUMBER>.
             RET: RET - Returns from a subroutine by popping the return address off the stack and jumping to that address.
             Comment: ; This is a comment (specified by the semicolon)
+        Indtruction Format:
+            Instruction Format for General Use:
+                | Opcode (6) | Addressing (2) | Operand 1 (8) | Operand 2 (8) | Padding/Flags (8) |
+
+            Instruction Format for 16-bit Operations:
+                | Opcode (6) | Addressing (2) |Operand 1 + Operand 2 (16) | Padding/Flags (8) |
     Operand types:
         Immediate value (e.g. #3)
         Registers (e.g. r1)
@@ -41,4 +47,18 @@ Assembly language:
         .start: Marks the beginning of the section containing executable instructions
         Comment: Semicolon (;) marks the beginning of a comment (until the end of the line)
 
+Number representation:
+    Negative numbers:
+        Two's complement
+    Rational numbers:
+        fixed-point numbers
+
+
 Computer Components:
+    CPU
+        CU 
+        ALU
+        Registers
+    Memory (RAM)
+
+
