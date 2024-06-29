@@ -1,0 +1,44 @@
+EMULATING A CPU IN PYTHON
+
+Assembly language:
+    Core instructions and syntax:
+        Arithmetic Operations
+            ADD: ADD <DESTINATION>, <SOURCE> - Adds SOURCE to DESTINATION.
+            SUB: SUB <DESTINATION>, <SOURCE> - Subtracts SOURCE from DESTINATION.
+            MUL: MUL <DESTINATION>, <SOURCE> - Multiplies DESTINATION by SOURCE.
+            DIV: DIV <DESTINATION>, <SOURCE> - Divides DESTINATION by SOURCE.
+        Logical Operations
+            AND: AND <DESTINATION>, <SOURCE> - Performs bitwise AND on DESTINATION with SOURCE.
+            OR: OR <DESTINATION>, <SOURCE> - Performs bitwise OR on DESTINATION with SOURCE.
+            NOT: NOT <DESTINATION> - Performs bitwise NOT on DESTINATION.
+            XOR: XOR <DESTINATION>, <SOURCE> - Performs bitwise XOR on DESTINATION with SOURCE.
+        Data Movement
+            MOV: MOV <DESTINATION>, <SOURCE> - Moves data from SOURCE to DESTINATION. This can be between registers, from memory to a register, or vice versa.
+        Control Flow
+            JMP: JMP <ADRESS> - Unconditionally jumps to ADRESS.
+            JEQ: JEQ <ADRESS> - Jumps to ADRESS if the previous comparison resulted in equality.
+            JNE: JNE <ADRESS> - Jumps to ADRESS if the previous comparison did not result in equality.
+        Comparison
+            CMP: CMP <OPERAND1>, <OPERAND2> - Compares OPERAND1 with OPERAND2 and sets flags for conditional jumps.
+        Special
+            NOP: NOP - does nothing
+            HLT: HLT -Stops execution of program
+            INT: INT <INTERRUPT_NUMBER> - Triggers a software interrupt, transferring control to the interrupt handler specified by <INTERRUPT_NUMBER>.
+            RET: RET - Returns from a subroutine by popping the return address off the stack and jumping to that address.
+            Comment: ; This is a comment (specified by the semicolon)
+    Operand types:
+        Immediate value (e.g. #3)
+        Registers (e.g. r1)
+        Memory Adress (e.g. [10])
+    Adressing modes:
+        Immediate Adressing: Operand is constant and specified in the instruction itself
+        Register adressing: Operand is in the specified register
+        Direct  adressing: Operand is at the memory adress specified in the instruction itself
+        Indirect adressing: Operand is at the memory adress contained in the register specified in the instruction 
+    Directives:
+        DB: Define Byte - Allocates and optionally initializes a byte of data.
+        .data: Defines a sections for data declarations
+        .start: Marks the beginning of the section containing executable instructions
+        Comment: Semicolon (;) marks the beginning of a comment (until the end of the line)
+
+Computer Components:

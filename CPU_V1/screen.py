@@ -46,7 +46,7 @@ class pygameDisplay:
         self.colors = ["#000000" for i in range(4096)]
     
     def translateRamToColors(self):
-        color_bytes = self.ram.registers[63488:] # letzten 2 kb 
+        color_bytes = self.ram.registers[63488:65536] # letzten 2 kb 
         
         for i, color_byte in enumerate(color_bytes):
             self.colors[i*2] = color_picker(color_byte.getByte()[:4])

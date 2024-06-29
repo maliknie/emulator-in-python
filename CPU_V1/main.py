@@ -7,7 +7,7 @@ from screen import pygameDisplay
 from controller import AppController
 
 if __name__ == "__main__":
-    ram_instance = RAM(65536)
+    ram_instance = RAM(100000)
     cu_instance = CU()
     alu_instance = ALU()
     cpu_instance = CPU(ram_instance, cu_instance, alu_instance)
