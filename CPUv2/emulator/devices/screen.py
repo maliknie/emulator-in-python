@@ -1,6 +1,8 @@
 import pygame
 import sys
+from time import sleep
 
+TEST_MODE = True
 def color_picker(string: str):
     match string:
         case "0000":
@@ -45,14 +47,14 @@ class pixelDisplay:
         self.colors = ["#000000" for i in range(4096)]
     
     def translateRamToColors(self):
-        color_bytes = self.ram.registers[63488:65536] # letzten 2 kb 
-        
-        for i, color_byte in enumerate(color_bytes):
-            self.colors[i*2] = color_picker(color_byte.getByte()[:4])
-            self.colors[i*2+1] = color_picker(color_byte.getByte()[4:])
+        pass
 
 
     def run(self):
+        if TEST_MODE:
+            print("Screen is running")
+            while True:
+                sleep(10)
         pygame.init()
         logical_size = (64, 64)
         display_size = (500, 500)
@@ -84,7 +86,7 @@ class pixelDisplay:
             screen.blit(scaled_surface, (0, 0))
 
             pygame.display.flip()
-            clock.tick(5)  # 30 FPS limit
+            clock.tick(5)  # 5 FPS
         pygame.quit()
         sys.exit()
 
