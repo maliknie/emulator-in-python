@@ -2,36 +2,41 @@ EMULATING A CPU IN PYTHON
 
 Assembly language:
     Core instructions and syntax:
-        Arithmetic Operations
-            ADD: ADD <DESTINATION>, <SOURCE> - Adds SOURCE to DESTINATION.
-            SUB: SUB <DESTINATION>, <SOURCE> - Subtracts SOURCE from DESTINATION.
-            MUL: MUL <DESTINATION>, <SOURCE> - Multiplies DESTINATION by SOURCE.
-            DIV: DIV <DESTINATION>, <SOURCE> - Divides DESTINATION by SOURCE.
-        Logical Operations
-            AND: AND <DESTINATION>, <SOURCE> - Performs bitwise AND on DESTINATION with SOURCE.
-            OR: OR <DESTINATION>, <SOURCE> - Performs bitwise OR on DESTINATION with SOURCE.
-            NOT: NOT <DESTINATION> - Performs bitwise NOT on DESTINATION.
-            XOR: XOR <DESTINATION>, <SOURCE> - Performs bitwise XOR on DESTINATION with SOURCE.
-        Data Movement
-            MOV: MOV <DESTINATION>, <SOURCE> - Moves data from SOURCE to DESTINATION. This can be between registers, from memory to a register, or vice versa.
-        Control Flow
-            JMP: JMP <ADRESS> - Unconditionally jumps to ADRESS.
-            JEQ: JEQ <ADRESS> - Jumps to ADRESS if the previous comparison resulted in equality.
-            JNE: JNE <ADRESS> - Jumps to ADRESS if the previous comparison did not result in equality.
-        Comparison
-            CMP: CMP <OPERAND1>, <OPERAND2> - Compares OPERAND1 with OPERAND2 and sets flags for conditional jumps.
+        32 bit:
+            jmp #imd: | opcode (8 bits) | padding with zeros (4 bits) | padding with zeros (4 bits) | immediate value (16 bits) | Description: imd -> pc
+            jeq #imd: | opcode (8 bits) | padding with zeros (4 bits) | padding with zeros (4 bits) | immediate value (16 bits) | Description: if zero flag = 1, imd -> pc
+            jne #imd: | opcode (8 bits) | padding with zeros (4 bits) | padding with zeros (4 bits) | immediate value (16 bits) | Description: if zero flag != 1, imd -> pc
+            inc [mem]: | opcode (8 bits) | padding with zeros (4 bits) | padding with zeros (4 bits) | memory address (16 bits) | Description: [mem] += 1
+            dec [mem]: | opcode (8 bits) | padding with zeros (4 bits) | padding with zeros (4 bits) | memory address (16 bits) | Description: [mem] -= 1
+            load #imd, reg : | opcode (8 bits) | reg1 (4 bits) | padding with zeros (4 bits) | immediate value (16 bits) | Description: imd -> reg1
+            load [mem], reg: | opcode (8 bits) | reg1 (4 bits) | padding with zeros (4 bits) | memory address (16 bits) | Description: [mem] -> reg1
+            store reg, [mem]: | opcode (8 bits) | reg1 (4 bits) | padding with zeros (4 bits) | memory address (16 bits) | Description: reg1 -> [mem] 
+        16 bit:
+            jmp reg: | opcode (8 bits) | reg1 (4 bits) | padding with zeros (4 bits) | padding with zeros (16 bits) | Description: reg1 -> pc
+            jeq reg: | opcode (8 bits) | reg1 (4 bits) | padding with zeros (4 bits) | padding with zeros (16 bits) | Description: if zero flag = 1, reg1 -> pc
+            jne reg: | opcode (8 bits) | reg1 (4 bits) | padding with zeros (4 bits) | padding with zeros (16 bits) | Description: if zero flag != 1, reg1 -> pc
+            store reg1, reg2: | opcode (8 bits) | reg1 (4 bits) | reg2 (4 bits) | padding with zeros (16 bits) | Description: reg2 -> [reg1]
+            move reg1, reg2: | opcode (8 bits) | reg1 (4 bits) | reg2 (4 bits) | padding with zeros (16 bits) | Description: reg2 -> reg1
+            add reg1, reg2: | opcode (8 bits) | reg1 (4 bits) | reg2 (4 bits) | padding with zeros (16 bits) | Description: reg2 + reg1 -> reg1
+            sub reg1, reg2: | opcode (8 bits) | reg1 (4 bits) | reg2 (4 bits) | padding with zeros (16 bits) | Description: reg2 - reg1 -> reg1
+            mult reg1, reg2: | opcode (8 bits) | reg1 (4 bits) | reg2 (4 bits) | padding with zeros (16 bits) | Description: reg2 * reg1 -> high 16 bits in reg1, low 16 bits in reg2
+            div reg1, reg2: | opcode (8 bits) | reg1 (4 bits) | reg2 (4 bits) | padding with zeros (16 bits) | Description: reg2 / reg1 -> result in reg1, mod in reg2
+            inc reg: | opcode (8 bits) | reg1 (4 bits) | padding with zeros (4 bits) | padding with zeros (16 bits) | Description: reg1 += 1
+            dec reg: | opcode (8 bits) | reg1 (4 bits) | padding with zeros (4 bits) | padding with zeros (16 bits) | Description: reg1 -= 1
+            and reg1, reg2: | opcode (8 bits) | reg1 (4 bits) | reg2 (4 bits) | padding with zeros (16 bits) | Description: reg2 & reg1 -> reg1
+            or reg1, reg2: | opcode (8 bits) | reg1 (4 bits) | reg2 (4 bits) | padding with zeros (16 bits) | Description: reg2 | reg1 -> reg1
+            xor reg1, reg2: | opcode (8 bits) | reg1 (4 bits) | reg2 (4 bits) | padding with zeros (16 bits) | Description: reg2 ^ reg1 -> reg1
+            not reg 1: | opcode (8 bits) | reg1 (4 bits) | padding with zeros (4 bits) | padding with zeros (16 bits) | Description: ~reg1 -> reg1
+            rol reg1, #imd: | opcode (8 bits) | reg1 (4 bits) | imd (4 bits) | padding with zeros (16 bits) | Description: reg1 << imd -> reg1
+            ror reg1, #imd: | opcode (8 bits) | reg1 (4 bits) | imd (4 bits) | padding with zeros (16 bits) | Description: reg1 >> imd -> reg1
+            cmp reg1, reg2: | opcode (8 bits) | reg1 (4 bits) | reg2 (4 bits) | padding with zeros (16 bits) | Description: reg2 - reg1 (only changes flags)
+
         Special
             NOP: NOP - does nothing
             HLT: HLT -Stops execution of program
             INT: INT <INTERRUPT_NUMBER> - Triggers a software interrupt, transferring control to the interrupt handler specified by <INTERRUPT_NUMBER>.
             RET: RET - Returns from a subroutine by popping the return address off the stack and jumping to that address.
             Comment: ; This is a comment (specified by the semicolon)
-        Indtruction Format:
-            Instruction Format for General Use:
-                | Opcode (6) | Addressing (2) | Operand 1 (8) | Operand 2 (8) | Padding/Flags (8) |
-
-            Instruction Format for 16-bit Operations:
-                | Opcode (6) | Addressing (2) |Operand 1 + Operand 2 (16) | Padding/Flags (8) |
     Operand types:
         Immediate value (e.g. #3)
         Registers (e.g. r1)
@@ -61,4 +66,6 @@ Computer Components:
         Registers
     Memory (RAM)
 
+
+        
 
