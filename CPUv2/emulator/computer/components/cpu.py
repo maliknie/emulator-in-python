@@ -17,6 +17,32 @@ class CPU:
         self.sp = "0000000000000000"
         self.bp = "0000000000000000"
         self.acc = "0000000000000000"
-        self.flags = "0000000000000000"
+        self.flags = "0000000000000000" # self.flags[15] = zero flag
         self.mar = "0000000000000000"
         self.mdr = "0000000000000000"
+
+        self.registers = {
+            "0000": "r0",
+            "0001": "r1",
+            "0010": "r2",
+            "0011": "r3",
+            "0100": "r4",
+            "0101": "r5",
+            "0110": "r6",
+            "0111": "r7",
+            "1000": "pc",
+            "1001": "ir",
+            "1010": "sp",
+            "1011": "bp",
+            "1100": "acc",
+            "1101": "flags",
+            "1110": "mar",
+            "1111": "mdr",
+        }
+    
+    def access_register(self, reg_code, value=None):
+        if not reg_code in self.registers:
+            raise ValueError("Invalid register code: ", reg_code)
+        if value == None:
+            return getattr(self, self.registers[reg_code])
+        setattr(self, self.registers[reg_code], value)

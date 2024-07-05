@@ -1,6 +1,7 @@
 from time import sleep
 class Computer:
-    def __init__(self, cpu, memory) -> None:
+    def __init__(self, controller, cpu, memory) -> None:
+        self.controller = controller
         self.cpu = cpu
         self.memory = memory
     

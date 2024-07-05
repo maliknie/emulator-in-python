@@ -21,9 +21,9 @@ def initialize_system():
     cpu.alu = alu
     cpu.cu = cu
     
-    computer = Computer(cpu=cpu, memory=memory)
+    computer = Computer(controller, cpu, memory)
 
-    screen = pixelDisplay(memory)
+    screen = pixelDisplay(controller, memory)
 
     gui = GUI(controller)
 

@@ -9,5 +9,5 @@ class ALU:
     def execute(self):
         pass
 
-class Instructions:
+class Operations:
     pass
