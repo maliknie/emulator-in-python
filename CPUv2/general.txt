@@ -3,33 +3,33 @@ EMULATING A CPU IN PYTHON
 Assembly language:
     Core instructions and syntax:
         32 bit:
-            jmp #imd: | opcode (8 bits) | padding with zeros (4 bits) | padding with zeros (4 bits) | immediate value (16 bits) | Description: imd -> pc
-            jeq #imd: | opcode (8 bits) | padding with zeros (4 bits) | padding with zeros (4 bits) | immediate value (16 bits) | Description: if zero flag = 1, imd -> pc
-            jne #imd: | opcode (8 bits) | padding with zeros (4 bits) | padding with zeros (4 bits) | immediate value (16 bits) | Description: if zero flag != 1, imd -> pc
-            inc [mem]: | opcode (8 bits) | padding with zeros (4 bits) | padding with zeros (4 bits) | memory address (16 bits) | Description: [mem] += 1
-            dec [mem]: | opcode (8 bits) | padding with zeros (4 bits) | padding with zeros (4 bits) | memory address (16 bits) | Description: [mem] -= 1
-            load #imd, reg : | opcode (8 bits) | reg1 (4 bits) | padding with zeros (4 bits) | immediate value (16 bits) | Description: imd -> reg1
-            load [mem], reg: | opcode (8 bits) | reg1 (4 bits) | padding with zeros (4 bits) | memory address (16 bits) | Description: [mem] -> reg1
-            store reg, [mem]: | opcode (8 bits) | reg1 (4 bits) | padding with zeros (4 bits) | memory address (16 bits) | Description: reg1 -> [mem] 
+            00000000 jmp #imd: | opcode (8 bits) | padding with zeros (4 bits) | padding with zeros (4 bits) | immediate value (16 bits) | Description: imd -> pc
+            00000001 jeq #imd: | opcode (8 bits) | padding with zeros (4 bits) | padding with zeros (4 bits) | immediate value (16 bits) | Description: if zero flag = 1, imd -> pc
+            00000010 jne #imd: | opcode (8 bits) | padding with zeros (4 bits) | padding with zeros (4 bits) | immediate value (16 bits) | Description: if zero flag != 1, imd -> pc
+            00000011 inc [mem]: | opcode (8 bits) | padding with zeros (4 bits) | padding with zeros (4 bits) | memory address (16 bits) | Description: [mem] += 1
+            00000100 dec [mem]: | opcode (8 bits) | padding with zeros (4 bits) | padding with zeros (4 bits) | memory address (16 bits) | Description: [mem] -= 1
+            00000101 load #imd, reg : | opcode (8 bits) | reg1 (4 bits) | padding with zeros (4 bits) | immediate value (16 bits) | Description: imd -> reg1
+            00000110 load [mem], reg: | opcode (8 bits) | reg1 (4 bits) | padding with zeros (4 bits) | memory address (16 bits) | Description: [mem] -> reg1
+            00000111 store reg, [mem]: | opcode (8 bits) | reg1 (4 bits) | padding with zeros (4 bits) | memory address (16 bits) | Description: reg1 -> [mem] 
         16 bit:
-            jmp reg: | opcode (8 bits) | reg1 (4 bits) | padding with zeros (4 bits) | padding with zeros (16 bits) | Description: reg1 -> pc
-            jeq reg: | opcode (8 bits) | reg1 (4 bits) | padding with zeros (4 bits) | padding with zeros (16 bits) | Description: if zero flag = 1, reg1 -> pc
-            jne reg: | opcode (8 bits) | reg1 (4 bits) | padding with zeros (4 bits) | padding with zeros (16 bits) | Description: if zero flag != 1, reg1 -> pc
-            store reg1, reg2: | opcode (8 bits) | reg1 (4 bits) | reg2 (4 bits) | padding with zeros (16 bits) | Description: reg2 -> [reg1]
-            move reg1, reg2: | opcode (8 bits) | reg1 (4 bits) | reg2 (4 bits) | padding with zeros (16 bits) | Description: reg2 -> reg1
-            add reg1, reg2: | opcode (8 bits) | reg1 (4 bits) | reg2 (4 bits) | padding with zeros (16 bits) | Description: reg2 + reg1 -> reg1
-            sub reg1, reg2: | opcode (8 bits) | reg1 (4 bits) | reg2 (4 bits) | padding with zeros (16 bits) | Description: reg2 - reg1 -> reg1
-            mult reg1, reg2: | opcode (8 bits) | reg1 (4 bits) | reg2 (4 bits) | padding with zeros (16 bits) | Description: reg2 * reg1 -> high 16 bits in reg1, low 16 bits in reg2
-            div reg1, reg2: | opcode (8 bits) | reg1 (4 bits) | reg2 (4 bits) | padding with zeros (16 bits) | Description: reg2 / reg1 -> result in reg1, mod in reg2
-            inc reg: | opcode (8 bits) | reg1 (4 bits) | padding with zeros (4 bits) | padding with zeros (16 bits) | Description: reg1 += 1
-            dec reg: | opcode (8 bits) | reg1 (4 bits) | padding with zeros (4 bits) | padding with zeros (16 bits) | Description: reg1 -= 1
-            and reg1, reg2: | opcode (8 bits) | reg1 (4 bits) | reg2 (4 bits) | padding with zeros (16 bits) | Description: reg2 & reg1 -> reg1
-            or reg1, reg2: | opcode (8 bits) | reg1 (4 bits) | reg2 (4 bits) | padding with zeros (16 bits) | Description: reg2 | reg1 -> reg1
-            xor reg1, reg2: | opcode (8 bits) | reg1 (4 bits) | reg2 (4 bits) | padding with zeros (16 bits) | Description: reg2 ^ reg1 -> reg1
-            not reg 1: | opcode (8 bits) | reg1 (4 bits) | padding with zeros (4 bits) | padding with zeros (16 bits) | Description: ~reg1 -> reg1
-            rol reg1, #imd: | opcode (8 bits) | reg1 (4 bits) | imd (4 bits) | padding with zeros (16 bits) | Description: reg1 << imd -> reg1
-            ror reg1, #imd: | opcode (8 bits) | reg1 (4 bits) | imd (4 bits) | padding with zeros (16 bits) | Description: reg1 >> imd -> reg1
-            cmp reg1, reg2: | opcode (8 bits) | reg1 (4 bits) | reg2 (4 bits) | padding with zeros (16 bits) | Description: reg2 - reg1 (only changes flags)
+            00001000 jmp reg: | opcode (8 bits) | reg1 (4 bits) | padding with zeros (4 bits) | padding with zeros (16 bits) | Description: reg1 -> pc
+            00001001 jeq reg: | opcode (8 bits) | reg1 (4 bits) | padding with zeros (4 bits) | padding with zeros (16 bits) | Description: if zero flag = 1, reg1 -> pc
+            00001010 jne reg: | opcode (8 bits) | reg1 (4 bits) | padding with zeros (4 bits) | padding with zeros (16 bits) | Description: if zero flag != 1, reg1 -> pc
+            00001011 store reg1, reg2: | opcode (8 bits) | reg1 (4 bits) | reg2 (4 bits) | padding with zeros (16 bits) | Description: reg2 -> [reg1]
+            00001100 move reg1, reg2: | opcode (8 bits) | reg1 (4 bits) | reg2 (4 bits) | padding with zeros (16 bits) | Description: reg2 -> reg1
+            00001101 add reg1, reg2: | opcode (8 bits) | reg1 (4 bits) | reg2 (4 bits) | padding with zeros (16 bits) | Description: reg2 + reg1 -> reg1
+            00001110 sub reg1, reg2: | opcode (8 bits) | reg1 (4 bits) | reg2 (4 bits) | padding with zeros (16 bits) | Description: reg2 - reg1 -> reg1
+            00001111 mult reg1, reg2: | opcode (8 bits) | reg1 (4 bits) | reg2 (4 bits) | padding with zeros (16 bits) | Description: reg2 * reg1 -> high 16 bits in reg1, low 16 bits in reg2
+            00010000 div reg1, reg2: | opcode (8 bits) | reg1 (4 bits) | reg2 (4 bits) | padding with zeros (16 bits) | Description: reg2 / reg1 -> result in reg1, mod in reg2
+            00010001 inc reg: | opcode (8 bits) | reg1 (4 bits) | padding with zeros (4 bits) | padding with zeros (16 bits) | Description: reg1 += 1
+            00010010 dec reg: | opcode (8 bits) | reg1 (4 bits) | padding with zeros (4 bits) | padding with zeros (16 bits) | Description: reg1 -= 1
+            00010011 and reg1, reg2: | opcode (8 bits) | reg1 (4 bits) | reg2 (4 bits) | padding with zeros (16 bits) | Description: reg2 & reg1 -> reg1
+            00010100 or reg1, reg2: | opcode (8 bits) | reg1 (4 bits) | reg2 (4 bits) | padding with zeros (16 bits) | Description: reg2 | reg1 -> reg1
+            00010101 xor reg1, reg2: | opcode (8 bits) | reg1 (4 bits) | reg2 (4 bits) | padding with zeros (16 bits) | Description: reg2 ^ reg1 -> reg1
+            00010110 not reg 1: | opcode (8 bits) | reg1 (4 bits) | padding with zeros (4 bits) | padding with zeros (16 bits) | Description: ~reg1 -> reg1
+            00010111 rol reg1, #imd: | opcode (8 bits) | reg1 (4 bits) | imd (4 bits) | padding with zeros (16 bits) | Description: reg1 << imd -> reg1
+            00011000 ror reg1, #imd: | opcode (8 bits) | reg1 (4 bits) | imd (4 bits) | padding with zeros (16 bits) | Description: reg1 >> imd -> reg1
+            00011001 cmp reg1, reg2: | opcode (8 bits) | reg1 (4 bits) | reg2 (4 bits) | padding with zeros (16 bits) | Description: reg2 - reg1 (only changes flags)
 
         Special
             NOP: NOP - does nothing

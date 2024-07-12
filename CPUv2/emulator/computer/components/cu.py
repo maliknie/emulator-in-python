@@ -22,10 +22,7 @@ class CU:
 
 
     def callALU(self, op, a, b):
-        self.cpu.alu.op = op
-        self.cpu.alu.a = a
-        self.cpu.alu.b = b
-        self.cpu.alu.execute()
+        self.cpu.alu.execute(op, a, b)
 
 class Instructions:
     @staticmethod # jump #imd
@@ -100,7 +97,7 @@ class Instructions:
         reg2 = cpu.access_register(operand2)
         value = int(reg1, 2) + int(reg2, 2)
         negative_check = value < 0
-        value %= 256
+        value %= 65536
         value = value * (-1) if negative_check else value
         value = bin(value)[2:].zfill(16)
         cpu.access_register(operand1, value)
@@ -110,7 +107,7 @@ class Instructions:
         reg2 = cpu.access_register(operand2)
         value = int(reg1, 2) - int(reg2, 2)
         negative_check = value < 0
-        value %= 256
+        value %= 65536
         value = value * (-1) if negative_check else value
         value = bin(value)[2:].zfill(16)
         cpu.access_register(operand1, value)
@@ -120,7 +117,7 @@ class Instructions:
         reg2 = cpu.access_register(operand2)
         value = int(reg1, 2) * int(reg2, 2)
         negative_check = value < 0
-        value %= 65536
+        value %= 256
         value = value * (-1) if negative_check else value
         value = bin(value)[2:].zfill(32)
         value_high = value[:16]
@@ -142,7 +139,78 @@ class Instructions:
         
         cpu.access_register(operand1, value)
         cpu.access_register(operand2, modulo)
-    @staticmethod
+    @staticmethod # inc reg
     def i00010001(cpu, operand1, operand2, operand3):
         reg = cpu.access_register(operand1)
         value = int(reg, 2)
+        value += 1
+        value %= 65536
+        value = bin(value)[2:].zfill(16)
+        cpu.access_register(operand1, value)
+    @staticmethod # dec reg
+    def i00010010(cpu, operand1, operand2, operand3):
+        reg = cpu.access_register(operand1)
+        value = int(reg, 2)
+        value -= 1
+        value %= 65536
+        value = bin(value)[2:].zfill(16)
+        cpu.access_register(operand1, value)
+    @staticmethod # and reg1 reg2
+    def i00010011(cpu, operand1, operand2, operand3):
+        reg1 = cpu.access_register(operand1)
+        reg2 = cpu.access_register(operand2)
+        value = int(reg1, 2) & int(reg2, 2)
+        value = bin(value)[2:].zfill(16)
+        cpu.access_register(operand1, value)
+    @staticmethod # or reg1 reg2
+    def i00010100(cpu, operand1, operand2, operand3):
+        reg1 = cpu.access_register(operand1)
+        reg2 = cpu.access_register(operand2)
+        value = int(reg1, 2) | int(reg2, 2)
+        value = bin(value)[2:].zfill(16)
+        cpu.access_register(operand1, value)
+    @staticmethod # xor reg1 reg2
+    def i00010101(cpu, operand1, operand2, operand3):
+        reg1 = cpu.access_register(operand1)
+        reg2 = cpu.access_register(operand2)
+        value = int(reg1, 2) ^ int(reg2, 2)
+        value = bin(value)[2:].zfill(16)
+        cpu.access_register(operand1, value)
+    @staticmethod # not reg
+    def i00010110(cpu, operand1, operand2, operand3):
+        reg1 = cpu.access_register(operand1)
+        value = int(reg1, 2)
+        value = ~value
+        value = bin(value)[2:].zfill(16)
+        cpu.access_register(operand1, value)
+    @staticmethod # rol reg #imd
+    def i00010111(cpu, operand1, operand2, operand3):
+        reg1 = cpu.access_register(operand1)
+        imd = int(operand2, 2)
+        rolled = reg1
+        for _ in range(imd):
+            rolled = rolled[1:] + rolled[0]
+        cpu.access_register(operand1, rolled)
+
+    @staticmethod # ror reg #imd
+    def i00011000(cpu, operand1, operand2, operand3):
+        reg1 = cpu.access_register(operand1)
+        imd = int(operand2, 2)
+        rolled = reg1
+        for _ in range(imd):
+            rolled = rolled[-1] + rolled[:-1]
+        cpu.access_register(operand1, rolled)
+    @staticmethod # cmp reg1 reg2
+    def i00011001(cpu, operand1, operand2, operand3):
+        reg1 = cpu.access_register(operand1)
+        reg2 = cpu.access_register(operand2)
+        value1 = int(reg1, 2)
+        value2 = int(reg2, 2)
+        if value1 - value2 == 0:
+            flags = cpu.access_register("1101")
+            flags[15] = 1
+            cpu.access_register("1101", flags)
+        else:
+            flags = cpu.access_register("1101")
+            flags[15] = 0
+            cpu.access_register("1101", flags)
