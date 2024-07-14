@@ -15,13 +15,14 @@ def initialize_system():
     controller = Controller(None, None, None)
 
     memory = RAM(size=65536)
-    cpu = CPU(None, None)
+    cpu = CPU(None, None, None)
     alu = ALU(cpu)
     cu = CU(cpu)
     cpu.alu = alu
     cpu.cu = cu
     
     computer = Computer(controller, cpu, memory)
+    cpu.computer = computer
 
     screen = pixelDisplay(controller, memory)
 

@@ -7,5 +7,10 @@ class Computer:
     
     def run(self):
         print("Computer is running")
-        while True:
-            sleep(10)
+        self.cpu.run()
+    
+    def shutdown(self):
+        self.cpu.stop()
+        self.memory.reset()
+        self.cpu.alu.reset()
+        print("Shutting down computer")

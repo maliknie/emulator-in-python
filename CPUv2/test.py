@@ -1,5 +1,3 @@
-a = 2378
-b = -4
-
-print(a//b)
-print(a%b)
+line = "a  "
+opcode = line.split(" ")
+print(opcode)
