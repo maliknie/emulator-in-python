@@ -64,3 +64,28 @@ class CPU:
         if value == None:
             return getattr(self, self.registers[reg_code])
         setattr(self, self.registers[reg_code], value)
+
+    # Debugging Tools
+
+    def print_registers(self):
+        print("_________________________")
+        print("Registers:")
+        print("r0: ", self.r0)
+        print("r1: ", self.r1)
+        print("r2: ", self.r2)
+        print("r3: ", self.r3)
+        print("r4: ", self.r4)
+        print("r5: ", self.r5)
+        print("r6: ", self.r6)
+        print("r7: ", self.r7)
+        print("_________________________")
+        print("pc: ", self.pc)
+        print("ir: ", self.ir)
+        print("sp: ", self.sp)
+        print("bp: ", self.bp)
+        print("acc: ", self.acc)
+        print("flags: ", self.flags)
+        print("mar: ", self.mar)
+        print("mdr: ", self.mdr)
+        print("_________________________")
+        print("")

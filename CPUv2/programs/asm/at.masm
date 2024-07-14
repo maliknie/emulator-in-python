@@ -1,7 +1,5 @@
-;this is a comment
-load #6969, r1
-load #-32000, mar
-:start
-store mar, r1
-inc r1
-jmp >start
+load #1, r0
+load #2, r1
+add r0, r1
+debug
+hlt

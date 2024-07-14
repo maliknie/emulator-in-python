@@ -24,6 +24,13 @@ class CU:
     def decode(self):
         instruction = self.cpu.ir
         self.opcode, self.operand1, self.operand2, self.operand3 = instruction[:8], instruction[8:12], instruction[12:16], instruction[16:32]
+        print("_________________________")
+        print("Decoded instruction: ")
+        print("Opcode: ", self.opcode)
+        print("Operand1: ", self.operand1)
+        print("Operand2: ", self.operand2)
+        print("Operand3: ", self.operand3)
+        print("_________________________")
     
     def execute(self):
         match self.opcode:
@@ -79,6 +86,10 @@ class CU:
                 Instructions.i00011000(self, self.cpu, self.operand1, self.operand2, self.operand3)
             case "00011001":
                 Instructions.i00011001(self, self.cpu, self.operand1, self.operand2, self.operand3)
+            case "11111111":
+                Instructions.i11111111(self, self.cpu, self.operand1, self.operand2, self.operand3)
+            case "debuggin":
+                Instructions.print_registers(self, self.cpu, self.operand1, self.operand2, self.operand3)
             case _:
                 raise ValueError("Invalid opcode: " + self.opcode + "\n" + "Program counter: " + str(int(self.cpu.pc, 2)))
 
@@ -220,6 +231,7 @@ class Instructions:
 
     @staticmethod # add reg1 reg2
     def i00001101(cu, cpu, operand1, operand2, operand3):
+
         print("add", operand1, operand2)
         reg1 = cpu.access_register(operand1)
         reg2 = cpu.access_register(operand2)
@@ -335,3 +347,12 @@ class Instructions:
         flags = set_flag(flags, "1", 14)
         cpu.access_register("1101", flags)
         cu.callALU("sub", reg1, reg2, 16)
+    @staticmethod # halt
+    def i11111111(cu, cpu, operand1, operand2, operand3):
+        print("halt")
+        cu.cpu.running = False
+    
+    # Debugging Tools
+    @staticmethod
+    def print_registers(cu, cpu, operand1, operand2, operand3):
+        cu.cpu.print_registers()

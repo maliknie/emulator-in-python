@@ -113,7 +113,7 @@ def register_to_bin(register):
     return registers[register]
 
 def immediate_to_bin(immediate, bitsize):
-    return mbin(int(immediate), bitsize)
+    return mbin(int(immediate), bitsize, neg = False)
 
 def get_instruction(tokens, i, labels: dict):
     mnemonic = tokens[0]
@@ -123,6 +123,7 @@ def get_instruction(tokens, i, labels: dict):
     operand2_bin = ""
     operand3_bin = ""
 
+    print(mnemonic, operands)
     match mnemonic:
         case "jmp":
             if len(operands) != 1:
@@ -131,7 +132,7 @@ def get_instruction(tokens, i, labels: dict):
                 opcode_bin = "00000000"
                 operand1_bin = "0000"
                 operand2_bin = "0000"
-                operand3_bin = mbin(int(operands[0][1:]), 16)
+                operand3_bin = mbin(int(operands[0][1:]), 16, neg = False)
             elif operands[0].startswith(">"):
                 if not operands[0] in labels:
                     raise ValueError(f"Label {operands[0]} isn't defined at line {i+1}")
@@ -153,7 +154,7 @@ def get_instruction(tokens, i, labels: dict):
                 opcode_bin = "00000001"
                 operand1_bin = "0000"
                 operand2_bin = "0000"
-                operand3_bin = mbin(int(operands[0][1:]), 16)
+                operand3_bin = mbin(int(operands[0][1:]), 16, neg=False)
             elif operands[0].startswith(">"):
                 if not operands[0] in labels:
                     raise ValueError(f"Label {operands[0]} isn't defined at line {i+1}")
@@ -175,7 +176,7 @@ def get_instruction(tokens, i, labels: dict):
                     opcode_bin = "00000010"
                     operand1_bin = "0000"
                     operand2_bin = "0000"
-                    operand3_bin = mbin(int(operands[0][1:]), 16)
+                    operand3_bin = mbin(int(operands[0][1:]), 16, neg=False)
             elif operands[0].startswith(">"):
                 if not operands[0] in labels:
                     raise ValueError(f"Label {operands[0]} isn't defined at line {i+1}")
@@ -197,7 +198,7 @@ def get_instruction(tokens, i, labels: dict):
                 opcode_bin = "00000011"
                 operand1_bin = "0000"
                 operand2_bin = "0000"
-                operand3_bin = mbin(int(operands[0][1:-1]), 16)
+                operand3_bin = mbin(int(operands[0][1:-1]), 16, neg=False)
             else:
                 opcode_bin = "00010001"
                 operand1_bin = register_to_bin(operands[0])
@@ -210,7 +211,7 @@ def get_instruction(tokens, i, labels: dict):
                 opcode_bin = "00000100"
                 operand1_bin = "0000"
                 operand2_bin = "0000"
-                operand3_bin = mbin(int(operands[0][1:-1]), 16)
+                operand3_bin = mbin(int(operands[0][1:-1]), 16, neg=False)
             else:
                 opcode_bin = "00010010"
                 operand1_bin = register_to_bin(operands[0])
@@ -223,12 +224,12 @@ def get_instruction(tokens, i, labels: dict):
                 opcode_bin = "00000101"
                 operand1_bin = register_to_bin(operands[1])
                 operand2_bin = "0000"
-                operand3_bin = mbin(int(operands[0][1:]), 16)
+                operand3_bin = mbin(int(operands[0][1:]), 16, neg=False)
             else:
                 opcode_bin = "00000110"
                 operand1_bin = register_to_bin(operands[1])
                 operand2_bin = "0000"
-                operand3_bin = mbin(int(operands[0][1:-1]), 16)
+                operand3_bin = mbin(int(operands[0][1:-1]), 16, neg=False)
         case "store":
             if len(operands) != 2:
                 raise ValueError(f"Invalid number of operands for {mnemonic} at line {i+1}")
@@ -236,20 +237,69 @@ def get_instruction(tokens, i, labels: dict):
                 opcode_bin = "00000111"
                 operand1_bin = register_to_bin(operands[0])
                 operand2_bin = "0000"
-                operand3_bin = mbin(int(operands[1][1:-1]), 16)
+                operand3_bin = mbin(int(operands[1][1:-1]), 16, neg=False)
             else:
                 opcode_bin = "00001011"
                 operand1_bin = register_to_bin(operands[0])
                 operand2_bin = register_to_bin(operands[1])
                 operand3_bin = "0000000000000000"
-        case "move", "add", "sub", "mult", "div", "and", "or", "xor", "cmp":
+        case "add":
             if len(operands) != 2:
                 raise ValueError(f"Invalid number of operands for {mnemonic} at line {i+1}")
             opcode_bin = non_redundant_mnemonics_opcodes[mnemonic]
             operand1_bin = register_to_bin(operands[0])
             operand2_bin = register_to_bin(operands[1])
             operand3_bin = "0000000000000000"
-        case "rol", "ror":
+        case "sub":
+            if len(operands) != 2:
+                raise ValueError(f"Invalid number of operands for {mnemonic} at line {i+1}")
+            opcode_bin = non_redundant_mnemonics_opcodes[mnemonic]
+            operand1_bin = register_to_bin(operands[0])
+            operand2_bin = register_to_bin(operands[1])
+            operand3_bin = "0000000000000000"
+        case "mult":
+            if len(operands) != 2:
+                raise ValueError(f"Invalid number of operands for {mnemonic} at line {i+1}")
+            opcode_bin = non_redundant_mnemonics_opcodes[mnemonic]
+            operand1_bin = register_to_bin(operands[0])
+            operand2_bin = register_to_bin(operands[1])
+            operand3_bin = "0000000000000000"
+        case "div":
+            if len(operands) != 2:
+                raise ValueError(f"Invalid number of operands for {mnemonic} at line {i+1}")
+            opcode_bin = non_redundant_mnemonics_opcodes[mnemonic]
+            operand1_bin = register_to_bin(operands[0])
+            operand2_bin = register_to_bin(operands[1])
+            operand3_bin = "0000000000000000"
+        case "and":
+            if len(operands) != 2:
+                raise ValueError(f"Invalid number of operands for {mnemonic} at line {i+1}")
+            opcode_bin = non_redundant_mnemonics_opcodes[mnemonic]
+            operand1_bin = register_to_bin(operands[0])
+            operand2_bin = register_to_bin(operands[1])
+            operand3_bin = "0000000000000000"
+        case "or":
+            if len(operands) != 2:
+                raise ValueError(f"Invalid number of operands for {mnemonic} at line {i+1}")
+            opcode_bin = non_redundant_mnemonics_opcodes[mnemonic]
+            operand1_bin = register_to_bin(operands[0])
+            operand2_bin = register_to_bin(operands[1])
+            operand3_bin = "0000000000000000"
+        case "xor":
+            if len(operands) != 2:
+                raise ValueError(f"Invalid number of operands for {mnemonic} at line {i+1}")
+            opcode_bin = non_redundant_mnemonics_opcodes[mnemonic]
+            operand1_bin = register_to_bin(operands[0])
+            operand2_bin = register_to_bin(operands[1])
+            operand3_bin = "0000000000000000"
+        case "rol":
+            if len(operands) != 2:
+                raise ValueError(f"Invalid number of operands for {mnemonic} at line {i+1}")
+            opcode_bin = non_redundant_mnemonics_opcodes[mnemonic]
+            operand1_bin = register_to_bin(operands[0])
+            operand2_bin = immediate_to_bin(operands[1], 4)
+            operand3_bin = "0000000000000000"
+        case "ror":
             if len(operands) != 2:
                 raise ValueError(f"Invalid number of operands for {mnemonic} at line {i+1}")
             opcode_bin = non_redundant_mnemonics_opcodes[mnemonic]
@@ -261,6 +311,16 @@ def get_instruction(tokens, i, labels: dict):
                 raise ValueError(f"Invalid number of operands for {mnemonic} at line {i+1}")
             opcode_bin = non_redundant_mnemonics_opcodes[mnemonic]
             operand1_bin = register_to_bin(operands[0])
+            operand2_bin = "0000"
+            operand3_bin = "0000000000000000"
+        case "hlt":
+            opcode_bin = "11111111"
+            operand1_bin = "0000"
+            operand2_bin = "0000"
+            operand3_bin = "0000000000000000"
+        case "debug":
+            opcode_bin = "debuggin"
+            operand1_bin = "0000"
             operand2_bin = "0000"
             operand3_bin = "0000000000000000"
 
@@ -292,7 +352,7 @@ def assemble(assembly):
         elif len(tokens) == 1:
             if tokens[0].startswith(":"):
                 if not tokens[0][1:] in reserved:
-                    labels[">" + tokens[0][1:]] = mbin(current_address, 16)
+                    labels[">" + tokens[0][1:]] = mbin(current_address, 16, neg=False)
                 else:
                     raise ValueError(f"Invalid label {tokens[0]} at line {i+1}")
                 continue

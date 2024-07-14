@@ -54,8 +54,10 @@ class ALU:
             flags = self.cpu.access_register("1101")
             flags = set_flag(flags, "0", 14)
             self.cpu.access_register("1101", flags)
+        else:
             acc_value = self.low.zfill(16) + self.high.zfill(16)
             self.cpu.access_register("1100", acc_value)
+            return self.low.zfill(16) + self.high.zfill(16)
 
 class Operations:
     @staticmethod

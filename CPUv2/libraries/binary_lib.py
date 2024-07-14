@@ -1,21 +1,24 @@
-def mbin(num, length):
-    match length:
-        case 8:
-            if num > 127 or num < -128:
-                raise ValueError("num must be between -128 and 127 for length 8, got " + str(num) + " instead.")
-        case 16:
-            if num > 32767 or num < -32768:
-                raise ValueError("num must be between -32768 and 32767 for length 16, got " + str(num) + " instead.")
-        case 32:
-            if num > 2147483647 or num < -2147483648:
-                raise ValueError("num must be between -2147483648 and 2147483647 for length 32, got " + str(num) + " instead.")
-        case _:
-            raise ValueError("length must be 8, 16, or 32, got " + str(length) + " instead.")
-    if num >= 0:
-        return "0" + bin(num)[2:].zfill(length-1)
+def mbin(num, length, neg = True):
+    if neg:
+        match length:
+            case 8:
+                if num > 127 or num < -128:
+                    raise ValueError("num must be between -128 and 127 for length 8, got " + str(num) + " instead.")
+            case 16:
+                if num > 32767 or num < -32768:
+                    raise ValueError("num must be between -32768 and 32767 for length 16, got " + str(num) + " instead.")
+            case 32:
+                if num > 2147483647 or num < -2147483648:
+                    raise ValueError("num must be between -2147483648 and 2147483647 for length 32, got " + str(num) + " instead.")
+            case _:
+                raise ValueError("length must be 8, 16, or 32, got " + str(length) + " instead.")
+        if num >= 0:
+            return "0" + bin(num)[2:].zfill(length-1)
+        else:
+            bin_num = num + 2**length
+            return "1" + bin(bin_num)[3:].zfill(length-1)
     else:
-        bin_num = num + 2**length
-        return "1" + bin(bin_num)[3:].zfill(length-1)
+        return bin(num)[2:].zfill(length)
 def mint(bin_num):
     if not type(bin_num) == str:
         raise ValueError("bin_num must be a string, got " +  str(type(bin_num)) + " instead (" + str(bin_num) + ")")
