@@ -226,17 +226,27 @@ class Instructions:
     @staticmethod # move reg1 reg 2
     def i00001100(cu, cpu, operand1, operand2, operand3):
         print("move", operand1, operand2)
-        reg2 = cpu.access_register(operand2)
-        cpu.access_register(operand1, reg2)
+        if operand1 in cpu.reg32bit and operand2 in cpu.reg32bit:
+            reg2 = cpu.access_register(operand2)
+            cpu.access_register(operand1, reg2)
+        elif operand1 in cpu.reg32bit and not operand2 in cpu.reg32bit:
+            reg2 = cpu.access_register(operand2)
+            reg2 = reg2.zfill(32)
+            cpu.access_register(operand1, reg2)
+        elif not operand1 in cpu.reg32bit and operand2 in cpu.reg32bit:
+            reg2 = cpu.access_register(operand2)[:16]
+            cpu.access_register(operand1, reg2)
+        else:
+            reg2 = cpu.access_register(operand2)
+            cpu.access_register(operand1, reg2)
 
     @staticmethod # add reg1 reg2
     def i00001101(cu, cpu, operand1, operand2, operand3):
-
         print("add", operand1, operand2)
         reg1 = cpu.access_register(operand1)
         reg2 = cpu.access_register(operand2)
         cu.callALU("add", reg1, reg2, 16)
-        value = cpu.access_register("1100")[16:]
+        value = cpu.access_register("1100")[:16]
         cpu.access_register(operand1, value)
 
     @staticmethod # sub reg1 reg2
@@ -245,7 +255,7 @@ class Instructions:
         reg1 = cpu.access_register(operand1)
         reg2 = cpu.access_register(operand2)
         cu.callALU("sub", reg1, reg2, 16)
-        value = cpu.access_register("1100")[16:]
+        value = cpu.access_register("1100")[:16]
         cpu.access_register(operand1, value)
 
     @staticmethod # mult reg1 reg2
@@ -276,7 +286,7 @@ class Instructions:
         print("inc reg", operand1)
         reg = cpu.access_register(operand1)
         cu.callALU("add", reg, "00000001", 16)
-        value = cpu.access_register("1100")[16:]
+        value = cpu.access_register("1100")[:16]
         cpu.access_register(operand1, value)
 
     @staticmethod # dec reg
@@ -284,7 +294,7 @@ class Instructions:
         print("dec reg", operand1)
         reg = cpu.access_register(operand1)
         cu.callALU("sub", reg, "00000001", 16)
-        value = cpu.access_register("1100")[16:]
+        value = cpu.access_register("1100")[:16]
         cpu.access_register(operand1, value)
 
     @staticmethod # and reg1 reg2
@@ -293,7 +303,7 @@ class Instructions:
         reg1 = cpu.access_register(operand1)
         reg2 = cpu.access_register(operand2)
         cu.callALU("and", reg1, reg2, 16)
-        value = cpu.access_register("1100")[16:]
+        value = cpu.access_register("1100")[:16]
         cpu.access_register(operand1, value)
 
     @staticmethod # or reg1 reg2
@@ -302,7 +312,7 @@ class Instructions:
         reg1 = cpu.access_register(operand1)
         reg2 = cpu.access_register(operand2)
         cu.callALU("or", reg1, reg2, 16)
-        value = cpu.access_register("1100")[16:]
+        value = cpu.access_register("1100")[:16]
         cpu.access_register(operand1, value)
 
     @staticmethod # xor reg1 reg2
@@ -311,7 +321,7 @@ class Instructions:
         reg1 = cpu.access_register(operand1)
         reg2 = cpu.access_register(operand2)
         cu.callALU("xor", reg1, reg2, 16)
-        value = cpu.access_register("1100")[16:]
+        value = cpu.access_register("1100")[:16]
         cpu.access_register(operand1, value)
 
     @staticmethod # not reg
@@ -319,7 +329,7 @@ class Instructions:
         print("not", operand1)
         reg1 = cpu.access_register(operand1)
         cu.callALU("not", reg1, None, 16)
-        value = cpu.access_register("1100")[16:]
+        value = cpu.access_register("1100")[:16]
         cpu.access_register(operand1, value)
 
     @staticmethod # rol reg #imd
@@ -327,7 +337,7 @@ class Instructions:
         print("rol", operand1, operand2)
         reg1 = cpu.access_register(operand1)
         cu.callALU("rol", reg1, operand2, 16)
-        rolled = cpu.access_register("1100")[16:]
+        rolled = cpu.access_register("1100")[:16]
         cpu.access_register(operand1, rolled)
 
     @staticmethod # ror reg #imd
@@ -335,7 +345,7 @@ class Instructions:
         print("ror", operand1, operand2)
         reg1 = cpu.access_register(operand1)
         cu.callALU("ror", reg1, operand2, 16)
-        rolled = cpu.access_register("1100")[16:]
+        rolled = cpu.access_register("1100")[:16]
         cpu.access_register(operand1, rolled)
 
     @staticmethod # cmp reg1 reg2
