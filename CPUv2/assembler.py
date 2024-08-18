@@ -53,6 +53,8 @@ non_redundant_mnemonics_opcodes = {
     "rol": "00010111",
     "ror": "00011000",
     "cmp": "00011001",
+    "shl": "00011010",
+    "shr": "00011011",
 }
 registers = {
             "r0": "0000",
@@ -89,6 +91,25 @@ registers = {
             "1111": "mdr",
         }
 
+def collect_labels(assembly, reserved):
+    print("Collecting labels...")
+    labels = {}
+    current_addresse = 0
+    for i, line in enumerate(assembly):
+        print(f"Line {i+1}: {line}")
+        if line.startswith(":"):
+            if line.endswith("\n"):
+                line = line.split("\n")[0]
+            if not line[1:] in reserved:
+                print(f"Storing label {line[1:]} at address {current_addresse}")
+                label = ">" + line[1:]
+                labels[label] = mbin(current_addresse, 16, neg=False)
+                    
+            else:
+                raise ValueError(f"Invalid label {line[1:]} at line {i+1}")
+        else:
+            current_addresse += 4
+    return labels
 
 def tokenize(line):
     if "\n" in line:
@@ -113,6 +134,8 @@ def register_to_bin(register):
     return registers[register]
 
 def immediate_to_bin(immediate, bitsize):
+    if immediate == "#":
+        return mbin(0, bitsize, neg = False)
     return mbin(int(immediate), bitsize, neg = False)
 
 def get_instruction(tokens, i, labels: dict):
@@ -135,6 +158,8 @@ def get_instruction(tokens, i, labels: dict):
                 operand3_bin = mbin(int(operands[0][1:]), 16, neg = False)
             elif operands[0].startswith(">"):
                 if not operands[0] in labels:
+                    print("_________________________")
+                    print("labels:", labels)
                     raise ValueError(f"Label {operands[0]} isn't defined at line {i+1}")
                 opcode_bin = "00000000"
                 operand1_bin = "0000"
@@ -157,6 +182,8 @@ def get_instruction(tokens, i, labels: dict):
                 operand3_bin = mbin(int(operands[0][1:]), 16, neg=False)
             elif operands[0].startswith(">"):
                 if not operands[0] in labels:
+                    print("_________________________")
+                    print("labels:", labels)
                     raise ValueError(f"Label {operands[0]} isn't defined at line {i+1}")
                 opcode_bin = "00000001"
                 operand1_bin = "0000"
@@ -313,6 +340,23 @@ def get_instruction(tokens, i, labels: dict):
             operand1_bin = register_to_bin(operands[0])
             operand2_bin = "0000"
             operand3_bin = "0000000000000000"
+        case "cmp":
+            if len(operands) != 2:
+                raise ValueError(f"Invalid number of operands for {mnemonic} at line {i+1}")
+            opcode_bin = non_redundant_mnemonics_opcodes[mnemonic]
+            operand1_bin = register_to_bin(operands[0])
+            operand2_bin = register_to_bin(operands[1])
+            operand3_bin = "0000000000000000"
+        case "shl":
+            opcode_bin = non_redundant_mnemonics_opcodes[mnemonic]
+            operand1_bin = register_to_bin(operands[0])
+            operand2_bin = immediate_to_bin(operands[1][:1], 4)
+            operand3_bin = "0000000000000000"
+        case "shr":
+            opcode_bin = non_redundant_mnemonics_opcodes[mnemonic]
+            operand1_bin = register_to_bin(operands[0])
+            operand2_bin = immediate_to_bin(operands[1][:1], 4)
+            operand3_bin = "0000000000000000"
         case "hlt":
             opcode_bin = "11111111"
             operand1_bin = "0000"
@@ -341,26 +385,17 @@ def read_from_file(input_file):
 
 def assemble(assembly):
     binary = []
-    reserved = ["jmp", "jeq", "jne", "inc", "dec", "load", "store", "move", "add", "sub", "mult", "div", "and", "or", "xor", "not", "rol", "ror", "cmp", "hlt", "nop", "ret", "", " ", "r0", "r1", "r2", "r3", "r4", "r5", "r6", "r7", "pc", "ir", "sp", "bp", "acc", "flags", "mar", "mdr"]
-    labels = {}
-    current_address = 0
+    reserved = ["jmp", "jeq", "jne", "inc", "dec", "load", "store", "move", "add", "sub", "mult", "div", "and", "or", "xor", "not", "rol", "ror", "cmp", "shl", "shr", "hlt", "nop", "ret", "", " ", "r0", "r1", "r2", "r3", "r4", "r5", "r6", "r7", "pc", "ir", "sp", "bp", "acc", "flags", "mar", "mdr"]
+    labels = collect_labels(assembly, reserved)
 
     for i, line in enumerate(assembly):
         tokens = tokenize(line)
         if tokens == None or len(tokens) == 0:
             continue
-        elif len(tokens) == 1:
-            if tokens[0].startswith(":"):
-                if not tokens[0][1:] in reserved:
-                    labels[">" + tokens[0][1:]] = mbin(current_address, 16, neg=False)
-                else:
-                    raise ValueError(f"Invalid label {tokens[0]} at line {i+1}")
-                continue
 
         instruction = get_instruction(tokens, i, labels)
         for byte in cut_instruction(instruction):
             binary.append(byte)
-            current_address += 1
     return binary
 
 DIRECTORY_INPUT = "CPUv2/programs/asm/"

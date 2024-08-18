@@ -11,6 +11,9 @@ class GUI:
         self.root.geometry("200x200")
         self.root.iconphoto(True, tk.PhotoImage(file='anderes/images/tk.png'))
 
+        self.cpu_open = False
+        self.clock_open = False
+
         self.setup_ui()
         self.main_loop()
     
@@ -30,8 +33,53 @@ class GUI:
         self.open_display_window_button = tk.Button(self.root, text="Open Screen", command=self.start_screen)
         self.open_display_window_button.pack()
 
+        self.cpu_gui_button = tk.Button(self.root, text="Open CPU", command=self.cpu_loop)
+        self.cpu_gui_button.pack()
+
+        self.clock_gui_button = tk.Button(self.root, text="Open Clock", command=self.clock_loop)
+        self.clock_gui_button.pack()
     def main_loop(self):
         self.root.mainloop()
+
+    def cpu_loop(self):
+        if self.cpu_open:
+            return
+        
+        self.cpu_open = True
+        self.cpu_gui = tk.Tk()
+        self.cpu_gui.title("CPU")
+        self.cpu_gui.geometry("200x200")
+        self.cpu_gui.bind("<Destroy>",  self.cpu_gui_destroyed)
+
+        self.tick_mode_button = tk.Button(self.cpu_gui, text="Switch Tick Mode", command=self.switch_tick_mode)
+        self.tick_mode_button.pack()
+
+        self.cpu_gui.mainloop()
+    
+    def clock_loop(self):
+        if self.clock_open:
+            return
+        
+        self.clock_open = True
+        self.clock_gui = tk.Tk()
+        self.clock_gui.title("Clock")
+        self.clock_gui.geometry("200x200")
+        self.clock_gui.bind("<Destroy>",  self.clock_gui_destroyed)
+
+        self.tick_button = tk.Button(self.clock_gui, text="Tick", command=self.controller.tick_button_pressed)
+        self.tick_button.pack()
+
+        self.clock_gui.mainloop()
+
+    def cpu_gui_destroyed(self, event):
+        print("CPU GUI Destroyed")
+        self.cpu_open = False
+        return event
+    
+    def clock_gui_destroyed(self, event):
+        print("Clock GUI Destroyed")
+        self.clock_open = False
+        return event
 
     def load_program(self):    
         name = self.load_program_entry.get()
@@ -47,3 +95,6 @@ class GUI:
     
     def shutdown_computer(self):
         self.controller.shutdown_computer()
+
+    def switch_tick_mode(self):
+        self.controller.switch_tick_mode()

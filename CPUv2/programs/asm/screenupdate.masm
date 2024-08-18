@@ -1,0 +1,23 @@
+:start
+load #63488, mar ;address
+load #17, r0 ;color
+load #3, r1 ;mar increase intervall
+load #0, r2 ;compare if zero
+
+:store_loop
+debug
+store mar, r0
+add mar, r1
+cmp mar, r2
+jeq >set_mar_and_color
+jmp >store_loop
+
+:set_mar_and_color
+load #63488, mar
+move r0, r3
+shl r3, #4
+move r3, r0
+shr r3, #4
+add r0, r3
+hlt
+jmp >store_loop

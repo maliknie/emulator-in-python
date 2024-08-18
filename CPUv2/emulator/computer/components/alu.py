@@ -39,6 +39,10 @@ class ALU:
                 self.high, self.low = "0000000000000000", Operations.rol(a, b, bit_length)
             case "ror":
                 self.high, self.low = "0000000000000000", Operations.ror(a, b, bit_length)
+            case "shl":
+                self.high, self.low = "0000000000000000", Operations.shl(a, b, bit_length)
+            case "shr":
+                self.high, self.low = "0000000000000000", Operations.shr(a, b, bit_length)
             case _:
                 raise ValueError("Invalid operation: " + op)
         if self.high.zfill(16) + self.low.zfill(16) == "00000000000000000000000000000000":
@@ -127,6 +131,18 @@ class Operations:
         a = mint(a)
         b = mint(b)
         result = (a >> b) | (a << (bit_length - b))
+        return mbin(result, bit_length).zfill(bit_length)
+    @staticmethod
+    def shl(a, b, bit_length = 16):
+        a = mint(a)
+        b = mint(b)
+        result = a << b
+        return mbin(result, bit_length).zfill(bit_length)
+    @staticmethod
+    def shr(a, b, bit_length = 16):
+        a = mint(a)
+        b = mint(b)
+        result = a >> b
         return mbin(result, bit_length).zfill(bit_length)
 
 def tests():

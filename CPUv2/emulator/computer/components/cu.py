@@ -86,6 +86,10 @@ class CU:
                 Instructions.i00011000(self, self.cpu, self.operand1, self.operand2, self.operand3)
             case "00011001":
                 Instructions.i00011001(self, self.cpu, self.operand1, self.operand2, self.operand3)
+            case "00011010":
+                Instructions.i00011010(self, self.cpu, self.operand1, self.operand2, self.operand3)
+            case "00011011":
+                Instructions.i00011011(self, self.cpu, self.operand1, self.operand2, self.operand3)
             case "11111111":
                 Instructions.i11111111(self, self.cpu, self.operand1, self.operand2, self.operand3)
             case "debuggin":
@@ -357,6 +361,23 @@ class Instructions:
         flags = set_flag(flags, "1", 14)
         cpu.access_register("1101", flags)
         cu.callALU("sub", reg1, reg2, 16)
+    
+    @staticmethod # shl reg #imd
+    def i00011010(cu, cpu, operand1, operand2, operand3):
+        print("shl", operand1, operand2)
+        reg1 = cpu.access_register(operand1)
+        cu.callALU("shl", reg1, operand2, 16)
+        shifted = cpu.access_register("1100")[:16]
+        cpu.access_register(operand1, shifted)
+    
+    @staticmethod # shr reg #imd
+    def i00011011(cu, cpu, operand1, operand2, operand3):
+        print("shr", operand1, operand2)
+        reg1 = cpu.access_register(operand1)
+        cu.callALU("shr", reg1, operand2, 16)
+        shifted = cpu.access_register("1100")[:16]
+        cpu.access_register(operand1, shifted)
+
     @staticmethod # halt
     def i11111111(cu, cpu, operand1, operand2, operand3):
         print("halt")

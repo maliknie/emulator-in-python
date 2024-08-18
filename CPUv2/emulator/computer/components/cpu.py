@@ -7,6 +7,7 @@ class CPU:
         self.computer = computer
 
         self.running = False
+        self.tick_mode = False
 
         self.r0 = "0000000000000000"
         self.r1 = "0000000000000000"
@@ -48,12 +49,15 @@ class CPU:
         }
 
     def run(self):
+        self.computer.clock.run()
+        """
         print("Running CPU")
         self.running = True
         while self.running:
             self.cu.fetch()
             self.cu.decode()
             self.cu.execute()
+        """
 
     def stop(self):
         self.running = False
@@ -89,3 +93,29 @@ class CPU:
         print("mdr: ", self.mdr)
         print("_________________________")
         print("")
+    
+    def get_state(self):
+        registers ={
+            "r0": self.r0,
+            "r1": self.r1,
+            "r2": self.r2,
+            "r3": self.r3,
+            "r4": self.r4,
+            "r5": self.r5,
+            "r6": self.r6,
+            "r7": self.r7,
+            "pc": self.pc,
+            "ir": self.ir,
+            "sp": self.sp,
+            "bp": self.bp,
+            "acc": self.acc,
+            "flags": self.flags,
+            "mar": self.mar,
+            "mdr": self.mdr,
+        }
+        running = {"running": self.running}
+        return (registers, running)
+    
+    def switch_tick_mode(self):
+        self.tick_mode = not self.tick_mode
+        print("Tick Mode: ", self.tick_mode)

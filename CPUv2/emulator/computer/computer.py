@@ -1,9 +1,10 @@
 from time import sleep
 class Computer:
-    def __init__(self, controller, cpu, memory) -> None:
+    def __init__(self, controller, cpu, memory, clock) -> None:
         self.controller = controller
         self.cpu = cpu
         self.memory = memory
+        self.clock = clock
     
     def run(self):
         print("Computer is running")

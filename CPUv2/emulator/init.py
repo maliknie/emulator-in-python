@@ -6,6 +6,7 @@ from computer.components.cu import CU
 from computer.components.alu import ALU
 from computer.components.memory import RAM
 from computer.computer import Computer
+from computer.components.clock import Clock
 
 from devices.screen import pixelDisplay
 
@@ -18,11 +19,14 @@ def initialize_system():
     cpu = CPU(None, None, None)
     alu = ALU(cpu)
     cu = CU(cpu)
+    clock = Clock(None)
     cpu.alu = alu
     cpu.cu = cu
+
     
-    computer = Computer(controller, cpu, memory)
+    computer = Computer(controller, cpu, memory, clock)
     cpu.computer = computer
+    clock.computer = computer
 
     screen = pixelDisplay(controller, memory)
 

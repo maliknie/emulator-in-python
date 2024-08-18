@@ -22,3 +22,12 @@ class AppController:
     
     def start_gui(self):
         self.gui.start()
+    
+    def get_cpu_state(self):
+        return self.computer.cpu.get_state()
+    
+    def tick_button_pressed(self):
+        self.computer.clock.tick_button_pressed()
+    
+    def switch_tick_mode(self):
+        self.computer.cpu.switch_tick_mode()
