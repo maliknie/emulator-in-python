@@ -48,11 +48,33 @@ class GUI:
         self.cpu_open = True
         self.cpu_gui = tk.Tk()
         self.cpu_gui.title("CPU")
-        self.cpu_gui.geometry("200x200")
+        self.cpu_gui.geometry("500x300")
         self.cpu_gui.bind("<Destroy>",  self.cpu_gui_destroyed)
 
         self.tick_mode_button = tk.Button(self.cpu_gui, text="Switch Tick Mode", command=self.switch_tick_mode)
         self.tick_mode_button.pack()
+
+        self.register_header = tk.Label(self.cpu_gui, text="Registers")
+        self.register_header.pack()
+
+        self.cpu_state = self.controller.get_cpu_state()
+        print(self.cpu_state)
+
+        self.running_label = tk.Label(self.cpu_gui, text="Running: " + str(self.cpu_state[1]["running"]))
+        self.running_label.pack()
+
+        #change running_label text:
+
+        self.register_labels = []
+
+        for key in self.cpu_state[0]:
+            label = tk.Label(self.cpu_gui, text=key + ": " + str(self.cpu_state[0][key]))
+            self.register_labels.append(label)
+        
+        for label in self.register_labels:
+            label.pack()
+
+        ###
 
         self.cpu_gui.mainloop()
     
@@ -98,3 +120,13 @@ class GUI:
 
     def switch_tick_mode(self):
         self.controller.switch_tick_mode()
+    
+    def update_cpu_gui(self):
+        print("Updating CPU GUI (GUI)")
+    
+        state = self.controller.get_cpu_state()
+        self.running_label.config(text="Running: " + str(state[1]["running"]))
+        for label in self.register_labels:
+            label_name = label.cget("text").split(":")[0]
+            label.config(text=label_name + ": " + str(state[0][label_name]))
+        

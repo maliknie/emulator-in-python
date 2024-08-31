@@ -6,18 +6,27 @@ class Clock():
         self.tick_event = threading.Event()
 
     def tick(self):
+        print("Ticking")
         if self.computer.cpu.tick_mode:
             self.computer.cpu.cu.fetch()
+            self.computer.controller.gui.update_cpu_gui()
             self.wait_for_tick()
             self.computer.cpu.cu.decode()
+            self.computer.controller.gui.update_cpu_gui()
             self.wait_for_tick()
             self.computer.cpu.cu.execute()
+            self.computer.controller.gui.update_cpu_gui()
             self.wait_for_tick()
 
         else:
             self.computer.cpu.cu.fetch()
+            self.computer.controller.gui.update_cpu_gui()
             self.computer.cpu.cu.decode()
+            self.computer.controller.gui.update_cpu_gui()
             self.computer.cpu.cu.execute()
+            self.computer.controller.gui.update_cpu_gui()
+        
+        
             
     def wait_for_tick(self):
         self.tick_event.clear()

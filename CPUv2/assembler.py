@@ -29,7 +29,6 @@ Core instructions and syntax:
              rol reg1, #imd: | 00010111 | reg1 (4 bits) | imd (4 bits) | padding with zeros (16 bits) | Description: reg1 << imd -> reg1
              ror reg1, #imd: | 00011000 | reg1 (4 bits) | imd (4 bits) | padding with zeros (16 bits) | Description: reg1 >> imd -> reg1
              cmp reg1, reg2: | 00011001 | reg1 (4 bits) | reg2 (4 bits) | padding with zeros (16 bits) | Description: reg2 - reg1 (only changes flags)
-
 """
 import sys
 from pathlib import Path

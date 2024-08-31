@@ -31,3 +31,7 @@ class AppController:
     
     def switch_tick_mode(self):
         self.computer.cpu.switch_tick_mode()
+    
+    def update_cpu_state(self):
+        print("Updating CPU State (Controller)")
+        self.gui.update_cpu_gui()
