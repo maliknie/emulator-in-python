@@ -1,7 +1,4 @@
 import tkinter as tk
-from tkinter import ttk
-
-import sv_ttk as sttk
 
 class GUI:
     def __init__(self, controller):
@@ -34,14 +31,6 @@ class GUI:
 
         # Load Program Frame
         self.load_program_frame = tk.Frame(self.root, background="white")
-
-        self.load_program_frame.grid_rowconfigure(0, weight=1)
-        self.load_program_frame.grid_rowconfigure(1, weight=1)
-        self.load_program_frame.grid_rowconfigure(2, weight=1)
-        self.load_program_frame.grid_columnconfigure(0, weight=1)
-        self.load_program_frame.grid_columnconfigure(1, weight=1)
-        self.load_program_frame.grid_columnconfigure(2, weight=1)
-    
         self.load_program_frame_label = tk.Label(self.load_program_frame, text="Load Program")
         self.load_program_frame_label.grid(row=0, column=0)
         self.load_program_label = tk.Label(self.load_program_frame, text="Enter Program Name: ")
@@ -54,14 +43,6 @@ class GUI:
 
         # Computer Buttons Frame
         self.computer_buttons_frame = tk.Frame(self.root, background="lightblue")
-
-        self.computer_buttons_frame.grid_rowconfigure(0, weight=1)
-        self.computer_buttons_frame.grid_rowconfigure(1, weight=1)
-        self.computer_buttons_frame.grid_rowconfigure(2, weight=1)
-        self.computer_buttons_frame.grid_columnconfigure(0, weight=1)
-        self.computer_buttons_frame.grid_columnconfigure(1, weight=1)
-        self.computer_buttons_frame.grid_columnconfigure(2, weight=1)
-
         self.computer_buttons_frame_label = tk.Label(self.computer_buttons_frame, text="Computer Controls")
         self.computer_buttons_frame_label.grid(row=0, column=0)
         self.start_cpu_button = tk.Button(self.computer_buttons_frame, text="Start Computer", command=self.start_computer)
@@ -72,14 +53,6 @@ class GUI:
 
         # GUI Buttons Frame
         self.gui_buttons_frame = tk.Frame(self.root, background="lightgreen")
-
-        self.gui_buttons_frame.grid_rowconfigure(0, weight=1)
-        self.gui_buttons_frame.grid_rowconfigure(1, weight=1)
-        self.gui_buttons_frame.grid_rowconfigure(2, weight=1)
-        self.gui_buttons_frame.grid_columnconfigure(0, weight=1)
-        self.gui_buttons_frame.grid_columnconfigure(1, weight=1)
-        self.gui_buttons_frame.grid_columnconfigure(2, weight=1)
-
         self.gui_buttons_frame_label = tk.Label(self.gui_buttons_frame, text="GUI Controls")
         self.gui_buttons_frame_label.grid(row=0, column=0)
         self.open_display_window_button = tk.Button(self.gui_buttons_frame, text="Open Screen", command=self.start_screen)
