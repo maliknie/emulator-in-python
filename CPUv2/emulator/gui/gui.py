@@ -1,4 +1,7 @@
 import tkinter as tk
+from tkinter import ttk
+
+import sv_ttk as sttk
 
 class GUI:
     def __init__(self, controller):
@@ -8,7 +11,7 @@ class GUI:
     def start(self):
         self.root = tk.Tk()
         self.root.title("CPU Emulator")
-        self.root.geometry("200x200")
+        self.root.geometry("500x500")
         self.root.iconphoto(True, tk.PhotoImage(file='anderes/images/tk.png'))
 
         self.cpu_open = False
@@ -18,26 +21,75 @@ class GUI:
         self.main_loop()
     
     def setup_ui(self):
-        self.load_program_entry = tk.Entry(self.root)
-        self.load_program_entry.pack()
+        
+        #Configure Grid Layout
 
-        self.load_program_button = tk.Button(self.root, text="Load Program", command=self.load_program)
-        self.load_program_button.pack()
+        self.root.grid_rowconfigure(0, weight=1)
+        self.root.grid_rowconfigure(1, weight=1)
+        self.root.grid_rowconfigure(2, weight=1)
+        self.root.grid_columnconfigure(0, weight=1)
+        self.root.grid_columnconfigure(1, weight=1)
+        self.root.grid_columnconfigure(2, weight=1)
 
-        self.start_cpu_button = tk.Button(self.root, text="Start Computer", command=self.start_computer)
-        self.start_cpu_button.pack()
 
-        self.shutdown_cpu_button = tk.Button(self.root, text="Shutdown Computer", command=self.shutdown_computer)
-        self.shutdown_cpu_button.pack()
+        # Load Program Frame
+        self.load_program_frame = tk.Frame(self.root, background="white")
 
-        self.open_display_window_button = tk.Button(self.root, text="Open Screen", command=self.start_screen)
-        self.open_display_window_button.pack()
+        self.load_program_frame.grid_rowconfigure(0, weight=1)
+        self.load_program_frame.grid_rowconfigure(1, weight=1)
+        self.load_program_frame.grid_rowconfigure(2, weight=1)
+        self.load_program_frame.grid_columnconfigure(0, weight=1)
+        self.load_program_frame.grid_columnconfigure(1, weight=1)
+        self.load_program_frame.grid_columnconfigure(2, weight=1)
+    
+        self.load_program_frame_label = tk.Label(self.load_program_frame, text="Load Program")
+        self.load_program_frame_label.grid(row=0, column=0)
+        self.load_program_label = tk.Label(self.load_program_frame, text="Enter Program Name: ")
+        self.load_program_label.grid(row=1, column=0)
+        self.load_program_entry = tk.Entry(self.load_program_frame)
+        self.load_program_entry.grid(row=1, column=1)
+        self.load_program_button = tk.Button(self.load_program_frame, text="Load Program", command=self.load_program)
+        self.load_program_button.grid(row=1, column=2)
+        self.load_program_frame.grid(row=0, column=0)
 
-        self.cpu_gui_button = tk.Button(self.root, text="Open CPU", command=self.cpu_loop)
-        self.cpu_gui_button.pack()
+        # Computer Buttons Frame
+        self.computer_buttons_frame = tk.Frame(self.root, background="lightblue")
 
-        self.clock_gui_button = tk.Button(self.root, text="Open Clock", command=self.clock_loop)
-        self.clock_gui_button.pack()
+        self.computer_buttons_frame.grid_rowconfigure(0, weight=1)
+        self.computer_buttons_frame.grid_rowconfigure(1, weight=1)
+        self.computer_buttons_frame.grid_rowconfigure(2, weight=1)
+        self.computer_buttons_frame.grid_columnconfigure(0, weight=1)
+        self.computer_buttons_frame.grid_columnconfigure(1, weight=1)
+        self.computer_buttons_frame.grid_columnconfigure(2, weight=1)
+
+        self.computer_buttons_frame_label = tk.Label(self.computer_buttons_frame, text="Computer Controls")
+        self.computer_buttons_frame_label.grid(row=0, column=0)
+        self.start_cpu_button = tk.Button(self.computer_buttons_frame, text="Start Computer", command=self.start_computer)
+        self.start_cpu_button.grid(row=1, column=0)
+        self.shutdown_cpu_button = tk.Button(self.computer_buttons_frame, text="Shutdown Computer", command=self.shutdown_computer)
+        self.shutdown_cpu_button.grid(row=1, column=1)
+        self.computer_buttons_frame.grid(row=1, column=0)
+
+        # GUI Buttons Frame
+        self.gui_buttons_frame = tk.Frame(self.root, background="lightgreen")
+
+        self.gui_buttons_frame.grid_rowconfigure(0, weight=1)
+        self.gui_buttons_frame.grid_rowconfigure(1, weight=1)
+        self.gui_buttons_frame.grid_rowconfigure(2, weight=1)
+        self.gui_buttons_frame.grid_columnconfigure(0, weight=1)
+        self.gui_buttons_frame.grid_columnconfigure(1, weight=1)
+        self.gui_buttons_frame.grid_columnconfigure(2, weight=1)
+
+        self.gui_buttons_frame_label = tk.Label(self.gui_buttons_frame, text="GUI Controls")
+        self.gui_buttons_frame_label.grid(row=0, column=0)
+        self.open_display_window_button = tk.Button(self.gui_buttons_frame, text="Open Screen", command=self.start_screen)
+        self.open_display_window_button.grid(row=1, column=0)
+        self.cpu_gui_button = tk.Button(self.gui_buttons_frame, text="Open CPU", command=self.cpu_loop)
+        self.cpu_gui_button.grid(row=1, column=1)
+        self.clock_gui_button = tk.Button(self.gui_buttons_frame, text="Open Clock", command=self.clock_loop)
+        self.clock_gui_button.grid(row=1, column=2)
+        self.gui_buttons_frame.grid(row=2, column=0)
+
     def main_loop(self):
         self.root.mainloop()
 
