@@ -1,8 +1,16 @@
 import tkinter as tk
+from tkinter import ttk
 
 class GUI:
     def __init__(self, controller):
         self.controller = controller
+
+        # GUI Settings
+        self.header_font = ("Calibri 24 bold")
+        self.standard_font = ("Calibri 18")
+        self.padding_x = 5
+        self.padding_y = 5
+        
         
 
     def start(self):
@@ -30,40 +38,53 @@ class GUI:
 
 
         # Load Program Frame
-        self.load_program_frame = tk.Frame(self.root, background="white")
-        self.load_program_frame_label = tk.Label(self.load_program_frame, text="Load Program")
+        self.load_program_frame = ttk.Frame(self.root) 
+        self.load_program_frame_label = ttk.Label(self.load_program_frame, text="Load Program", font=self.header_font)
         self.load_program_frame_label.grid(row=0, column=0)
-        self.load_program_label = tk.Label(self.load_program_frame, text="Enter Program Name: ")
-        self.load_program_label.grid(row=1, column=0)
-        self.load_program_entry = tk.Entry(self.load_program_frame)
-        self.load_program_entry.grid(row=1, column=1)
-        self.load_program_button = tk.Button(self.load_program_frame, text="Load Program", command=self.load_program)
-        self.load_program_button.grid(row=1, column=2)
+        self.load_program_input_frame = ttk.Frame(self.load_program_frame)
+
+        self.load_program_label = ttk.Label(self.load_program_input_frame, text="Enter Program Name: ", font=self.standard_font)
+        self.load_program_label.grid(row=1, column=0,)
+        self.load_program_entry = ttk.Entry(self.load_program_input_frame)
+        self.load_program_entry.grid(row=1, column=1, padx=self.padding_x)
+        self.load_program_button = ttk.Button(self.load_program_input_frame, text="Load Program", command=self.load_program)
+        self.load_program_button.grid(row=1, column=2, padx=self.padding_x)
+
+        self.load_program_input_frame.grid(row=1, column=0, padx=self.padding_x)
         self.load_program_frame.grid(row=0, column=0)
 
         # Computer Buttons Frame
-        self.computer_buttons_frame = tk.Frame(self.root, background="lightblue")
-        self.computer_buttons_frame_label = tk.Label(self.computer_buttons_frame, text="Computer Controls")
+        self.computer_buttons_frame = ttk.Frame(self.root)
+        self.computer_buttons_frame_label = ttk.Label(self.computer_buttons_frame, text="Computer Controls", font=self.header_font)
         self.computer_buttons_frame_label.grid(row=0, column=0)
-        self.start_cpu_button = tk.Button(self.computer_buttons_frame, text="Start Computer", command=self.start_computer)
-        self.start_cpu_button.grid(row=1, column=0)
-        self.shutdown_cpu_button = tk.Button(self.computer_buttons_frame, text="Shutdown Computer", command=self.shutdown_computer)
-        self.shutdown_cpu_button.grid(row=1, column=1)
+
+        self.computer_buttons_button_frame = ttk.Frame(self.computer_buttons_frame)
+        self.start_cpu_button = ttk.Button(self.computer_buttons_button_frame, text="Start Computer", command=self.start_computer)
+        self.start_cpu_button.grid(row=1, column=0, padx=self.padding_x)
+        self.shutdown_cpu_button = ttk.Button(self.computer_buttons_button_frame, text="Shutdown Computer", command=self.shutdown_computer)
+        self.shutdown_cpu_button.grid(row=1, column=1, padx=self.padding_x)
+
+        self.computer_buttons_button_frame.grid(row=1, column=0, pady=10)
         self.computer_buttons_frame.grid(row=1, column=0)
 
         # GUI Buttons Frame
-        self.gui_buttons_frame = tk.Frame(self.root, background="lightgreen")
-        self.gui_buttons_frame_label = tk.Label(self.gui_buttons_frame, text="GUI Controls")
+        self.gui_buttons_frame = ttk.Frame(self.root)
+        self.gui_buttons_frame_label = ttk.Label(self.gui_buttons_frame, text="GUI Controls", font=self.header_font)
         self.gui_buttons_frame_label.grid(row=0, column=0)
-        self.open_display_window_button = tk.Button(self.gui_buttons_frame, text="Open Screen", command=self.start_screen)
-        self.open_display_window_button.grid(row=1, column=0)
-        self.cpu_gui_button = tk.Button(self.gui_buttons_frame, text="Open CPU", command=self.cpu_loop)
-        self.cpu_gui_button.grid(row=1, column=1)
-        self.clock_gui_button = tk.Button(self.gui_buttons_frame, text="Open Clock", command=self.clock_loop)
-        self.clock_gui_button.grid(row=1, column=2)
+
+        self.gui_buttons_button_frame = ttk.Frame(self.gui_buttons_frame)
+        self.open_display_window_button = ttk.Button(self.gui_buttons_button_frame, text="Open Screen", command=self.start_screen)
+        self.cpu_gui_button = ttk.Button(self.gui_buttons_button_frame, text="Open CPU", command=self.cpu_loop)
+        self.clock_gui_button = ttk.Button(self.gui_buttons_button_frame, text="Open Clock", command=self.clock_loop)
+        self.open_display_window_button.grid(row=1, column=0, padx=self.padding_x)  
+        self.cpu_gui_button.grid(row=1, column=1, padx=self.padding_x)
+        self.clock_gui_button.grid(row=1, column=2, padx=self.padding_x)
+        self.gui_buttons_button_frame.grid(row=1, column=0, pady=10)
         self.gui_buttons_frame.grid(row=2, column=0)
 
     def main_loop(self):
+        self.root.tk.call("source", "CPUv2/libraries/Azure-ttk-theme-main/azure.tcl")
+        self.root.tk.call("set_theme", "dark")
         self.root.mainloop()
 
     def cpu_loop(self):
@@ -76,7 +97,7 @@ class GUI:
         self.cpu_gui.geometry("500x300")
         self.cpu_gui.bind("<Destroy>",  self.cpu_gui_destroyed)
 
-        self.tick_mode_button = tk.Button(self.cpu_gui, text="Switch Tick Mode", command=self.switch_tick_mode)
+        self.tick_mode_button = ttk.Checkbutton(self.cpu_gui, text="Tick Mode", style="Switch.TCheckbutton", command=self.switch_tick_mode)
         self.tick_mode_button.pack()
 
         self.register_header = tk.Label(self.cpu_gui, text="Registers")
@@ -90,17 +111,34 @@ class GUI:
 
         #change running_label text:
 
-        self.register_labels = []
+        self.all_purpose_register_labels = []
+        self.special_purpose_register_labels = []
 
+        self.all_purpose_register_frame = ttk.Frame(self.cpu_gui)
+        self.special_purpose_register_frame = ttk.Frame(self.cpu_gui)
+
+        counter = 0
         for key in self.cpu_state[0]:
-            label = tk.Label(self.cpu_gui, text=key + ": " + str(self.cpu_state[0][key]))
-            self.register_labels.append(label)
+            counter += 1
+            if counter < 9:
+                label = ttk.Label(self.all_purpose_register_frame, text=key + ": " + str(self.cpu_state[0][key]))
+                self.all_purpose_register_labels.append(label)
+            else:
+                label = ttk.Label(self.special_purpose_register_frame, text=key + ": " + str(self.cpu_state[0][key]))
+                self.special_purpose_register_labels.append(label)
         
-        for label in self.register_labels:
+        for label in self.all_purpose_register_labels:
             label.pack()
+        for label in self.special_purpose_register_labels:
+            label.pack()
+        
+        self.all_purpose_register_frame.pack(side="left")
+        self.special_purpose_register_frame.pack(side="left")
 
         ###
 
+        self.cpu_gui.tk.call("source", "CPUv2/libraries/Azure-ttk-theme-main/azure.tcl")
+        self.cpu_gui.tk.call("set_theme", "dark")
         self.cpu_gui.mainloop()
     
     def clock_loop(self):
@@ -110,12 +148,19 @@ class GUI:
         self.clock_open = True
         self.clock_gui = tk.Tk()
         self.clock_gui.title("Clock")
-        self.clock_gui.geometry("200x200")
+        self.clock_gui.geometry("300x100")
         self.clock_gui.bind("<Destroy>",  self.clock_gui_destroyed)
 
-        self.tick_button = tk.Button(self.clock_gui, text="Tick", command=self.controller.tick_button_pressed)
+
+        self.operation_label = ttk.Label(self.clock_gui, text="Current Operation: " + self.controller.computer.clock.current_operation, font=self.standard_font)
+        self.operation_label.pack(pady=self.padding_y)
+
+        self.tick_button = ttk.Button(self.clock_gui, text="Tick", command=self.controller.tick_button_pressed)
         self.tick_button.pack()
 
+
+        self.clock_gui.tk.call("source", "CPUv2/libraries/Azure-ttk-theme-main/azure.tcl")
+        self.clock_gui.tk.call("set_theme", "dark")
         self.clock_gui.mainloop()
 
     def cpu_gui_destroyed(self, event):
@@ -154,4 +199,9 @@ class GUI:
         for label in self.register_labels:
             label_name = label.cget("text").split(":")[0]
             label.config(text=label_name + ": " + str(state[0][label_name]))
+    
+    def update_clock_gui(self):
+        print("Updating Clock GUI (GUI)")
+        self.operation_label.config(text="Current Operation: " + self.controller.computer.clock.current_operation)
+
         
