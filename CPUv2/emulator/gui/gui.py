@@ -104,7 +104,6 @@ class GUI:
         self.register_header.pack()
 
         self.cpu_state = self.controller.get_cpu_state()
-        print(self.cpu_state)
 
         self.running_label = tk.Label(self.cpu_gui, text="Running: " + str(self.cpu_state[1]["running"]))
         self.running_label.pack()
@@ -164,14 +163,12 @@ class GUI:
         self.clock_gui.mainloop()
 
     def cpu_gui_destroyed(self, event):
-        print("CPU GUI Destroyed")
         self.cpu_open = False
-        return event
+        return (event,)
     
     def clock_gui_destroyed(self, event):
-        print("Clock GUI Destroyed")
         self.clock_open = False
-        return event
+        return (event,)
 
     def load_program(self):    
         name = self.load_program_entry.get()
@@ -196,9 +193,15 @@ class GUI:
     
         state = self.controller.get_cpu_state()
         self.running_label.config(text="Running: " + str(state[1]["running"]))
-        for label in self.register_labels:
+
+        for label in self.all_purpose_register_labels:
             label_name = label.cget("text").split(":")[0]
             label.config(text=label_name + ": " + str(state[0][label_name]))
+        
+        for label in self.special_purpose_register_labels:
+            label_name = label.cget("text").split(":")[0]
+            label.config(text=label_name + ": " + str(state[0][label_name]))
+
     
     def update_clock_gui(self):
         print("Updating Clock GUI (GUI)")

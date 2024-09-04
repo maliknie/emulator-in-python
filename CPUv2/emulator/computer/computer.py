@@ -11,7 +11,6 @@ class Computer:
         self.cpu.run()
     
     def shutdown(self):
-        sleep(1)
         self.cpu.stop()
         self.memory.reset()
         self.cpu.alu.reset()
