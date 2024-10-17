@@ -71,7 +71,7 @@ class ALU:
 
         # Wenn die cmp-Flag 0 ist, wird das Ergebnis der Operation in den Akkumulator geschrieben
         else:
-            acc_value = self.low.zfill(16) + self.high.zfill(16)
+            acc_value = self.high.zfill(16) + self.low.zfill(16)
             self.cpu.access_register("1100", acc_value)
             return self.low.zfill(16) + self.high.zfill(16)
         

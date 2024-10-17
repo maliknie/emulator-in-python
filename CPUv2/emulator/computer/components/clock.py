@@ -28,6 +28,7 @@ class Clock():
             self.computer.cpu.cu.decode()
             self.current_operation = "Execute"
             self.computer.cpu.cu.execute()
+            self.computer.controller.update_gui()
         
         
             

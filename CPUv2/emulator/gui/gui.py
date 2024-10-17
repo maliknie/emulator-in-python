@@ -1,5 +1,11 @@
 import tkinter as tk
 from tkinter import ttk
+import sys
+from pathlib import Path
+project_root = Path(__file__).resolve().parents[3]
+sys.path.append(str(project_root))
+from libraries.binary_lib import mbin, mint, set_flag, check_flag
+
 
 class GUI:
     def __init__(self, controller):
@@ -28,7 +34,7 @@ class GUI:
     def start(self):
         self.root = tk.Tk()
         self.root.title("CPU Emulator")
-        self.root.geometry("1000x600")
+        self.root.geometry("600x600")
         self.root.iconphoto(True, tk.PhotoImage(file='anderes/images/tk.png'))
 
         self.setup_ui()
@@ -47,32 +53,32 @@ class GUI:
         # Load Program Frame
         self.load_program_frame = ttk.Frame(self.root) 
         self.load_program_frame_label = ttk.Label(self.load_program_frame, text="Load Program", font=self.header_font)
-        self.load_program_frame_label.grid(row=0, column=0)
+        self.load_program_frame_label.grid(row=0, column=0, sticky="n", pady=self.padding_y, padx=self.padding_x)
         self.load_program_input_frame = ttk.Frame(self.load_program_frame)
 
         self.load_program_label = ttk.Label(self.load_program_input_frame, text="Enter Program Name: ", font=self.standard_font)
-        self.load_program_label.grid(row=1, column=0,)
+        self.load_program_label.grid(row=1, column=0, padx=self.padding_x, pady=self.padding_y)
         self.load_program_entry = ttk.Entry(self.load_program_input_frame)
-        self.load_program_entry.grid(row=1, column=1, padx=self.padding_x)
+        self.load_program_entry.grid(row=1, column=1, padx=self.padding_x, pady=self.padding_y)
         self.load_program_button = ttk.Button(self.load_program_input_frame, text="Load Program", command=self.load_program)
-        self.load_program_button.grid(row=1, column=2, padx=self.padding_x)
+        self.load_program_button.grid(row=1, column=2, padx=self.padding_x, pady=self.padding_y)
 
-        self.load_program_input_frame.grid(row=1, column=0, padx=self.padding_x)
-        self.load_program_frame.grid(row=0, column=0)
+        self.load_program_input_frame.grid(row=1, column=0, padx=self.padding_x, pady=self.padding_y)
+        self.load_program_frame.grid(row=0, column=0, sticky="n", pady=self.padding_y, padx=self.padding_x)
 
         # Computer Buttons Frame
         self.computer_buttons_frame = ttk.Frame(self.root)
         self.computer_buttons_frame_label = ttk.Label(self.computer_buttons_frame, text="Computer Controls", font=self.header_font)
-        self.computer_buttons_frame_label.grid(row=0, column=0)
+        self.computer_buttons_frame_label.grid(row=0, column=0, pady=self.padding_y, padx=self.padding_x)
 
         self.computer_buttons_button_frame = ttk.Frame(self.computer_buttons_frame)
         self.start_cpu_button = ttk.Button(self.computer_buttons_button_frame, text="Start Computer", command=self.start_computer)
-        self.start_cpu_button.grid(row=1, column=0, padx=self.padding_x)
+        self.start_cpu_button.grid(row=1, column=0, padx=self.padding_x, pady=self.padding_y)
         self.shutdown_cpu_button = ttk.Button(self.computer_buttons_button_frame, text="Shutdown Computer", command=self.shutdown_computer)
-        self.shutdown_cpu_button.grid(row=1, column=1, padx=self.padding_x)
+        self.shutdown_cpu_button.grid(row=1, column=1, padx=self.padding_x, pady=self.padding_y)
 
-        self.computer_buttons_button_frame.grid(row=1, column=0, pady=10)
-        self.computer_buttons_frame.grid(row=1, column=0)
+        self.computer_buttons_button_frame.grid(row=1, column=0, pady=self.padding_y, padx=self.padding_x)
+        self.computer_buttons_frame.grid(row=1, column=0, pady=self.padding_y, padx=self.padding_x)
 
         # GUI Buttons Frame
         self.gui_buttons_frame = ttk.Frame(self.root)
@@ -114,7 +120,7 @@ class GUI:
         self.cpu_open = True
         self.cpu_gui = tk.Tk()
         self.cpu_gui.title("CPU")
-        self.cpu_gui.geometry("500x300")
+        self.cpu_gui.geometry("550x300")
         self.cpu_gui.bind("<Destroy>",  self.cpu_gui_destroyed)
 
         self.register_header = tk.Label(self.cpu_gui, text="Registers", font=self.header_font)
@@ -134,14 +140,21 @@ class GUI:
         for key in self.cpu_state[0]:
             counter += 1
             if counter < 9:
-                label = ttk.Label(self.all_purpose_register_frame, text=key + ": " + str(self.cpu_state[0][key]), font=self.small_font)
+                content = str(self.cpu_state[0][key])
+                label = ttk.Label(self.all_purpose_register_frame, text=key + ": " + content + " (" +str(mint(content)) + ")", font=self.small_font)
                 self.all_purpose_register_labels.append(label)
             else:
+                content = str(self.cpu_state[0][key])
+                if not key in ["ir", "flags"]:
+                    message = key + ": " + content + " (" + str(mint(content)) + ")"
+                else:
+                    message = key + ": " + content
+
                 if key in ["ir", "acc"]:
-                    label = ttk.Label(self.register_32_bit_frame, text=key + ": " + str(self.cpu_state[0][key]), font=self.small_font)
+                    label = ttk.Label(self.register_32_bit_frame, text=message, font=self.small_font)
                     self.register_32_bit_frame_labels.append(label)
                     continue
-                label = ttk.Label(self.special_purpose_register_frame, text=key + ": " + str(self.cpu_state[0][key]), font=self.small_font)
+                label = ttk.Label(self.special_purpose_register_frame, text=message, font=self.small_font)
                 self.special_purpose_register_labels.append(label)
         
     
@@ -334,28 +347,39 @@ class GUI:
     
     # Aktualisiert das CPU Fenster
     def update_cpu_gui(self):
-
         if not self.cpu_window_open:
             return
-
+        
         state = self.controller.get_cpu_state()
         
 
         for label in self.all_purpose_register_labels:
             label_name = label.cget("text").split(":")[0]
-            label.config(text=label_name + ": " + str(state[0][label_name]))
+            message = label_name + ": " + str(state[0][label_name]).zfill(16) + " (" + str(mint(state[0][label_name])) + ")"
+            label.config(text=message)
         
         for label in self.special_purpose_register_labels:
             label_name = label.cget("text").split(":")[0]
-            if label_name in ["ir", "acc"]:
-                label.config(text=label_name + ": " + str(state[0][label_name]).zfill(32))
+            if label_name == "flags":
+                message = label_name + ": " + str(state[0][label_name]).zfill(16)
             else:
-                label.config(text=label_name + ": " + str(state[0][label_name]).zfill(16))
+                message = label_name + ": " + str(state[0][label_name]).zfill(16) + " (" + str(mint(state[0][label_name])) + ")"
+            label_name = label.cget("text").split(":")[0]
+            label.config(text=message)
+        
+        for label in self.register_32_bit_frame_labels:
+            label_name = label.cget("text").split(":")[0]
+            if label_name == "ir":
+                message = label_name + ": " + str(state[0][label_name]).zfill(32)
+            else:
+                message = label_name + ": " + str(state[0][label_name]).zfill(32) + " (" + str(mint(state[0][label_name])) + ")"
+            label.config(text=message)
+        
             
 
     # Aktualisiert das Clock Fenster
     def update_clock_gui(self):
-        if not self.cpu_window_open and not self.controller.computer.cpu.tick_mode:
+        if not self.clock_window_open:
             return
         self.operation_label.config(text="Current Operation: " + self.controller.computer.clock.current_operation)
 
@@ -363,11 +387,10 @@ class GUI:
     def update_alu_gui(self, op, a, b, result):
         if not self.alu_window_open:
             return
-        print("Updating ALU GUI")
-        self.alu_operand_a_label.config(text="Operand a: " + str(a))
-        self.alu_operand_b_label.config(text="Operand b: " + str(b))
+        self.alu_operand_a_label.config(text="Operand a: " + str(a) + " (" + str(mint(a)) + ")")
+        self.alu_operand_b_label.config(text="Operand b: " + str(b) + " (" + str(mint(b)) + ")")
         self.alu_operation_label.config(text="Operation: " + op)
-        self.alu_result_label.config(text="Result: " + result)
+        self.alu_result_label.config(text="Result: " + result + " (" + str(mint(result)) + ")")
 
     # Aktualisiert das RAM Fenster
     def update_ram_gui(self):
@@ -377,15 +400,12 @@ class GUI:
             self.ram_result_label.config(text="Result: Invalid Address")
             return
         self.new_ram_result = self.controller.computer.memory.read(self.current_ram_address)
-        self.ram_result_label.config(text="Result: " + str(self.new_ram_result))
+        self.ram_result_label.config(text="Result: " + str(self.new_ram_result) + " (" + str(mint(self.new_ram_result)) + ")")
 
     # Aktualisiert das Log Fenster
     def update_log_gui(self):
-        print("Trying to update Log GUI")
-        print(self.log_window_open)
         if not self.log_window_open:
             return
-        print("Updating Log GUI")
         for widget in self.log_text_frame.winfo_children():
             widget.destroy()
         

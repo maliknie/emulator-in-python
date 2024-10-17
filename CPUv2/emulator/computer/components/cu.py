@@ -134,7 +134,7 @@ class Instructions:
         memory_address = int(operand3, 2)
         value = cpu.computer.memory.read(memory_address)
         cu.callALU("add", value, "00000001", 8)
-        value = cpu.access_register("1100")[8:]
+        value = cpu.access_register("1100")[24:]
         cpu.computer.memory.write(memory_address, value)
 
     @staticmethod # dec [mem]
@@ -144,7 +144,7 @@ class Instructions:
         memory_address = int(operand3, 2)
         value = cpu.computer.memory.read(memory_address)
         cu.callALU("sub", value, "00000001", 8)
-        value = cpu.access_register("1100")[8:]
+        value = cpu.access_register("1100")[24:]
         cpu.computer.memory.write(memory_address, value)
 
     @staticmethod # load #imd reg
@@ -238,7 +238,7 @@ class Instructions:
         reg1 = cpu.access_register(operand1)
         reg2 = cpu.access_register(operand2)
         cu.callALU("add", reg1, reg2, 16)
-        value = cpu.access_register("1100")[:16]
+        value = cpu.access_register("1100")[16:]
         cpu.access_register(operand1, value)
 
     @staticmethod # sub reg1 reg2
@@ -248,7 +248,7 @@ class Instructions:
         reg1 = cpu.access_register(operand1)
         reg2 = cpu.access_register(operand2)
         cu.callALU("sub", reg1, reg2, 16)
-        value = cpu.access_register("1100")[:16]
+        value = cpu.access_register("1100")[16:]
         cpu.access_register(operand1, value)
 
     @staticmethod # mult reg1 reg2
@@ -282,7 +282,7 @@ class Instructions:
 
         reg = cpu.access_register(operand1)
         cu.callALU("add", reg, "00000001", 16)
-        value = cpu.access_register("1100")[:16]
+        value = cpu.access_register("1100")[16:]
         cpu.access_register(operand1, value)
 
     @staticmethod # dec reg
@@ -291,7 +291,7 @@ class Instructions:
 
         reg = cpu.access_register(operand1)
         cu.callALU("sub", reg, "00000001", 16)
-        value = cpu.access_register("1100")[:16]
+        value = cpu.access_register("1100")[16:]
         cpu.access_register(operand1, value)
 
     @staticmethod # and reg1 reg2
@@ -301,7 +301,7 @@ class Instructions:
         reg1 = cpu.access_register(operand1)
         reg2 = cpu.access_register(operand2)
         cu.callALU("and", reg1, reg2, 16)
-        value = cpu.access_register("1100")[:16]
+        value = cpu.access_register("1100")[16:]
         cpu.access_register(operand1, value)
 
     @staticmethod # or reg1 reg2
@@ -311,7 +311,7 @@ class Instructions:
         reg1 = cpu.access_register(operand1)
         reg2 = cpu.access_register(operand2)
         cu.callALU("or", reg1, reg2, 16)
-        value = cpu.access_register("1100")[:16]
+        value = cpu.access_register("1100")[16:]
         cpu.access_register(operand1, value)
 
     @staticmethod # xor reg1 reg2
@@ -321,7 +321,7 @@ class Instructions:
         reg1 = cpu.access_register(operand1)
         reg2 = cpu.access_register(operand2)
         cu.callALU("xor", reg1, reg2, 16)
-        value = cpu.access_register("1100")[:16]
+        value = cpu.access_register("1100")[16:]
         cpu.access_register(operand1, value)
 
     @staticmethod # not reg
@@ -330,7 +330,7 @@ class Instructions:
 
         reg1 = cpu.access_register(operand1)
         cu.callALU("not", reg1, None, 16)
-        value = cpu.access_register("1100")[:16]
+        value = cpu.access_register("1100")[16:]
         cpu.access_register(operand1, value)
 
     @staticmethod # rol reg #imd
@@ -339,7 +339,7 @@ class Instructions:
 
         reg1 = cpu.access_register(operand1)
         cu.callALU("rol", reg1, operand2, 16)
-        rolled = cpu.access_register("1100")[:16]
+        rolled = cpu.access_register("1100")[16:]
         cpu.access_register(operand1, rolled)
 
     @staticmethod # ror reg #imd
@@ -348,7 +348,7 @@ class Instructions:
 
         reg1 = cpu.access_register(operand1)
         cu.callALU("ror", reg1, operand2, 16)
-        rolled = cpu.access_register("1100")[:16]
+        rolled = cpu.access_register("1100")[16:]
         cpu.access_register(operand1, rolled)
 
     @staticmethod # cmp reg1 reg2
@@ -368,7 +368,7 @@ class Instructions:
 
         reg1 = cpu.access_register(operand1)
         cu.callALU("shl", reg1, operand2, 16)
-        shifted = cpu.access_register("1100")[:16]
+        shifted = cpu.access_register("1100")[16:]
         cpu.access_register(operand1, shifted)
     
     @staticmethod # shr reg #imd
@@ -377,7 +377,7 @@ class Instructions:
 
         reg1 = cpu.access_register(operand1)
         cu.callALU("shr", reg1, operand2, 16)
-        shifted = cpu.access_register("1100")[:16]
+        shifted = cpu.access_register("1100")[16:]
         cpu.access_register(operand1, shifted)
 
     @staticmethod # halt
