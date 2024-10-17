@@ -8,6 +8,7 @@ class GUI:
         # GUI Settings
         self.header_font = ("Calibri 24 bold")
         self.standard_font = ("Calibri 18")
+        self.small_font = ("Monospace 10")
         self.padding_x = 5
         self.padding_y = 5
 
@@ -116,39 +117,46 @@ class GUI:
         self.cpu_gui.geometry("500x300")
         self.cpu_gui.bind("<Destroy>",  self.cpu_gui_destroyed)
 
-        self.register_header = tk.Label(self.cpu_gui, text="Registers")
-        self.register_header.pack()
+        self.register_header = tk.Label(self.cpu_gui, text="Registers", font=self.header_font)
+        self.register_header.grid(sticky="w")
 
         self.cpu_state = self.controller.get_cpu_state()
 
-        self.running_label = tk.Label(self.cpu_gui, text="Running: " + str(self.controller.computer.cpu.running)) #+ str(self.cpu_state[1]["running"]))
-        self.running_label.pack()
-
-        #change running_label text:
-
         self.all_purpose_register_labels = []
         self.special_purpose_register_labels = []
+        self.register_32_bit_frame_labels = []
 
         self.all_purpose_register_frame = ttk.Frame(self.cpu_gui)
         self.special_purpose_register_frame = ttk.Frame(self.cpu_gui)
+        self.register_32_bit_frame = ttk.Frame(self.cpu_gui)
 
         counter = 0
         for key in self.cpu_state[0]:
             counter += 1
             if counter < 9:
-                label = ttk.Label(self.all_purpose_register_frame, text=key + ": " + str(self.cpu_state[0][key]))
+                label = ttk.Label(self.all_purpose_register_frame, text=key + ": " + str(self.cpu_state[0][key]), font=self.small_font)
                 self.all_purpose_register_labels.append(label)
             else:
-                label = ttk.Label(self.special_purpose_register_frame, text=key + ": " + str(self.cpu_state[0][key]))
+                if key in ["ir", "acc"]:
+                    label = ttk.Label(self.register_32_bit_frame, text=key + ": " + str(self.cpu_state[0][key]), font=self.small_font)
+                    self.register_32_bit_frame_labels.append(label)
+                    continue
+                label = ttk.Label(self.special_purpose_register_frame, text=key + ": " + str(self.cpu_state[0][key]), font=self.small_font)
                 self.special_purpose_register_labels.append(label)
         
-        for label in self.all_purpose_register_labels:
-            label.pack()
-        for label in self.special_purpose_register_labels:
-            label.pack()
+    
+
         
-        self.all_purpose_register_frame.pack(side="left")
-        self.special_purpose_register_frame.pack(side="left")
+        for i, label in enumerate(self.all_purpose_register_labels):
+            label.grid(sticky="w", row=i, column=0)
+        for i, label in enumerate(self.special_purpose_register_labels):
+            label.grid(sticky="w", row=i, column=0)
+        for i, label in enumerate(self.register_32_bit_frame_labels):
+            label.grid(sticky="w", row=i, column=0)
+        
+        self.all_purpose_register_frame.grid(row=1, column=0, pady=self.padding_y, sticky="w")
+        self.special_purpose_register_frame.grid(row=1, column=1, pady=self.padding_y, sticky="w")
+        self.register_32_bit_frame.grid(row=2, column=0, pady=self.padding_y, sticky="w")
 
         self.cpu_gui.tk.call("source", "CPUv2/libraries/Azure-ttk-theme-main/azure.tcl")
         self.cpu_gui.tk.call("set_theme", "dark")
@@ -162,24 +170,24 @@ class GUI:
         self.clock_open = True
         self.clock_gui = tk.Tk()
         self.clock_gui.title("Clock")
-        self.clock_gui.geometry("300x100")
+        self.clock_gui.geometry("350x150")
         self.clock_gui.bind("<Destroy>",  self.clock_gui_destroyed)
 
         self.operation_and_tick_frame = ttk.Frame(self.clock_gui)
         self.tick_mode_frame = ttk.Frame(self.clock_gui)
 
         self.operation_label = ttk.Label(self.operation_and_tick_frame, text="Current Operation: " + self.controller.computer.clock.current_operation, font=self.standard_font)
-        self.operation_label.pack(pady=self.padding_y)
+        self.operation_label.grid(pady=self.padding_y, padx=self.padding_x, sticky="w", row=0, column=0)
         self.tick_button = ttk.Button(self.operation_and_tick_frame, text="Tick", command=self.controller.tick_button_pressed)
-        self.tick_button.pack()
+        self.tick_button.grid(pady=self.padding_y, padx=self.padding_x, sticky="w", row=1, column=0)
 
         self.tick_mode_on_button = ttk.Button(self.tick_mode_frame, text="Tick Mode On", command=self.controller.tick_mode_on)
         self.tick_mode_off_button = ttk.Button(self.tick_mode_frame, text="Tick Mode Off", command=self.controller.tick_mode_off)
-        self.tick_mode_on_button.grid(row=0, column=0)
-        self.tick_mode_off_button.grid(row=0, column=1)
+        self.tick_mode_on_button.grid(row=0, column=0, padx=self.padding_x, pady=self.padding_y, sticky="w")
+        self.tick_mode_off_button.grid(row=0, column=1, padx=self.padding_x, pady=self.padding_y, sticky="w")
 
-        self.operation_and_tick_frame.grid(row=0, column=0)
-        self.tick_mode_frame.grid(row=1, column=0)
+        self.operation_and_tick_frame.grid(row=0, column=0, pady=self.padding_y, padx=self.padding_x, sticky="w")
+        self.tick_mode_frame.grid(row=1, column=0, pady=self.padding_y, padx=self.padding_x, sticky="w")
 
         self.clock_gui.tk.call("source", "CPUv2/libraries/Azure-ttk-theme-main/azure.tcl")
         self.clock_gui.tk.call("set_theme", "dark")
@@ -193,28 +201,37 @@ class GUI:
 
         self.alu_gui = tk.Tk()
         self.alu_gui.title("ALU")
-        self.alu_gui.geometry("500x300")
+        self.alu_gui.geometry("750x100")
         self.alu_gui.bind("<Destroy>",  self.alu_gui_destroyed)
 
         self.alu_operand_frame = ttk.Frame(self.alu_gui)
         self.alu_operation_frame = ttk.Frame(self.alu_gui)
         self.alu_result_frame = ttk.Frame(self.alu_gui)
+        self.alu_arrow_1_frame = ttk.Frame(self.alu_gui)
+        self.alu_arrow_2_frame = ttk.Frame(self.alu_gui)
 
-        self.alu_operand_a_label = ttk.Label(self.alu_operand_frame, text="Operand a: None")
-        self.alu_operand_a_label.grid(row=0, column=0)
-        self.alu_operand_b_label = ttk.Label(self.alu_operand_frame, text="Operand b: None")
-        self.alu_operand_b_label.grid(row=0, column=2)
+        self.alu_arrow_1 = ttk.Label(self.alu_arrow_1_frame, text="→", font=self.standard_font)
+        self.alu_arrow_2 = ttk.Label(self.alu_arrow_2_frame, text="→", font=self.standard_font)
+        self.alu_arrow_1.grid(row=0, column=0, pady=self.padding_y, padx=self.padding_x, sticky="w")
+        self.alu_arrow_2.grid(row=0, column=0, pady=self.padding_y, padx=self.padding_x, sticky="w")
 
-        self.alu_operation_label = ttk.Label(self.alu_operation_frame, text="Operation: None")
-        self.alu_operation_label.grid(row=1, column=1)
+        self.alu_operand_a_label = ttk.Label(self.alu_operand_frame, text="Operand a: None", font=self.standard_font)
+        self.alu_operand_b_label = ttk.Label(self.alu_operand_frame, text="Operand b: None", font=self.standard_font)
+        self.alu_operand_a_label.grid(row=0, column=0, pady=self.padding_y, padx=self.padding_x, sticky="w")
+        self.alu_operand_b_label.grid(row=2, column=0, pady=self.padding_y, padx=self.padding_x, sticky="w")
 
-        self.alu_result_label = ttk.Label(self.alu_result_frame, text="Result: None")
-        self.alu_result_label.grid(row=2, column=1)
+        self.alu_operation_label = ttk.Label(self.alu_operation_frame, text="Operation: None", font=self.standard_font)
+        self.alu_operation_label.grid(row=1, column=0, pady=self.padding_y, padx=self.padding_x, sticky="w")
+
+        self.alu_result_label = ttk.Label(self.alu_result_frame, text="Result: None", font=self.standard_font)
+        self.alu_result_label.grid(row=2, column=0, pady=self.padding_y, padx=self.padding_x, sticky="w")
 
 
-        self.alu_operand_frame.grid(row=0, column=0)
-        self.alu_operation_frame.grid(row=1, column=0)
-        self.alu_result_frame.grid(row=2, column=0)
+        self.alu_operand_frame.grid(row=0, column=0, pady=self.padding_y, padx=self.padding_x, sticky="w")
+        self.alu_arrow_1_frame.grid(row=0, column=1, pady=self.padding_y, padx=self.padding_x, sticky="w")
+        self.alu_operation_frame.grid(row=0, column=2, pady=self.padding_y, padx=self.padding_x, sticky="w")
+        self.alu_arrow_2_frame.grid(row=0, column=3, pady=self.padding_y, padx=self.padding_x, sticky="w")
+        self.alu_result_frame.grid(row=0, column=4, pady=self.padding_y, padx=self.padding_x, sticky="w")
 
         self.alu_gui.tk.call("source", "CPUv2/libraries/Azure-ttk-theme-main/azure.tcl")
         self.alu_gui.tk.call("set_theme", "dark")
@@ -231,29 +248,29 @@ class GUI:
 
         self.ram_gui = tk.Tk()
         self.ram_gui.title("RAM")
-        self.ram_gui.geometry("300x200")
+        self.ram_gui.geometry("600x200")
         self.ram_gui.bind("<Destroy>",  self.ram_gui_destroyed)
 
         self.ram_label_frame = ttk.Frame(self.ram_gui)
         self.ram_entry_frame = ttk.Frame(self.ram_gui)
         self.ram_result_frame = ttk.Frame(self.ram_gui)
 
-        self.ram_label = ttk.Label(self.ram_label_frame, text="Memory")
-        self.ram_label.grid(row=0, column=0)
+        self.ram_label = ttk.Label(self.ram_label_frame, text="Memory", font=self.header_font)
+        self.ram_label.grid(row=0, column=0, pady=self.padding_y, padx=self.padding_x, sticky="w")
 
-        self.ram_entry_label = ttk.Label(self.ram_entry_frame, text="Enter Memory Address: ")
+        self.ram_entry_label = ttk.Label(self.ram_entry_frame, text="Enter Memory Address: ", font=self.standard_font)
         self.ram_entry_label.grid(row=1, column=0)
         self.ram_entry = ttk.Entry(self.ram_entry_frame)
         self.ram_entry.grid(row=1, column=1)
         self.ram_entry_button = ttk.Button(self.ram_entry_frame, text="Read Memory", command=lambda: self.controller.read_memory(self.ram_entry.get()))
-        self.ram_entry_button.grid(row=1, column=2)
+        self.ram_entry_button.grid(row=1, column=2, padx=self.padding_x, pady=self.padding_y, sticky="w")
 
-        self.ram_result_label = ttk.Label(self.ram_result_frame, text="Result: None")
-        self.ram_result_label.grid(row=2, column=0)
+        self.ram_result_label = ttk.Label(self.ram_result_frame, text="Result: None", font=self.standard_font)
+        self.ram_result_label.grid(row=2, column=0, pady=self.padding_y, padx=self.padding_x, sticky="w")
 
-        self.ram_label_frame.grid(row=0, column=0)
-        self.ram_entry_frame.grid(row=1, column=0)
-        self.ram_result_frame.grid(row=2, column=0)
+        self.ram_label_frame.grid(row=0, column=0, pady=self.padding_y, padx=self.padding_x, sticky="w")
+        self.ram_entry_frame.grid(row=1, column=0, pady=self.padding_y, padx=self.padding_x, sticky="w")
+        self.ram_result_frame.grid(row=2, column=0, pady=self.padding_y, padx=self.padding_x, sticky="w")
 
 
         self.ram_gui.tk.call("source", "CPUv2/libraries/Azure-ttk-theme-main/azure.tcl")
@@ -268,20 +285,20 @@ class GUI:
 
         self.log_gui = tk.Tk()
         self.log_gui.title("Log")
-        self.log_gui.geometry("500x300")
+        self.log_gui.geometry("800x300")
         self.log_gui.protocol("WM_DELETE_WINDOW", self.log_gui_destroyed)
 
         self.log_label_frame = ttk.Frame(self.log_gui)
         self.log_text_frame = ttk.Frame(self.log_gui)
 
-        self.log_label = ttk.Label(self.log_label_frame, text="Last Log Entries: ")
-        self.log_text = ttk.Label(self.log_text_frame, text="None")
-        self.log_label.grid(row=0, column=0)
-        self.log_text.grid(row=0, column=0)
+        self.log_label = ttk.Label(self.log_label_frame, text="Last Log Entries: ", font=self.header_font)
+        self.log_text = ttk.Label(self.log_text_frame, text="None", font=self.small_font)
+        self.log_label.grid(row=0, column=0, padx=self.padding_x, pady=self.padding_y, sticky="w")
+        self.log_text.grid(row=0, column=0, padx=self.padding_x, pady=self.padding_y, sticky="w")
 
 
-        self.log_label_frame.grid(row=0, column=0)
-        self.log_text_frame.grid(row=1, column=0)
+        self.log_label_frame.grid(row=0, column=0, pady=self.padding_y, padx=self.padding_x, sticky="w")
+        self.log_text_frame.grid(row=1, column=0, pady=self.padding_y, padx=self.padding_x, sticky="w")
 
         self.log_gui.tk.call("source", "CPUv2/libraries/Azure-ttk-theme-main/azure.tcl")
         self.log_gui.tk.call("set_theme", "dark")
@@ -322,7 +339,7 @@ class GUI:
             return
 
         state = self.controller.get_cpu_state()
-        self.running_label.config(text="Running: " + str(self.controller.computer.cpu.running))
+        
 
         for label in self.all_purpose_register_labels:
             label_name = label.cget("text").split(":")[0]
@@ -330,7 +347,11 @@ class GUI:
         
         for label in self.special_purpose_register_labels:
             label_name = label.cget("text").split(":")[0]
-            label.config(text=label_name + ": " + str(state[0][label_name]))
+            if label_name in ["ir", "acc"]:
+                label.config(text=label_name + ": " + str(state[0][label_name]).zfill(32))
+            else:
+                label.config(text=label_name + ": " + str(state[0][label_name]).zfill(16))
+            
 
     # Aktualisiert das Clock Fenster
     def update_clock_gui(self):
@@ -369,9 +390,9 @@ class GUI:
             widget.destroy()
         
         for i, event in enumerate(self.new_events):
-            label = ttk.Label(self.log_text_frame, text=event)
-            label.grid(row=i, column=0)
-        self.log_text_frame.grid(row=1, column=0)
+            label = ttk.Label(self.log_text_frame, text=event, font=self.small_font)
+            label.grid(row=i, column=0, padx=self.padding_x, pady=self.padding_y, sticky="w")
+        self.log_text_frame.grid(row=1, column=0, pady=self.padding_y, padx=self.padding_x, sticky="w")
 
         
         self.new_events = []
