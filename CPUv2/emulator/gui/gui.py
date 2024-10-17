@@ -21,6 +21,7 @@ class GUI:
         self.new_ram_result = None
         self.current_ram_address = None
         
+        self.new_events = []
         
     # Startet das root Fenster
     def start(self):
@@ -303,7 +304,7 @@ class GUI:
     
     # Wird ausgeführt, wenn das Log Fenster geschlossen wird
     def log_gui_destroyed(self, event):
-        self.log_window_open = False
+        #self.log_window_open = False
         return (event,)
 
 
@@ -315,7 +316,7 @@ class GUI:
             return
 
         state = self.controller.get_cpu_state()
-        self.running_label.config(text="Running: " + str(state[1]["running"]))
+        self.running_label.config(text="Running: " + str(state[2]["running"]))
 
         for label in self.all_purpose_register_labels:
             label_name = label.cget("text").split(":")[0]
@@ -353,7 +354,21 @@ class GUI:
 
     # Aktualisiert das Log Fenster
     def update_log_gui(self):
-        pass
+        print("Trying to update Log GUI")
+        print(self.log_window_open)
+        if not self.log_window_open:
+            return
+        print("Updating Log GUI")
+        for widget in self.log_text_frame.winfo_children():
+            widget.destroy()
+        
+        for i, event in enumerate(self.new_events):
+            label = ttk.Label(self.log_text_frame, text=event)
+            label.grid(row=i, column=0)
+        self.log_text_frame.grid(row=1, column=0)
+
+        
+        self.new_events = []
 
 
 

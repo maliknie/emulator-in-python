@@ -46,8 +46,9 @@ class ALU:
             case _:
                 raise ValueError("Invalid operation: " + op)
             
-        print("ALU: ", op, a, b, self.low.zfill(16) + self.high.zfill(16))
         self.cpu.computer.controller.gui.update_alu_gui(op, a, b, self.high.zfill(16) + self.low.zfill(16))
+
+        self.cpu.computer.controller.add_event("ALU: Executing " + a + " " + op + " " + b + " -> " + self.high.zfill(16) + self.low.zfill(16))
 
         # Wenn das Ergebnis einer Operation 0 ist, wird die Zero-Flag gesetzt
         if self.high.zfill(16) + self.low.zfill(16) == "00000000000000000000000000000000":

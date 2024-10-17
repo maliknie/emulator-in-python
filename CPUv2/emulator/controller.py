@@ -41,6 +41,11 @@ class AppController:
     def update_gui(self):
         self.gui.update_cpu_gui()
         self.gui.update_clock_gui()
+        self.gui.update_log_gui()
+    
+    def add_event(self, event):
+        print(event)
+        self.gui.new_events.append(event)
     
     def read_memory(self, address):
         if address.isdigit():

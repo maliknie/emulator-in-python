@@ -7,9 +7,12 @@ class RAM:
         self.memory_cells = ["00000000" for _ in range(self.size)]
     
     def read(self, address):
-        return self.memory_cells[address]
+        result = self.memory_cells[address]
+        self.computer.controller.add_event("RAM: Reading at address " + str(address) + " -> " + str(result))
+        return result
     
     def write(self, address, data):
+        self.computer.controller.add_event("RAM: Writing at address " + str(address) + " <- " + str(data))
         self.computer.controller.gui.update_ram_gui()
         self.memory_cells[address] = data
     

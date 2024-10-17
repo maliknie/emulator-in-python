@@ -17,10 +17,14 @@ class CU:
         pc %= len(self.cpu.computer.memory.memory_cells)
         self.cpu.pc = bin(pc)[2:].zfill(16)
 
+        self.cpu.computer.controller.add_event("CU: Fetching instruction " + instruction + " from address " + str(pc - 4))
+
     # Teilt die Instruktion in Opcode und Operanden auf
     def decode(self):
         instruction = self.cpu.ir
         self.opcode, self.operand1, self.operand2, self.operand3 = instruction[:8], instruction[8:12], instruction[12:16], instruction[16:32]
+
+        self.cpu.computer.controller.add_event("CU: Decoding instruction " + instruction + " -> " + self.opcode + " " + self.operand1 + " " + self.operand2 + " " + self.operand3)
         """
         print("_________________________")
         print("Decoded instruction: ")
@@ -97,7 +101,6 @@ class CU:
                 raise ValueError("Invalid opcode: " + self.opcode + "\n" + "Program counter: " + str(int(self.cpu.pc, 2)))
 
     def callALU(self, op, a, b, bit_length = 16):
-        print("ALU is called")
         self.cpu.alu.execute(op, a, b, bit_length)
 
 # Implementation der Instruktionen
