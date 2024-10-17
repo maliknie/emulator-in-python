@@ -8,14 +8,14 @@ from computer.components.memory import RAM
 from computer.computer import Computer
 from computer.components.clock import Clock
 
-from devices.screen import pixelDisplay
+from devices.screen import PixelDisplay
 
 from gui.gui import GUI
 
-def initialize_system():
+def initialize_system(ram_size):
     controller = Controller(None, None, None)
 
-    memory = RAM(size=65536)
+    memory = RAM(size=ram_size)
     cpu = CPU(None, None, None)
     alu = ALU(cpu)
     cu = CU(cpu)
@@ -28,11 +28,12 @@ def initialize_system():
     cpu.computer = computer
     clock.computer = computer
 
-    screen = pixelDisplay(controller, memory)
+    controller.computer = computer
+
+    screen = PixelDisplay(controller)
 
     gui = GUI(controller)
-
-    controller.computer = computer
+    
     controller.screen = screen
     controller.gui = gui
 

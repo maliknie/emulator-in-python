@@ -45,6 +45,8 @@ class ALU:
                 self.high, self.low = "0000000000000000", Operations.shr(a, b, bit_length)
             case _:
                 raise ValueError("Invalid operation: " + op)
+
+                #Kommentare
         if self.high.zfill(16) + self.low.zfill(16) == "00000000000000000000000000000000":
             flags = self.cpu.access_register("1101")
             flags = set_flag(flags, "1", 15)

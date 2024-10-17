@@ -3,16 +3,18 @@ environ['PYGAME_HIDE_SUPPORT_PROMPT'] = '1'
 
 import pygame
 import sys
+from time import sleep
 
+TWO_KB = 2048
 
-class pixelDisplay:
-    def __init__(self, controller, ram):
+class PixelDisplay:
+    def __init__(self, controller):
         self.controller = controller
-        self.ram = ram
+        self.ram = self.controller.computer.memory
         self.colors = [(0, 0, 0) for _ in range(4096)]
     
-    def translateRamToColors(self):
-        color_bytes = self.ram.memory_cells[63488:65536] # letzten 2 kb 
+    def translate_ram_to_colors(self):
+        color_bytes = self.ram.memory_cells[self.ram.size-TWO_KB:self.ram.size]
         
         for i, color_byte in enumerate(color_bytes):
             self.colors[i*2] = self.color_picker(color_byte[:4])
@@ -30,14 +32,15 @@ class pixelDisplay:
         pygame.display.set_caption('Pixelbased Display')
         pygame.display.set_icon(pygame.image.load("anderes/images/icon.png"))
         
-        running = True
-        while running:
+        self.running = True
+        while self.running:
+            
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     pygame.quit()
-                    sys.exit()
+                    #sys.exit()
             
-            self.translateRamToColors()
+            self.translate_ram_to_colors()
 
             draw_surface.fill((0, 0, 0))
 
@@ -46,14 +49,13 @@ class pixelDisplay:
                 y = i // 64
                 draw_surface.set_at((x, y), color)
 
-            # Skalieren und auf Bildschirm zeichnen (keine Ahnung warum das jetzt funktioniert)
             scaled_surface = pygame.transform.scale(draw_surface, display_size)
             screen.blit(scaled_surface, (0, 0))
 
             pygame.display.flip()
-            clock.tick(5)  # 5 FPS
+            sleep(0.1)
         pygame.quit()
-        sys.exit()
+        #sys.exit()
 
     @staticmethod
     def color_picker(string: str):

@@ -95,18 +95,21 @@ def collect_labels(assembly, reserved):
     labels = {}
     current_addresse = 0
     for i, line in enumerate(assembly):
+        print("Entered loop")
         print(f"Line {i+1}: {line}")
-        if line.startswith(":"):
-            if line.endswith("\n"):
-                line = line.split("\n")[0]
-            if not line[1:] in reserved:
-                print(f"Storing label {line[1:]} at address {current_addresse}")
-                label = ">" + line[1:]
+        if line.endswith("\n"):
+            line = line.split("\n")[0]
+        if line.endswith(":"):
+            print("Label found")
+            if not line[0:] in reserved:
+                print(f"Storing label {line[0:]} at address {current_addresse}")
+                label = ">" + line[0:]
                 labels[label] = mbin(current_addresse, 16, neg=False)
                     
             else:
                 raise ValueError(f"Invalid label {line[1:]} at line {i+1}")
         else:
+            print("No label found")
             current_addresse += 4
     return labels
 
@@ -156,14 +159,15 @@ def get_instruction(tokens, i, labels: dict):
                 operand2_bin = "0000"
                 operand3_bin = mbin(int(operands[0][1:]), 16, neg = False)
             elif operands[0].startswith(">"):
-                if not operands[0] in labels:
+                if not str(operands[0]) + ":" in labels:
                     print("_________________________")
+                    print("Error causing label: " + operands[0])
                     print("labels:", labels)
                     raise ValueError(f"Label {operands[0]} isn't defined at line {i+1}")
                 opcode_bin = "00000000"
                 operand1_bin = "0000"
                 operand2_bin = "0000"
-                operand3_bin = labels[operands[0]]
+                operand3_bin = labels[operands[0] + ":"]
             else:
                 if not operands[0] in registers:
                     raise ValueError(f"Invalid register {operands[0]} at line {i+1}")
@@ -180,14 +184,14 @@ def get_instruction(tokens, i, labels: dict):
                 operand2_bin = "0000"
                 operand3_bin = mbin(int(operands[0][1:]), 16, neg=False)
             elif operands[0].startswith(">"):
-                if not operands[0] in labels:
+                if not operands[0] + ":" in labels:
                     print("_________________________")
                     print("labels:", labels)
                     raise ValueError(f"Label {operands[0]} isn't defined at line {i+1}")
                 opcode_bin = "00000001"
                 operand1_bin = "0000"
                 operand2_bin = "0000"
-                operand3_bin = labels[operands[0]]
+                operand3_bin = labels[operands[0] + ":"]
             else:
                 if not operands[0] in registers:
                     raise ValueError(f"Invalid register {operands[0]} at line {i+1}")
@@ -204,12 +208,12 @@ def get_instruction(tokens, i, labels: dict):
                     operand2_bin = "0000"
                     operand3_bin = mbin(int(operands[0][1:]), 16, neg=False)
             elif operands[0].startswith(">"):
-                if not operands[0] in labels:
+                if not operands[0] + ":" in labels:
                     raise ValueError(f"Label {operands[0]} isn't defined at line {i+1}")
                 opcode_bin = "00000010"
                 operand1_bin = "0000"
                 operand2_bin = "0000"
-                operand3_bin = labels[operands[0]]
+                operand3_bin = labels[operands[0] + ":"]
             else:
                 if not operands[0] in registers:
                     raise ValueError(f"Invalid register {operands[0]} at line {i+1}")
@@ -269,6 +273,13 @@ def get_instruction(tokens, i, labels: dict):
                 operand1_bin = register_to_bin(operands[0])
                 operand2_bin = register_to_bin(operands[1])
                 operand3_bin = "0000000000000000"
+        case "move":
+            if len(operands) != 2:
+                raise ValueError(f"Invalid number of operands for {mnemonic} at line {i+1}")
+            opcode_bin = non_redundant_mnemonics_opcodes[mnemonic]
+            operand1_bin = register_to_bin(operands[0])
+            operand2_bin = register_to_bin(operands[1])
+            operand3_bin = "0000000000000000"
         case "add":
             if len(operands) != 2:
                 raise ValueError(f"Invalid number of operands for {mnemonic} at line {i+1}")
@@ -356,7 +367,7 @@ def get_instruction(tokens, i, labels: dict):
             operand1_bin = register_to_bin(operands[0])
             operand2_bin = immediate_to_bin(operands[1][:1], 4)
             operand3_bin = "0000000000000000"
-        case "hlt":
+        case "halt":
             opcode_bin = "11111111"
             operand1_bin = "0000"
             operand2_bin = "0000"
@@ -366,6 +377,9 @@ def get_instruction(tokens, i, labels: dict):
             operand1_bin = "0000"
             operand2_bin = "0000"
             operand3_bin = "0000000000000000"
+        case _:
+            if not mnemonic.endswith(":"):
+                raise ValueError(f"Invalid mnemonic {mnemonic} at line {i+1}")
 
     instruction = opcode_bin + operand1_bin + operand2_bin + operand3_bin
     return instruction

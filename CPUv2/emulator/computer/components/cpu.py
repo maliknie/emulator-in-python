@@ -59,6 +59,29 @@ class CPU:
             self.cu.execute()
         """
 
+    def reset(self):
+        self.running = False
+        self.tick_mode = False
+
+        self.r0 = "0000000000000000"
+        self.r1 = "0000000000000000"
+        self.r2 = "0000000000000000"
+        self.r3 = "0000000000000000"
+        self.r4 = "0000000000000000"
+        self.r5 = "0000000000000000"
+        self.r6 = "0000000000000000"
+        self.r7 = "0000000000000000"
+
+        self.pc = "0000000000000000"
+        self.ir = "00000000000000000000000000000000"
+        self.sp = "0000000000000000"
+        self.bp = "0000000000000000"
+        self.acc = "00000000000000000000000000000000"
+        self.flags = "0000000000000000" # self.flags[15] = zero flag, self.flags[14] = cmp flag
+        self.mar = "0000000000000000"
+        self.mdr = "0000000000000000"
+
+        self.alu.reset()
     def stop(self):
         self.running = False
 

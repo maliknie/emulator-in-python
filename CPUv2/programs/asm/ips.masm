@@ -1,0 +1,6 @@
+load #60000, r0
+loop:
+dec r0
+cmp r0, r1
+jne >loop
+halt

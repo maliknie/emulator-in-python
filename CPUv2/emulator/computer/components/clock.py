@@ -7,7 +7,6 @@ class Clock():
         self.tick_event = threading.Event()
 
     def tick(self):
-        print("Ticking")
         if self.computer.cpu.tick_mode:
             self.current_operation = "Fetch"
             self.computer.cpu.cu.fetch()

@@ -1,0 +1,11 @@
+load #4369, r0 ;color
+load #63488, r1 ;adress to be stored to
+load #65534, r2 ;last adress
+load #2, r3
+loop:
+store r1, r0 ;store the color to the adress in r1
+add r1, r3 ;increse r1 by 2
+cmp r1, r2 ;is the last adress reached?
+jne >loop ;if no, go to the store instruction
+store r1, r0
+halt

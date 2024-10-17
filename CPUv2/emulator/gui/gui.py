@@ -10,6 +10,9 @@ class GUI:
         self.standard_font = ("Calibri 18")
         self.padding_x = 5
         self.padding_y = 5
+
+        self.cpu_window_open = False
+        self.clock_window_open = False
         
         
 
@@ -18,9 +21,6 @@ class GUI:
         self.root.title("CPU Emulator")
         self.root.geometry("500x500")
         self.root.iconphoto(True, tk.PhotoImage(file='anderes/images/tk.png'))
-
-        self.cpu_open = False
-        self.clock_open = False
 
         self.setup_ui()
         self.main_loop()
@@ -88,9 +88,11 @@ class GUI:
         self.root.mainloop()
 
     def cpu_loop(self):
-        if self.cpu_open:
+        if self.cpu_window_open:
             return
         
+        self.cpu_window_open = True
+
         self.cpu_open = True
         self.cpu_gui = tk.Tk()
         self.cpu_gui.title("CPU")
@@ -141,7 +143,7 @@ class GUI:
         self.cpu_gui.mainloop()
     
     def clock_loop(self):
-        if self.clock_open:
+        if self.clock_window_open:
             return
         
         self.clock_open = True
@@ -163,11 +165,13 @@ class GUI:
         self.clock_gui.mainloop()
 
     def cpu_gui_destroyed(self, event):
-        self.cpu_open = False
+        self.cpu_window_open = False
+        #self.cpu_open = False
         return (event,)
     
     def clock_gui_destroyed(self, event):
-        self.clock_open = False
+        self.cpu_window_open = False
+        #self.clock_open = False
         return (event,)
 
     def load_program(self):    
@@ -189,8 +193,10 @@ class GUI:
         self.controller.switch_tick_mode()
     
     def update_cpu_gui(self):
-        print("Updating CPU GUI (GUI)")
-    
+
+        if not self.cpu_window_open and not self.controller.computer.cpu.tick_mode:
+            return
+
         state = self.controller.get_cpu_state()
         self.running_label.config(text="Running: " + str(state[1]["running"]))
 
@@ -204,7 +210,8 @@ class GUI:
 
     
     def update_clock_gui(self):
-        print("Updating Clock GUI (GUI)")
+        if not self.cpu_window_open and not self.controller.computer.cpu.tick_mode:
+            return
         self.operation_label.config(text="Current Operation: " + self.controller.computer.clock.current_operation)
 
         

@@ -1,0 +1,14 @@
+; Farben laden
+load #291, r0
+load #17767, r1
+load #35243, r2
+load #52719, r3
+
+; Farben speichern um sie auf dem Bildschirm anzuzeigen
+store r0, [63488]
+store r1, [63490]
+store r2, [63492]
+store r3, [63494]
+
+; Ende
+halt
