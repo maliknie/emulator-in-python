@@ -27,6 +27,7 @@ def initialize_system(ram_size):
     computer = Computer(controller, cpu, memory, clock)
     cpu.computer = computer
     clock.computer = computer
+    memory.computer = computer
 
     controller.computer = computer
 

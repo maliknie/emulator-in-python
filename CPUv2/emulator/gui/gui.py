@@ -16,6 +16,10 @@ class GUI:
         self.alu_window_open = False
         self.ram_window_open = False
         self.log_window_open = False
+
+        self.memory_address_entry = None
+        self.new_ram_result = None
+        self.current_ram_address = None
         
         
     # Startet das root Fenster
@@ -119,7 +123,7 @@ class GUI:
 
         self.cpu_state = self.controller.get_cpu_state()
 
-        self.running_label = tk.Label(self.cpu_gui, text="Running: " + str(self.cpu_state[1]["running"]))
+        self.running_label = tk.Label(self.cpu_gui, text="Running: " ) #+ str(self.cpu_state[1]["running"]))
         self.running_label.pack()
 
         #change running_label text:
@@ -234,7 +238,7 @@ class GUI:
         self.ram_entry_label.grid(row=1, column=0)
         self.ram_entry = ttk.Entry(self.ram_entry_frame)
         self.ram_entry.grid(row=1, column=1)
-        self.ram_entry_button = ttk.Button(self.ram_entry_frame, text="Read Memory", command=lambda: 1 + 1)
+        self.ram_entry_button = ttk.Button(self.ram_entry_frame, text="Read Memory", command=lambda: self.controller.read_memory(self.ram_entry.get()))
         self.ram_entry_button.grid(row=1, column=2)
 
         self.ram_result_label = ttk.Label(self.ram_result_frame, text="Result: None")
@@ -328,12 +332,24 @@ class GUI:
         self.operation_label.config(text="Current Operation: " + self.controller.computer.clock.current_operation)
 
     # Aktualisiert das ALU Fenster
-    def update_alu_gui(self):
-        pass
+    def update_alu_gui(self, op, a, b, result):
+        if not self.alu_window_open:
+            return
+        print("Updating ALU GUI")
+        self.alu_operand_a_label.config(text="Operand a: " + str(a))
+        self.alu_operand_b_label.config(text="Operand b: " + str(b))
+        self.alu_operation_label.config(text="Operation: " + op)
+        self.alu_result_label.config(text="Result: " + result)
 
     # Aktualisiert das RAM Fenster
     def update_ram_gui(self):
-        pass
+        if not self.ram_window_open:
+            return
+        if self.current_ram_address == None:
+            self.ram_result_label.config(text="Result: Invalid Address")
+            return
+        self.new_ram_result = self.controller.computer.memory.read(self.current_ram_address)
+        self.ram_result_label.config(text="Result: " + str(self.new_ram_result))
 
     # Aktualisiert das Log Fenster
     def update_log_gui(self):

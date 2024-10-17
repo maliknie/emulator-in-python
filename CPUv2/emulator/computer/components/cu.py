@@ -97,6 +97,7 @@ class CU:
                 raise ValueError("Invalid opcode: " + self.opcode + "\n" + "Program counter: " + str(int(self.cpu.pc, 2)))
 
     def callALU(self, op, a, b, bit_length = 16):
+        print("ALU is called")
         self.cpu.alu.execute(op, a, b, bit_length)
 
 # Implementation der Instruktionen

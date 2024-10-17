@@ -41,3 +41,16 @@ class AppController:
     def update_gui(self):
         self.gui.update_cpu_gui()
         self.gui.update_clock_gui()
+    
+    def read_memory(self, address):
+        if address.isdigit():
+            address = int(address)
+            self.gui.current_ram_address = address
+            self.gui.update_ram_gui()
+            return
+        
+        self.gui.current_ram_address = None
+        self.gui.update_ram_gui()
+        return
+
+        

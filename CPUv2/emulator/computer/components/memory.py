@@ -10,6 +10,7 @@ class RAM:
         return self.memory_cells[address]
     
     def write(self, address, data):
+        self.computer.controller.gui.update_ram_gui()
         self.memory_cells[address] = data
     
     def load_program(self, program_path):
