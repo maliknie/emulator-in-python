@@ -46,25 +46,33 @@ class ALU:
             case _:
                 raise ValueError("Invalid operation: " + op)
 
-                #Kommentare
+        # Wenn das Ergebnis einer Operation 0 ist, wird die Zero-Flag gesetzt
         if self.high.zfill(16) + self.low.zfill(16) == "00000000000000000000000000000000":
             flags = self.cpu.access_register("1101")
             flags = set_flag(flags, "1", 15)
             self.cpu.access_register("1101", flags)
+
+        # Wenn das Ergebnis einer Operation nicht 0 ist, wird die Zero-Flag nicht gesetzt
         else:
             flags = self.cpu.access_register("1101")
             flags = set_flag(flags, "0", 15)
             self.cpu.access_register("1101", flags)
 
+
+        # Wenn die cmp-Flag 1 ist, wird sie auf 0 gesetzt und das Ergebnis der Operation wird nicht in den Akkumulator geschrieben
         if not self.cpu == None and check_flag(self.cpu.access_register("1101"), 14):
             flags = self.cpu.access_register("1101")
             flags = set_flag(flags, "0", 14)
             self.cpu.access_register("1101", flags)
+
+        # Wenn die cmp-Flag 0 ist, wird das Ergebnis der Operation in den Akkumulator geschrieben
         else:
             acc_value = self.low.zfill(16) + self.high.zfill(16)
             self.cpu.access_register("1100", acc_value)
             return self.low.zfill(16) + self.high.zfill(16)
 
+
+# Implementation der Operationen der ALU
 class Operations:
     @staticmethod
     def add(a, b, bit_length = 16):

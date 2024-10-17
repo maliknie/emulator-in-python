@@ -9,6 +9,7 @@ class CPU:
         self.running = False
         self.tick_mode = False
 
+        # Allgemeine Register
         self.r0 = "0000000000000000"
         self.r1 = "0000000000000000"
         self.r2 = "0000000000000000"
@@ -18,6 +19,7 @@ class CPU:
         self.r6 = "0000000000000000"
         self.r7 = "0000000000000000"
 
+        # Spezialregister
         self.pc = "0000000000000000"
         self.ir = "00000000000000000000000000000000"
         self.sp = "0000000000000000"
@@ -29,6 +31,7 @@ class CPU:
 
         self.reg32bit = ["1001", "1100"]
 
+        # Register Mapping
         self.registers = {
             "0000": "r0",
             "0001": "r1",
@@ -48,16 +51,13 @@ class CPU:
             "1111": "mdr",
         }
 
+
+
     def run(self):
         self.computer.clock.run()
-        """
-        print("Running CPU")
-        self.running = True
-        while self.running:
-            self.cu.fetch()
-            self.cu.decode()
-            self.cu.execute()
-        """
+
+    def stop(self):
+        self.running = False
 
     def reset(self):
         self.running = False
@@ -82,15 +82,20 @@ class CPU:
         self.mdr = "0000000000000000"
 
         self.alu.reset()
-    def stop(self):
-        self.running = False
 
+    
+    # Wird benutzt um von Register zu lesen und hinein zu schreiben
     def access_register(self, reg_code, value=None):
         if not reg_code in self.registers:
             raise ValueError("Invalid register code: ", reg_code)
         if value == None:
             return getattr(self, self.registers[reg_code])
         setattr(self, self.registers[reg_code], value)
+
+    # Wechselt den Tick Mode (automatische oder manuelle Ausführung des Programms)
+    def switch_tick_mode(self):
+        self.tick_mode = not self.tick_mode
+        print("Tick Mode: ", self.tick_mode)
 
     # Debugging Tools
 
@@ -138,7 +143,3 @@ class CPU:
         }
         running = {"running": self.running}
         return (registers, running)
-    
-    def switch_tick_mode(self):
-        self.tick_mode = not self.tick_mode
-        print("Tick Mode: ", self.tick_mode)

@@ -15,20 +15,18 @@ class GUI:
         self.clock_window_open = False
         
         
-
+    # Startet das root Fenster
     def start(self):
         self.root = tk.Tk()
         self.root.title("CPU Emulator")
-        self.root.geometry("500x500")
+        self.root.geometry("500x600")
         self.root.iconphoto(True, tk.PhotoImage(file='anderes/images/tk.png'))
 
         self.setup_ui()
         self.main_loop()
     
+    # Setzt das Layout des root Fensters
     def setup_ui(self):
-        
-        #Configure Grid Layout
-
         self.root.grid_rowconfigure(0, weight=1)
         self.root.grid_rowconfigure(1, weight=1)
         self.root.grid_rowconfigure(2, weight=1)
@@ -82,11 +80,13 @@ class GUI:
         self.gui_buttons_button_frame.grid(row=1, column=0, pady=10)
         self.gui_buttons_frame.grid(row=2, column=0)
 
+    # Startet die main Schleife des root Fensters
     def main_loop(self):
         self.root.tk.call("source", "CPUv2/libraries/Azure-ttk-theme-main/azure.tcl")
         self.root.tk.call("set_theme", "dark")
         self.root.mainloop()
 
+    # Startet das CPU Fenster
     def cpu_loop(self):
         if self.cpu_window_open:
             return
@@ -136,12 +136,11 @@ class GUI:
         self.all_purpose_register_frame.pack(side="left")
         self.special_purpose_register_frame.pack(side="left")
 
-        ###
-
         self.cpu_gui.tk.call("source", "CPUv2/libraries/Azure-ttk-theme-main/azure.tcl")
         self.cpu_gui.tk.call("set_theme", "dark")
         self.cpu_gui.mainloop()
     
+    # Startet das Clock Fenster
     def clock_loop(self):
         if self.clock_window_open:
             return
@@ -159,20 +158,45 @@ class GUI:
         self.tick_button = ttk.Button(self.clock_gui, text="Tick", command=self.controller.tick_button_pressed)
         self.tick_button.pack()
 
-
         self.clock_gui.tk.call("source", "CPUv2/libraries/Azure-ttk-theme-main/azure.tcl")
         self.clock_gui.tk.call("set_theme", "dark")
         self.clock_gui.mainloop()
 
+    # Wird ausgeführt, wenn das CPU Fenster geschlossen wird
     def cpu_gui_destroyed(self, event):
         self.cpu_window_open = False
-        #self.cpu_open = False
         return (event,)
     
+    # Wird ausgeführt, wenn das Clock Fenster geschlossen wird
     def clock_gui_destroyed(self, event):
         self.cpu_window_open = False
-        #self.clock_open = False
         return (event,)
+    
+    # Aktualisiert das CPU Fenster
+    def update_cpu_gui(self):
+
+        if not self.cpu_window_open and not self.controller.computer.cpu.tick_mode:
+            return
+
+        state = self.controller.get_cpu_state()
+        self.running_label.config(text="Running: " + str(state[1]["running"]))
+
+        for label in self.all_purpose_register_labels:
+            label_name = label.cget("text").split(":")[0]
+            label.config(text=label_name + ": " + str(state[0][label_name]))
+        
+        for label in self.special_purpose_register_labels:
+            label_name = label.cget("text").split(":")[0]
+            label.config(text=label_name + ": " + str(state[0][label_name]))
+
+    # Aktualisiert das Clock Fenster
+    def update_clock_gui(self):
+        if not self.cpu_window_open and not self.controller.computer.cpu.tick_mode:
+            return
+        self.operation_label.config(text="Current Operation: " + self.controller.computer.clock.current_operation)
+
+
+
 
     def load_program(self):    
         name = self.load_program_entry.get()
@@ -191,27 +215,3 @@ class GUI:
 
     def switch_tick_mode(self):
         self.controller.switch_tick_mode()
-    
-    def update_cpu_gui(self):
-
-        if not self.cpu_window_open and not self.controller.computer.cpu.tick_mode:
-            return
-
-        state = self.controller.get_cpu_state()
-        self.running_label.config(text="Running: " + str(state[1]["running"]))
-
-        for label in self.all_purpose_register_labels:
-            label_name = label.cget("text").split(":")[0]
-            label.config(text=label_name + ": " + str(state[0][label_name]))
-        
-        for label in self.special_purpose_register_labels:
-            label_name = label.cget("text").split(":")[0]
-            label.config(text=label_name + ": " + str(state[0][label_name]))
-
-    
-    def update_clock_gui(self):
-        if not self.cpu_window_open and not self.controller.computer.cpu.tick_mode:
-            return
-        self.operation_label.config(text="Current Operation: " + self.controller.computer.clock.current_operation)
-
-        

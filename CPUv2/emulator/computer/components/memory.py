@@ -10,7 +10,6 @@ class RAM:
         return self.memory_cells[address]
     
     def write(self, address, data):
-        #print(f"Writing {data} to address {address}")
         self.memory_cells[address] = data
     
     def load_program(self, program_path):

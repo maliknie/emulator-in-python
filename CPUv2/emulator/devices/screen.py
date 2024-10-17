@@ -38,7 +38,7 @@ class PixelDisplay:
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     pygame.quit()
-                    #sys.exit()
+                    sys.exit()
             
             self.translate_ram_to_colors()
 
@@ -55,7 +55,7 @@ class PixelDisplay:
             pygame.display.flip()
             sleep(0.1)
         pygame.quit()
-        #sys.exit()
+        sys.exit()
 
     @staticmethod
     def color_picker(string: str):

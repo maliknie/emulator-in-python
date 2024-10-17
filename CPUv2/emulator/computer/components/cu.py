@@ -1,15 +1,14 @@
 import sys
 from pathlib import Path
-
 project_root = Path(__file__).resolve().parents[3]
 sys.path.append(str(project_root))
-
 from libraries.binary_lib import mbin, mint, set_flag, check_flag
 
 class CU:
     def __init__(self, cpu) -> None:
         self.cpu = cpu
-
+    
+    # Holt 4 Bytes aus dem Speicher und speichert sie im IR
     def fetch(self):
         pc = int(self.cpu.pc, 2)
         instruction = self.cpu.computer.memory.read(pc) + self.cpu.computer.memory.read(pc + 1) + self.cpu.computer.memory.read(pc + 2) + self.cpu.computer.memory.read(pc + 3)
@@ -18,9 +17,7 @@ class CU:
         pc %= len(self.cpu.computer.memory.memory_cells)
         self.cpu.pc = bin(pc)[2:].zfill(16)
 
-
-
-
+    # Teilt die Instruktion in Opcode und Operanden auf
     def decode(self):
         instruction = self.cpu.ir
         self.opcode, self.operand1, self.operand2, self.operand3 = instruction[:8], instruction[8:12], instruction[12:16], instruction[16:32]
@@ -33,6 +30,7 @@ class CU:
         print("Operand3: ", self.operand3, mint(self.operand3))
         print("_________________________")"""
     
+    # Führt die Instruktion aus
     def execute(self):
         match self.opcode:
             case "00000000":
@@ -101,59 +99,25 @@ class CU:
     def callALU(self, op, a, b, bit_length = 16):
         self.cpu.alu.execute(op, a, b, bit_length)
 
+# Implementation der Instruktionen
 class Instructions:
-    @classmethod
-    def get_opcode_dict(cls):
-        opcode_dict = {
-            "00000000": cls.i00000000,
-            "00000001": cls.i00000001,
-            "00000010": cls.i00000010,
-            "00000011": cls.i00000011,
-            "00000100": cls.i00000100,
-            "00000101": cls.i00000101,
-            "00000110": cls.i00000110,
-            "00000111": cls.i00000111,
-            "00001000": cls.i00001000,
-            "00001001": cls.i00001001,
-            "00001010": cls.i00001010,
-            "00001011": cls.i00001011,
-            "00001100": cls.i00001100,
-            "00001101": cls.i00001101,
-            "00001110": cls.i00001110,
-            "00001111": cls.i00001111,
-            "00010000": cls.i00010000,
-            "00010001": cls.i00010001,
-            "00010010": cls.i00010010,
-            "00010011": cls.i00010011,
-            "00010100": cls.i00010100,
-            "00010101": cls.i00010101,
-            "00010110": cls.i00010110,
-            "00010111": cls.i00010111,
-            "00011000": cls.i00011000,
-            "00011001": cls.i00011001,
-        } 
-        return opcode_dict
-    
+
     @staticmethod # jump #imd
     def i00000000(cu, cpu, operand1, operand2, operand3):
-        #print("jmp", operand3)
         cpu.pc = operand3
         
     @staticmethod # jeq #imd
     def i00000001(cu, cpu, operand1, operand2, operand3):
-        #print("jeq", operand3)
         if check_flag(cpu.flags, 15):
             cpu.pc = operand3
 
     @staticmethod # jne #imd
     def i00000010(cu, cpu, operand1, operand2, operand3):
-        # print("jne", operand3)
         if not check_flag(cpu.flags, 15):
             cpu.pc = operand3
 
     @staticmethod # inc [mem]
     def i00000011(cu, cpu, opernad1, operand2, operand3):
-        #print("inc", operand3)
         memory_address = int(operand3, 2)
         value = cpu.computer.memory.read(memory_address)
         cu.callALU("add", value, "00000001", 8)
@@ -162,7 +126,6 @@ class Instructions:
 
     @staticmethod # dec [mem]
     def i00000100(cu, cpu, operand1, operand2, operand3):
-        #print("dec", operand3)
         memory_address = int(operand3, 2)
         value = cpu.computer.memory.read(memory_address)
         cu.callALU("sub", value, "00000001", 8)
@@ -171,14 +134,12 @@ class Instructions:
 
     @staticmethod # load #imd
     def i00000101(cu, cpu, operand1, operand2, operand3):
-        #print("load", operand3)
         if operand1 in cpu.reg32bit:
             operand3 = operand3.zfill(32)
         cpu.access_register(operand1, operand3)
 
     @staticmethod # load [mem]
     def i00000110(cu, cpu, operand1, operand2, operand3):
-        #print("load (mem)", operand3)
         memory_address = mint(operand3)
         value = cpu.computer.memory.read(memory_address) + cpu.computer.memory.read(memory_address + 1)
         if operand1 in cpu.reg32bit:
@@ -187,7 +148,6 @@ class Instructions:
 
     @staticmethod # store [mem]
     def i00000111(cu, cpu, operand1, operand2, operand3):
-        #print("store", operand3)
         memory_address = mint(operand3)
         value = cpu.access_register(operand1)
         cpu.computer.memory.write(memory_address, value[:8])
@@ -198,27 +158,23 @@ class Instructions:
 
     @staticmethod # jmp reg
     def i00001000(cu, cpu, operand1, operand2, operand3):
-        #print("jmp reg", operand1)
         reg = cpu.access_register(operand1)
         cpu.pc = reg
 
     @staticmethod # jeq reg
     def i00001001(cu, cpu, operand1, operand2, operand3):
-        #print("jeq reg", operand1)
         if check_flag(cpu.flags, 15):
             reg = cpu.access_register(operand1)
             cpu.pc = reg
 
     @staticmethod # jne reg
     def i00001010(cu, cpu, operand1, operand2, operand3):
-        #print("jne reg", operand1)
         if not check_flag(cpu.flags, 15):
             reg = cpu.access_register(operand1)
             cpu.pc = reg
 
     @staticmethod # store [reg1] reg2
     def i00001011(cu, cpu, operand1, operand2, operand3):
-        #print("store [reg1] reg2", operand1, operand2)
         address = cpu.access_register(operand1)
         address = mint(address)
         value = cpu.access_register(operand2)
@@ -230,7 +186,6 @@ class Instructions:
 
     @staticmethod # move reg1 reg 2
     def i00001100(cu, cpu, operand1, operand2, operand3):
-        #print("move", operand1, operand2)
         if operand1 in cpu.reg32bit and operand2 in cpu.reg32bit:
             reg2 = cpu.access_register(operand2)
             cpu.access_register(operand1, reg2)
@@ -247,7 +202,6 @@ class Instructions:
 
     @staticmethod # add reg1 reg2
     def i00001101(cu, cpu, operand1, operand2, operand3):
-        #print("add", operand1, operand2)
         reg1 = cpu.access_register(operand1)
         reg2 = cpu.access_register(operand2)
         cu.callALU("add", reg1, reg2, 16)
@@ -256,7 +210,6 @@ class Instructions:
 
     @staticmethod # sub reg1 reg2
     def i00001110(cu, cpu, operand1, operand2, operand3):
-        #print("sub", operand1, operand2)
         reg1 = cpu.access_register(operand1)
         reg2 = cpu.access_register(operand2)
         cu.callALU("sub", reg1, reg2, 16)
@@ -265,7 +218,6 @@ class Instructions:
 
     @staticmethod # mult reg1 reg2
     def i00001111(cu, cpu, operand1, operand2, operand3):
-        #print("mul", operand1, operand2)
         reg1 = cpu.access_register(operand1)
         reg2 = cpu.access_register(operand2)
         cu.callALU("mul", reg1, reg2, 32)
@@ -276,7 +228,6 @@ class Instructions:
 
     @staticmethod # div reg1 reg2
     def i00010000(cu, cpu, operand1, operand2, operand3):
-        #print("div", operand1, operand2)
         reg1 = cpu.access_register(operand1)
         reg2 = cpu.access_register(operand2)
         cu.callALU("div", reg1, reg2, 16)
@@ -288,7 +239,6 @@ class Instructions:
 
     @staticmethod # inc reg
     def i00010001(cu, cpu, operand1, operand2, operand3):
-        #print("inc reg", operand1)
         reg = cpu.access_register(operand1)
         cu.callALU("add", reg, "00000001", 16)
         value = cpu.access_register("1100")[:16]
@@ -304,7 +254,6 @@ class Instructions:
 
     @staticmethod # and reg1 reg2
     def i00010011(cu, cpu, operand1, operand2, operand3):
-        #print("and", operand1, operand2)
         reg1 = cpu.access_register(operand1)
         reg2 = cpu.access_register(operand2)
         cu.callALU("and", reg1, reg2, 16)
@@ -313,7 +262,6 @@ class Instructions:
 
     @staticmethod # or reg1 reg2
     def i00010100(cu, cpu, operand1, operand2, operand3):
-        #print("or", operand1, operand2)
         reg1 = cpu.access_register(operand1)
         reg2 = cpu.access_register(operand2)
         cu.callALU("or", reg1, reg2, 16)
@@ -322,7 +270,6 @@ class Instructions:
 
     @staticmethod # xor reg1 reg2
     def i00010101(cu, cpu, operand1, operand2, operand3):
-        #print("xor", operand1, operand2)
         reg1 = cpu.access_register(operand1)
         reg2 = cpu.access_register(operand2)
         cu.callALU("xor", reg1, reg2, 16)
@@ -339,7 +286,6 @@ class Instructions:
 
     @staticmethod # rol reg #imd
     def i00010111(cu, cpu, operand1, operand2, operand3):
-        #print("rol", operand1, operand2)
         reg1 = cpu.access_register(operand1)
         cu.callALU("rol", reg1, operand2, 16)
         rolled = cpu.access_register("1100")[:16]
@@ -347,7 +293,6 @@ class Instructions:
 
     @staticmethod # ror reg #imd
     def i00011000(cu, cpu, operand1, operand2, operand3):
-        #print("ror", operand1, operand2)
         reg1 = cpu.access_register(operand1)
         cu.callALU("ror", reg1, operand2, 16)
         rolled = cpu.access_register("1100")[:16]
@@ -355,7 +300,6 @@ class Instructions:
 
     @staticmethod # cmp reg1 reg2
     def i00011001(cu, cpu, operand1, operand2, operand3):
-        #print("cmp", operand1, operand2)
         reg1 = cpu.access_register(operand1)
         reg2 = cpu.access_register(operand2)
         flags = cpu.access_register("1101")
@@ -365,7 +309,6 @@ class Instructions:
     
     @staticmethod # shl reg #imd
     def i00011010(cu, cpu, operand1, operand2, operand3):
-        #print("shl", operand1, operand2)
         reg1 = cpu.access_register(operand1)
         cu.callALU("shl", reg1, operand2, 16)
         shifted = cpu.access_register("1100")[:16]
@@ -373,7 +316,6 @@ class Instructions:
     
     @staticmethod # shr reg #imd
     def i00011011(cu, cpu, operand1, operand2, operand3):
-        #print("shr", operand1, operand2)
         reg1 = cpu.access_register(operand1)
         cu.callALU("shr", reg1, operand2, 16)
         shifted = cpu.access_register("1100")[:16]

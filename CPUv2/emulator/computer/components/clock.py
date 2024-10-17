@@ -24,13 +24,10 @@ class Clock():
         else:
             self.current_operation = "Fetch"
             self.computer.cpu.cu.fetch()
-            self.computer.controller.update_gui()
             self.current_operation = "Decode"
             self.computer.cpu.cu.decode()
-            self.computer.controller.update_gui()
             self.current_operation = "Execute"
             self.computer.cpu.cu.execute()
-            self.computer.controller.update_gui()
         
         
             
