@@ -108,20 +108,29 @@ class Instructions:
 
     @staticmethod # jump #imd
     def i00000000(cu, cpu, operand1, operand2, operand3):
+        cu.cpu.computer.controller.add_event("CU: Executing jmp #" + str(mint(operand3)))
+
         cpu.pc = operand3
         
     @staticmethod # jeq #imd
     def i00000001(cu, cpu, operand1, operand2, operand3):
+        cu.cpu.computer.controller.add_event("CU: Executing jeq #" + str(mint(operand3)))
+
         if check_flag(cpu.flags, 15):
             cpu.pc = operand3
 
     @staticmethod # jne #imd
     def i00000010(cu, cpu, operand1, operand2, operand3):
+        cu.cpu.computer.controller.add_event("CU: Executing jne #" + str(mint(operand3)))
+
         if not check_flag(cpu.flags, 15):
             cpu.pc = operand3
 
     @staticmethod # inc [mem]
     def i00000011(cu, cpu, opernad1, operand2, operand3):
+        cu.cpu.computer.controller.add_event("CU: Executing inc [" + str(mint(operand3)) + "]")
+
+
         memory_address = int(operand3, 2)
         value = cpu.computer.memory.read(memory_address)
         cu.callALU("add", value, "00000001", 8)
@@ -130,28 +139,36 @@ class Instructions:
 
     @staticmethod # dec [mem]
     def i00000100(cu, cpu, operand1, operand2, operand3):
+        cu.cpu.computer.controller.add_event("CU: Executing dec [" + str(mint(operand3)) + "]")
+
         memory_address = int(operand3, 2)
         value = cpu.computer.memory.read(memory_address)
         cu.callALU("sub", value, "00000001", 8)
         value = cpu.access_register("1100")[8:]
         cpu.computer.memory.write(memory_address, value)
 
-    @staticmethod # load #imd
+    @staticmethod # load #imd reg
     def i00000101(cu, cpu, operand1, operand2, operand3):
+        cu.cpu.computer.controller.add_event("CU: Executing load #" + str(mint(operand3)) + "," + cpu.registers[operand1])
+
         if operand1 in cpu.reg32bit:
             operand3 = operand3.zfill(32)
         cpu.access_register(operand1, operand3)
 
-    @staticmethod # load [mem]
+    @staticmethod # load [mem] reg
     def i00000110(cu, cpu, operand1, operand2, operand3):
+        cu.cpu.computer.controller.add_event("CU: Executing load [" + str(mint(operand3)) + "], " + cpu.registers[operand1])
+
         memory_address = mint(operand3)
         value = cpu.computer.memory.read(memory_address) + cpu.computer.memory.read(memory_address + 1)
         if operand1 in cpu.reg32bit:
             value += cpu.computer.memory.read(memory_address + 2) + cpu.computer.memory.read(memory_address + 3)
         cpu.access_register(operand1, value)
 
-    @staticmethod # store [mem]
+    @staticmethod # store reg [mem]
     def i00000111(cu, cpu, operand1, operand2, operand3):
+        cu.cpu.computer.controller.add_event("CU: Executing store " + cpu.registers[operand1] + ", [" + str(mint(operand3)) + "]")
+
         memory_address = mint(operand3)
         value = cpu.access_register(operand1)
         cpu.computer.memory.write(memory_address, value[:8])
@@ -162,23 +179,31 @@ class Instructions:
 
     @staticmethod # jmp reg
     def i00001000(cu, cpu, operand1, operand2, operand3):
+        cu.cpu.computer.controller.add_event("CU: Executing jmp [" + cpu.registers[operand1] + "]")
+
         reg = cpu.access_register(operand1)
         cpu.pc = reg
 
     @staticmethod # jeq reg
     def i00001001(cu, cpu, operand1, operand2, operand3):
+        cu.cpu.computer.controller.add_event("CU: Executing jeq [" + cpu.registers[operand1] + "]")
+
         if check_flag(cpu.flags, 15):
             reg = cpu.access_register(operand1)
             cpu.pc = reg
 
     @staticmethod # jne reg
     def i00001010(cu, cpu, operand1, operand2, operand3):
+        cu.cpu.computer.controller.add_event("CU: Executing jne [" + cpu.registers[operand1] + "]")
+
         if not check_flag(cpu.flags, 15):
             reg = cpu.access_register(operand1)
             cpu.pc = reg
 
     @staticmethod # store [reg1] reg2
     def i00001011(cu, cpu, operand1, operand2, operand3):
+        cu.cpu.computer.controller.add_event("CU: Executing store [" + cpu.registers[operand1] + "], " + cpu.registers[operand2])
+
         address = cpu.access_register(operand1)
         address = mint(address)
         value = cpu.access_register(operand2)
@@ -190,6 +215,8 @@ class Instructions:
 
     @staticmethod # move reg1 reg 2
     def i00001100(cu, cpu, operand1, operand2, operand3):
+        cu.cpu.computer.controller.add_event("CU: Executing move " + cpu.registers[operand1] + ", " + cpu.registers[operand2])
+
         if operand1 in cpu.reg32bit and operand2 in cpu.reg32bit:
             reg2 = cpu.access_register(operand2)
             cpu.access_register(operand1, reg2)
@@ -206,6 +233,8 @@ class Instructions:
 
     @staticmethod # add reg1 reg2
     def i00001101(cu, cpu, operand1, operand2, operand3):
+        cu.cpu.computer.controller.add_event("CU: Executing add " + cpu.registers[operand1] + ", " + cpu.registers[operand2])
+
         reg1 = cpu.access_register(operand1)
         reg2 = cpu.access_register(operand2)
         cu.callALU("add", reg1, reg2, 16)
@@ -214,6 +243,8 @@ class Instructions:
 
     @staticmethod # sub reg1 reg2
     def i00001110(cu, cpu, operand1, operand2, operand3):
+        cu.cpu.computer.controller.add_event("CU: Executing sub " + cpu.registers[operand1] + ", " + cpu.registers[operand2])
+
         reg1 = cpu.access_register(operand1)
         reg2 = cpu.access_register(operand2)
         cu.callALU("sub", reg1, reg2, 16)
@@ -222,6 +253,8 @@ class Instructions:
 
     @staticmethod # mult reg1 reg2
     def i00001111(cu, cpu, operand1, operand2, operand3):
+        cu.cpu.computer.controller.add_event("CU: Executing mult " + cpu.registers[operand1] + ", " + cpu.registers[operand2])
+
         reg1 = cpu.access_register(operand1)
         reg2 = cpu.access_register(operand2)
         cu.callALU("mul", reg1, reg2, 32)
@@ -232,6 +265,8 @@ class Instructions:
 
     @staticmethod # div reg1 reg2
     def i00010000(cu, cpu, operand1, operand2, operand3):
+        cu.cpu.computer.controller.add_event("CU: Executing div " + cpu.registers[operand1] + ", " + cpu.registers[operand2])
+
         reg1 = cpu.access_register(operand1)
         reg2 = cpu.access_register(operand2)
         cu.callALU("div", reg1, reg2, 16)
@@ -243,6 +278,8 @@ class Instructions:
 
     @staticmethod # inc reg
     def i00010001(cu, cpu, operand1, operand2, operand3):
+        cu.cpu.computer.controller.add_event("CU: Executing inc " + cpu.registers[operand1])
+
         reg = cpu.access_register(operand1)
         cu.callALU("add", reg, "00000001", 16)
         value = cpu.access_register("1100")[:16]
@@ -250,7 +287,8 @@ class Instructions:
 
     @staticmethod # dec reg
     def i00010010(cu, cpu, operand1, operand2, operand3):
-        #print("dec reg", operand1)
+        cu.cpu.computer.controller.add_event("CU: Executing dec " + cpu.registers[operand1])
+
         reg = cpu.access_register(operand1)
         cu.callALU("sub", reg, "00000001", 16)
         value = cpu.access_register("1100")[:16]
@@ -258,6 +296,8 @@ class Instructions:
 
     @staticmethod # and reg1 reg2
     def i00010011(cu, cpu, operand1, operand2, operand3):
+        cu.cpu.computer.controller.add_event("CU: Executing and " + cpu.registers[operand1] + ", " + cpu.registers[operand2])
+
         reg1 = cpu.access_register(operand1)
         reg2 = cpu.access_register(operand2)
         cu.callALU("and", reg1, reg2, 16)
@@ -266,6 +306,8 @@ class Instructions:
 
     @staticmethod # or reg1 reg2
     def i00010100(cu, cpu, operand1, operand2, operand3):
+        cu.cpu.computer.controller.add_event("CU: Executing or " + cpu.registers[operand1] + ", " + cpu.registers[operand2])
+
         reg1 = cpu.access_register(operand1)
         reg2 = cpu.access_register(operand2)
         cu.callALU("or", reg1, reg2, 16)
@@ -274,6 +316,8 @@ class Instructions:
 
     @staticmethod # xor reg1 reg2
     def i00010101(cu, cpu, operand1, operand2, operand3):
+        cu.cpu.computer.controller.add_event("CU: Executing xor " + cpu.registers[operand1] + ", " + cpu.registers[operand2])
+
         reg1 = cpu.access_register(operand1)
         reg2 = cpu.access_register(operand2)
         cu.callALU("xor", reg1, reg2, 16)
@@ -282,7 +326,8 @@ class Instructions:
 
     @staticmethod # not reg
     def i00010110(cu, cpu, operand1, operand2, operand3):
-        #print("not", operand1)
+        cu.cpu.computer.controller.add_event("CU: Executing not " + cpu.registers[operand1])
+
         reg1 = cpu.access_register(operand1)
         cu.callALU("not", reg1, None, 16)
         value = cpu.access_register("1100")[:16]
@@ -290,6 +335,8 @@ class Instructions:
 
     @staticmethod # rol reg #imd
     def i00010111(cu, cpu, operand1, operand2, operand3):
+        cu.cpu.computer.controller.add_event("CU: Executing rol " + cpu.registers[operand1] + ", #" + str(mint(operand2)))
+
         reg1 = cpu.access_register(operand1)
         cu.callALU("rol", reg1, operand2, 16)
         rolled = cpu.access_register("1100")[:16]
@@ -297,6 +344,8 @@ class Instructions:
 
     @staticmethod # ror reg #imd
     def i00011000(cu, cpu, operand1, operand2, operand3):
+        cu.cpu.computer.controller.add_event("CU: Executing ror " + cpu.registers[operand1] + ", #" + str(mint(operand2)))
+
         reg1 = cpu.access_register(operand1)
         cu.callALU("ror", reg1, operand2, 16)
         rolled = cpu.access_register("1100")[:16]
@@ -304,6 +353,8 @@ class Instructions:
 
     @staticmethod # cmp reg1 reg2
     def i00011001(cu, cpu, operand1, operand2, operand3):
+        cu.cpu.computer.controller.add_event("CU: Executing cmp " + cpu.registers[operand1] + ", " + cpu.registers[operand2])
+
         reg1 = cpu.access_register(operand1)
         reg2 = cpu.access_register(operand2)
         flags = cpu.access_register("1101")
@@ -313,6 +364,8 @@ class Instructions:
     
     @staticmethod # shl reg #imd
     def i00011010(cu, cpu, operand1, operand2, operand3):
+        cu.cpu.computer.controller.add_event("CU: Executing shl " + cpu.registers[operand1] + ", #" + str(mint(operand2)))
+
         reg1 = cpu.access_register(operand1)
         cu.callALU("shl", reg1, operand2, 16)
         shifted = cpu.access_register("1100")[:16]
@@ -320,6 +373,8 @@ class Instructions:
     
     @staticmethod # shr reg #imd
     def i00011011(cu, cpu, operand1, operand2, operand3):
+        cu.cpu.computer.controller.add_event("CU: Executing shr " + cpu.registers[operand1] + ", #" + str(mint(operand2)))
+
         reg1 = cpu.access_register(operand1)
         cu.callALU("shr", reg1, operand2, 16)
         shifted = cpu.access_register("1100")[:16]
@@ -327,6 +382,7 @@ class Instructions:
 
     @staticmethod # halt
     def i11111111(cu, cpu, operand1, operand2, operand3):
+        cu.cpu.computer.controller.add_event("CU: Executing halt")
         print("halt")
         cu.cpu.running = False
     

@@ -22,6 +22,10 @@ def mbin(num, length, neg = True):
 def mint(bin_num):
     if not type(bin_num) == str:
         raise ValueError("bin_num must be a string, got " +  str(type(bin_num)) + " instead (" + str(bin_num) + ")")
+    return int(bin_num, 2)
+    """
+    if not type(bin_num) == str:
+        raise ValueError("bin_num must be a string, got " +  str(type(bin_num)) + " instead (" + str(bin_num) + ")")
     length = len(bin_num)
     num = 0
     bin_num = bin_num[::-1]
@@ -32,7 +36,7 @@ def mint(bin_num):
         else:
             if bit == "1":
                 num += 2**i
-    return num
+    return num"""
 
 def set_flag(flags, bit, pos):
     return flags[:pos] + bit + flags[pos+1:]

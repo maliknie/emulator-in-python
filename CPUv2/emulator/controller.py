@@ -34,9 +34,11 @@ class AppController:
     def tick_button_pressed(self):
         self.computer.clock.tick_button_pressed()
     
-    def switch_tick_mode(self):
-        print("Switching tick mode")
-        self.computer.cpu.switch_tick_mode()
+    def tick_mode_on(self):
+        self.computer.cpu.tick_mode = True
+    
+    def tick_mode_off(self):
+        self.computer.cpu.tick_mode = False
     
     def update_gui(self):
         self.gui.update_cpu_gui()
@@ -44,7 +46,6 @@ class AppController:
         self.gui.update_log_gui()
     
     def add_event(self, event):
-        print(event)
         self.gui.new_events.append(event)
     
     def read_memory(self, address):

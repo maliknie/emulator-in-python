@@ -116,15 +116,12 @@ class GUI:
         self.cpu_gui.geometry("500x300")
         self.cpu_gui.bind("<Destroy>",  self.cpu_gui_destroyed)
 
-        self.tick_mode_button = ttk.Checkbutton(self.cpu_gui, text="Tick Mode", style="Switch.TCheckbutton", command=self.switch_tick_mode)
-        self.tick_mode_button.pack()
-
         self.register_header = tk.Label(self.cpu_gui, text="Registers")
         self.register_header.pack()
 
         self.cpu_state = self.controller.get_cpu_state()
 
-        self.running_label = tk.Label(self.cpu_gui, text="Running: " ) #+ str(self.cpu_state[1]["running"]))
+        self.running_label = tk.Label(self.cpu_gui, text="Running: " + str(self.controller.computer.cpu.running)) #+ str(self.cpu_state[1]["running"]))
         self.running_label.pack()
 
         #change running_label text:
@@ -168,12 +165,21 @@ class GUI:
         self.clock_gui.geometry("300x100")
         self.clock_gui.bind("<Destroy>",  self.clock_gui_destroyed)
 
+        self.operation_and_tick_frame = ttk.Frame(self.clock_gui)
+        self.tick_mode_frame = ttk.Frame(self.clock_gui)
 
-        self.operation_label = ttk.Label(self.clock_gui, text="Current Operation: " + self.controller.computer.clock.current_operation, font=self.standard_font)
+        self.operation_label = ttk.Label(self.operation_and_tick_frame, text="Current Operation: " + self.controller.computer.clock.current_operation, font=self.standard_font)
         self.operation_label.pack(pady=self.padding_y)
-
-        self.tick_button = ttk.Button(self.clock_gui, text="Tick", command=self.controller.tick_button_pressed)
+        self.tick_button = ttk.Button(self.operation_and_tick_frame, text="Tick", command=self.controller.tick_button_pressed)
         self.tick_button.pack()
+
+        self.tick_mode_on_button = ttk.Button(self.tick_mode_frame, text="Tick Mode On", command=self.controller.tick_mode_on)
+        self.tick_mode_off_button = ttk.Button(self.tick_mode_frame, text="Tick Mode Off", command=self.controller.tick_mode_off)
+        self.tick_mode_on_button.grid(row=0, column=0)
+        self.tick_mode_off_button.grid(row=0, column=1)
+
+        self.operation_and_tick_frame.grid(row=0, column=0)
+        self.tick_mode_frame.grid(row=1, column=0)
 
         self.clock_gui.tk.call("source", "CPUv2/libraries/Azure-ttk-theme-main/azure.tcl")
         self.clock_gui.tk.call("set_theme", "dark")
@@ -263,12 +269,12 @@ class GUI:
         self.log_gui = tk.Tk()
         self.log_gui.title("Log")
         self.log_gui.geometry("500x300")
-        self.log_gui.bind("<Destroy>",  self.log_gui_destroyed)
+        self.log_gui.protocol("WM_DELETE_WINDOW", self.log_gui_destroyed)
 
         self.log_label_frame = ttk.Frame(self.log_gui)
         self.log_text_frame = ttk.Frame(self.log_gui)
 
-        self.log_label = ttk.Label(self.log_label_frame, text="Last Log Entry: None")
+        self.log_label = ttk.Label(self.log_label_frame, text="Last Log Entries: ")
         self.log_text = ttk.Label(self.log_text_frame, text="None")
         self.log_label.grid(row=0, column=0)
         self.log_text.grid(row=0, column=0)
@@ -303,20 +309,20 @@ class GUI:
         return (event,)
     
     # Wird ausgeführt, wenn das Log Fenster geschlossen wird
-    def log_gui_destroyed(self, event):
-        #self.log_window_open = False
-        return (event,)
-
+    def log_gui_destroyed(self):
+        self.log_window_open = False
+        self.log_gui.destroy()
+    
 
     
     # Aktualisiert das CPU Fenster
     def update_cpu_gui(self):
 
-        if not self.cpu_window_open and not self.controller.computer.cpu.tick_mode:
+        if not self.cpu_window_open:
             return
 
         state = self.controller.get_cpu_state()
-        self.running_label.config(text="Running: " + str(state[2]["running"]))
+        self.running_label.config(text="Running: " + str(self.controller.computer.cpu.running))
 
         for label in self.all_purpose_register_labels:
             label_name = label.cget("text").split(":")[0]
@@ -387,6 +393,3 @@ class GUI:
     
     def shutdown_computer(self):
         self.controller.shutdown_computer()
-
-    def switch_tick_mode(self):
-        self.controller.switch_tick_mode()

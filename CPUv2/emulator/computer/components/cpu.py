@@ -218,5 +218,4 @@ class CPU:
                 "mar": mint(self.mar),
                 "mdr": mint(self.mdr)
             }
-        running = {"running": self.running}
-        return (registers, decoded_registers, running)
+        return (registers, decoded_registers)
