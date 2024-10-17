@@ -13,13 +13,16 @@ class GUI:
 
         self.cpu_window_open = False
         self.clock_window_open = False
+        self.alu_window_open = False
+        self.ram_window_open = False
+        self.log_window_open = False
         
         
     # Startet das root Fenster
     def start(self):
         self.root = tk.Tk()
         self.root.title("CPU Emulator")
-        self.root.geometry("500x600")
+        self.root.geometry("1000x600")
         self.root.iconphoto(True, tk.PhotoImage(file='anderes/images/tk.png'))
 
         self.setup_ui()
@@ -74,9 +77,16 @@ class GUI:
         self.open_display_window_button = ttk.Button(self.gui_buttons_button_frame, text="Open Screen", command=self.start_screen)
         self.cpu_gui_button = ttk.Button(self.gui_buttons_button_frame, text="Open CPU", command=self.cpu_loop)
         self.clock_gui_button = ttk.Button(self.gui_buttons_button_frame, text="Open Clock", command=self.clock_loop)
-        self.open_display_window_button.grid(row=1, column=0, padx=self.padding_x)  
-        self.cpu_gui_button.grid(row=1, column=1, padx=self.padding_x)
-        self.clock_gui_button.grid(row=1, column=2, padx=self.padding_x)
+        self.alu_gui_button = ttk.Button(self.gui_buttons_button_frame, text="Open ALU", command=self.alu_loop)
+        self.ram_gui_button = ttk.Button(self.gui_buttons_button_frame, text="Open RAM", command=self.ram_loop)
+        self.log_gui_button = ttk.Button(self.gui_buttons_button_frame, text="Open Log", command=self.log_loop)
+
+        self.open_display_window_button.grid(row=1, column=0, padx=self.padding_x, pady=self.padding_y)  
+        self.cpu_gui_button.grid(row=1, column=1, padx=self.padding_x, pady=self.padding_y)
+        self.clock_gui_button.grid(row=1, column=2, padx=self.padding_x, pady=self.padding_y)
+        self.alu_gui_button.grid(row=2, column=0, padx=self.padding_x, pady=self.padding_y)
+        self.ram_gui_button.grid(row=2, column=1, padx=self.padding_x, pady=self.padding_y)
+        self.log_gui_button.grid(row=2, column=2, padx=self.padding_x, pady=self.padding_y)
         self.gui_buttons_button_frame.grid(row=1, column=0, pady=10)
         self.gui_buttons_frame.grid(row=2, column=0)
 
@@ -85,6 +95,8 @@ class GUI:
         self.root.tk.call("source", "CPUv2/libraries/Azure-ttk-theme-main/azure.tcl")
         self.root.tk.call("set_theme", "dark")
         self.root.mainloop()
+
+
 
     # Startet das CPU Fenster
     def cpu_loop(self):
@@ -162,6 +174,109 @@ class GUI:
         self.clock_gui.tk.call("set_theme", "dark")
         self.clock_gui.mainloop()
 
+    def alu_loop(self):
+        if self.alu_window_open:
+            return
+        
+        self.alu_window_open = True
+
+        self.alu_gui = tk.Tk()
+        self.alu_gui.title("ALU")
+        self.alu_gui.geometry("500x300")
+        self.alu_gui.bind("<Destroy>",  self.alu_gui_destroyed)
+
+        self.alu_operand_frame = ttk.Frame(self.alu_gui)
+        self.alu_operation_frame = ttk.Frame(self.alu_gui)
+        self.alu_result_frame = ttk.Frame(self.alu_gui)
+
+        self.alu_operand_a_label = ttk.Label(self.alu_operand_frame, text="Operand a: None")
+        self.alu_operand_a_label.grid(row=0, column=0)
+        self.alu_operand_b_label = ttk.Label(self.alu_operand_frame, text="Operand b: None")
+        self.alu_operand_b_label.grid(row=0, column=2)
+
+        self.alu_operation_label = ttk.Label(self.alu_operation_frame, text="Operation: None")
+        self.alu_operation_label.grid(row=1, column=1)
+
+        self.alu_result_label = ttk.Label(self.alu_result_frame, text="Result: None")
+        self.alu_result_label.grid(row=2, column=1)
+
+
+        self.alu_operand_frame.grid(row=0, column=0)
+        self.alu_operation_frame.grid(row=1, column=0)
+        self.alu_result_frame.grid(row=2, column=0)
+
+        self.alu_gui.tk.call("source", "CPUv2/libraries/Azure-ttk-theme-main/azure.tcl")
+        self.alu_gui.tk.call("set_theme", "dark")
+        self.alu_gui.mainloop()
+
+    def cu_loop(self):
+        pass
+
+    def ram_loop(self):
+        if self.ram_window_open:
+            return
+        
+        self.ram_window_open = True
+
+        self.ram_gui = tk.Tk()
+        self.ram_gui.title("RAM")
+        self.ram_gui.geometry("300x200")
+        self.ram_gui.bind("<Destroy>",  self.ram_gui_destroyed)
+
+        self.ram_label_frame = ttk.Frame(self.ram_gui)
+        self.ram_entry_frame = ttk.Frame(self.ram_gui)
+        self.ram_result_frame = ttk.Frame(self.ram_gui)
+
+        self.ram_label = ttk.Label(self.ram_label_frame, text="Memory")
+        self.ram_label.grid(row=0, column=0)
+
+        self.ram_entry_label = ttk.Label(self.ram_entry_frame, text="Enter Memory Address: ")
+        self.ram_entry_label.grid(row=1, column=0)
+        self.ram_entry = ttk.Entry(self.ram_entry_frame)
+        self.ram_entry.grid(row=1, column=1)
+        self.ram_entry_button = ttk.Button(self.ram_entry_frame, text="Read Memory", command=lambda: 1 + 1)
+        self.ram_entry_button.grid(row=1, column=2)
+
+        self.ram_result_label = ttk.Label(self.ram_result_frame, text="Result: None")
+        self.ram_result_label.grid(row=2, column=0)
+
+        self.ram_label_frame.grid(row=0, column=0)
+        self.ram_entry_frame.grid(row=1, column=0)
+        self.ram_result_frame.grid(row=2, column=0)
+
+
+        self.ram_gui.tk.call("source", "CPUv2/libraries/Azure-ttk-theme-main/azure.tcl")
+        self.ram_gui.tk.call("set_theme", "dark")
+        self.ram_gui.mainloop()
+
+    def log_loop(self):
+        if self.log_window_open:
+            return
+        
+        self.log_window_open = True
+
+        self.log_gui = tk.Tk()
+        self.log_gui.title("Log")
+        self.log_gui.geometry("500x300")
+        self.log_gui.bind("<Destroy>",  self.log_gui_destroyed)
+
+        self.log_label_frame = ttk.Frame(self.log_gui)
+        self.log_text_frame = ttk.Frame(self.log_gui)
+
+        self.log_label = ttk.Label(self.log_label_frame, text="Last Log Entry: None")
+        self.log_text = ttk.Label(self.log_text_frame, text="None")
+        self.log_label.grid(row=0, column=0)
+        self.log_text.grid(row=0, column=0)
+
+
+        self.log_label_frame.grid(row=0, column=0)
+        self.log_text_frame.grid(row=1, column=0)
+
+        self.log_gui.tk.call("source", "CPUv2/libraries/Azure-ttk-theme-main/azure.tcl")
+        self.log_gui.tk.call("set_theme", "dark")
+        self.log_gui.mainloop()
+
+
     # Wird ausgeführt, wenn das CPU Fenster geschlossen wird
     def cpu_gui_destroyed(self, event):
         self.cpu_window_open = False
@@ -171,6 +286,23 @@ class GUI:
     def clock_gui_destroyed(self, event):
         self.cpu_window_open = False
         return (event,)
+
+    # Wird ausgeführt, wenn das ALU Fenster geschlossen wird
+    def alu_gui_destroyed(self, event):
+        self.alu_window_open = False
+        return (event,)
+    
+    # Wird ausgeführt, wenn das RAM Fenster geschlossen wird
+    def ram_gui_destroyed(self, event):
+        self.ram_window_open = False
+        return (event,)
+    
+    # Wird ausgeführt, wenn das Log Fenster geschlossen wird
+    def log_gui_destroyed(self, event):
+        self.log_window_open = False
+        return (event,)
+
+
     
     # Aktualisiert das CPU Fenster
     def update_cpu_gui(self):
@@ -194,6 +326,18 @@ class GUI:
         if not self.cpu_window_open and not self.controller.computer.cpu.tick_mode:
             return
         self.operation_label.config(text="Current Operation: " + self.controller.computer.clock.current_operation)
+
+    # Aktualisiert das ALU Fenster
+    def update_alu_gui(self):
+        pass
+
+    # Aktualisiert das RAM Fenster
+    def update_ram_gui(self):
+        pass
+
+    # Aktualisiert das Log Fenster
+    def update_log_gui(self):
+        pass
 
 
 

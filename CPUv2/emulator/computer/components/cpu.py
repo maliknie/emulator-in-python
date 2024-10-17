@@ -1,4 +1,9 @@
 from time import sleep
+import sys
+from pathlib import Path
+project_root = Path(__file__).resolve().parents[3]
+sys.path.append(str(project_root))
+from libraries.binary_lib import mbin, mint, set_flag, check_flag
 
 class CPU:
     def __init__(self, alu, cu, computer) -> None:
@@ -49,6 +54,38 @@ class CPU:
             "1101": "flags",
             "1110": "mar",
             "1111": "mdr",
+        }
+
+        self.opcodes ={
+            "00000000": "jmp",
+            "00000001": "jeq",
+            "00000010": "jne",
+            "00000011": "inc",
+            "00000100": "dec",
+            "00000101": "load",
+            "00000110": "load",
+            "00000111": "store",
+            "00001000": "jmp",
+            "00001001": "jeq",
+            "00001010": "jne",
+            "00001011": "store",
+            "00001100": "move",
+            "00001101": "add",
+            "00001110": "sub",
+            "00001111": "mult",
+            "00010000": "div",
+            "00010001": "inc",
+            "00010010": "dec",
+            "00010011": "and",
+            "00010100": "or",
+            "00010101": "xor",
+            "00010110": "not",
+            "00010111": "rol",
+            "00011000": "ror",
+            "00011001": "cmp",
+            "00011010": "shl",
+            "00011011": "shr",
+            "11111111": "halt"
         }
 
 
@@ -139,7 +176,47 @@ class CPU:
             "acc": self.acc,
             "flags": self.flags,
             "mar": self.mar,
-            "mdr": self.mdr,
+            "mdr": self.mdr
         }
+        if not self.opcodes[self.ir[:8]] in ["rol", "ror", "shl", "shr"]:
+            decoded_registers ={
+                "r0": mint(self.r0),
+                "r1": mint(self.r1),
+                "r2": mint(self.r2),
+                "r3": mint(self.r3),
+                "r4": mint(self.r4),
+                "r5": mint(self.r5),
+                "r6": mint(self.r6),
+                "r7": mint(self.r7),
+
+                "pc": mint(self.pc),
+                "ir": self.opcodes[self.ir[:8]] + " " + str(self.registers[self.ir[8:12]]) + " " + str(self.registers[self.ir[12:16]]) + " " + str(mint(self.ir[16:])),
+                "sp": mint(self.sp),
+                "bp": mint(self.bp),
+                "acc": mint(self.acc),
+                "flags": self.flags,
+                "mar": mint(self.mar),
+                "mdr": mint(self.mdr)
+            }
+        else:
+            decoded_registers ={
+                "r0": mint(self.r0),
+                "r1": mint(self.r1),
+                "r2": mint(self.r2),
+                "r3": mint(self.r3),
+                "r4": mint(self.r4),
+                "r5": mint(self.r5),
+                "r6": mint(self.r6),
+                "r7": mint(self.r7),
+
+                "pc": mint(self.pc),
+                "ir": self.opcodes[self.ir[:8]] + " " + str(mint(self.ir[8:12])) + " " + str(mint(self.ir[12:16])) + " " + str(mint(self.ir[16:])),
+                "sp": mint(self.sp),
+                "bp": mint(self.bp),
+                "acc": mint(self.acc),
+                "flags": self.flags,
+                "mar": mint(self.mar),
+                "mdr": mint(self.mdr)
+            }
         running = {"running": self.running}
-        return (registers, running)
+        return (registers, decoded_registers, running)
