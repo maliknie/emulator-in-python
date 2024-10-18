@@ -121,7 +121,7 @@ class GUI:
         self.cpu_gui = tk.Tk()
         self.cpu_gui.title("CPU")
         self.cpu_gui.geometry("550x300")
-        self.cpu_gui.bind("<Destroy>",  self.cpu_gui_destroyed)
+        self.cpu_gui.protocol("WM_DELETE_WINDOW", self.cpu_gui_destroyed)
 
         self.register_header = tk.Label(self.cpu_gui, text="Registers", font=self.header_font)
         self.register_header.grid(sticky="w")
@@ -180,11 +180,11 @@ class GUI:
         if self.clock_window_open:
             return
         
-        self.clock_open = True
+        self.clock_window_open = True
         self.clock_gui = tk.Tk()
         self.clock_gui.title("Clock")
         self.clock_gui.geometry("350x150")
-        self.clock_gui.bind("<Destroy>",  self.clock_gui_destroyed)
+        self.clock_gui.protocol("WM_DELETE_WINDOW", self.clock_gui_destroyed)
 
         self.operation_and_tick_frame = ttk.Frame(self.clock_gui)
         self.tick_mode_frame = ttk.Frame(self.clock_gui)
@@ -215,7 +215,7 @@ class GUI:
         self.alu_gui = tk.Tk()
         self.alu_gui.title("ALU")
         self.alu_gui.geometry("750x100")
-        self.alu_gui.bind("<Destroy>",  self.alu_gui_destroyed)
+        self.alu_gui.protocol("WM_DELETE_WINDOW", self.alu_gui_destroyed)
 
         self.alu_operand_frame = ttk.Frame(self.alu_gui)
         self.alu_operation_frame = ttk.Frame(self.alu_gui)
@@ -250,9 +250,6 @@ class GUI:
         self.alu_gui.tk.call("set_theme", "dark")
         self.alu_gui.mainloop()
 
-    def cu_loop(self):
-        pass
-
     def ram_loop(self):
         if self.ram_window_open:
             return
@@ -262,7 +259,7 @@ class GUI:
         self.ram_gui = tk.Tk()
         self.ram_gui.title("RAM")
         self.ram_gui.geometry("600x200")
-        self.ram_gui.bind("<Destroy>",  self.ram_gui_destroyed)
+        self.ram_gui.protocol("WM_DELETE_WINDOW", self.ram_gui_destroyed)
 
         self.ram_label_frame = ttk.Frame(self.ram_gui)
         self.ram_entry_frame = ttk.Frame(self.ram_gui)
@@ -319,24 +316,24 @@ class GUI:
 
 
     # Wird ausgeführt, wenn das CPU Fenster geschlossen wird
-    def cpu_gui_destroyed(self, event):
+    def cpu_gui_destroyed(self):
         self.cpu_window_open = False
-        return (event,)
+        self.cpu_gui.destroy()
     
     # Wird ausgeführt, wenn das Clock Fenster geschlossen wird
-    def clock_gui_destroyed(self, event):
+    def clock_gui_destroyed(self):
         self.cpu_window_open = False
-        return (event,)
+        self.clock_gui.destroy()
 
     # Wird ausgeführt, wenn das ALU Fenster geschlossen wird
-    def alu_gui_destroyed(self, event):
+    def alu_gui_destroyed(self):
         self.alu_window_open = False
-        return (event,)
+        self.alu_gui.destroy()
     
     # Wird ausgeführt, wenn das RAM Fenster geschlossen wird
-    def ram_gui_destroyed(self, event):
+    def ram_gui_destroyed(self):
         self.ram_window_open = False
-        return (event,)
+        self.ram_gui.destroy()
     
     # Wird ausgeführt, wenn das Log Fenster geschlossen wird
     def log_gui_destroyed(self):
