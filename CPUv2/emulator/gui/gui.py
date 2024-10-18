@@ -346,31 +346,39 @@ class GUI:
     def update_cpu_gui(self):
         if not self.cpu_window_open:
             return
-        
-        state = self.controller.get_cpu_state()
-        
+        try:
+            state = self.controller.get_cpu_state()
+            
 
-        for label in self.all_purpose_register_labels:
-            label_name = label.cget("text").split(":")[0]
-            message = label_name + ": " + str(state[0][label_name]).zfill(16) + " (" + str(mint(state[0][label_name])) + ")"
-            label.config(text=message)
-        
-        for label in self.special_purpose_register_labels:
-            label_name = label.cget("text").split(":")[0]
-            if label_name == "flags":
-                message = label_name + ": " + str(state[0][label_name]).zfill(16)
-            else:
+            for label in self.all_purpose_register_labels:
+                if not label.winfo_exists():
+                    continue
+                label_name = label.cget("text").split(":")[0]
                 message = label_name + ": " + str(state[0][label_name]).zfill(16) + " (" + str(mint(state[0][label_name])) + ")"
-            label_name = label.cget("text").split(":")[0]
-            label.config(text=message)
-        
-        for label in self.register_32_bit_frame_labels:
-            label_name = label.cget("text").split(":")[0]
-            if label_name == "ir":
-                message = label_name + ": " + str(state[0][label_name]).zfill(32)
-            else:
-                message = label_name + ": " + str(state[0][label_name]).zfill(32) + " (" + str(mint(state[0][label_name])) + ")"
-            label.config(text=message)
+                label.config(text=message)
+            
+            for label in self.special_purpose_register_labels:
+                if not label.winfo_exists():
+                    continue
+                label_name = label.cget("text").split(":")[0]
+                if label_name == "flags":
+                    message = label_name + ": " + str(state[0][label_name]).zfill(16)
+                else:
+                    message = label_name + ": " + str(state[0][label_name]).zfill(16) + " (" + str(mint(state[0][label_name])) + ")"
+                label_name = label.cget("text").split(":")[0]
+                label.config(text=message)
+            
+            for label in self.register_32_bit_frame_labels:
+                if not label.winfo_exists():
+                    continue
+                label_name = label.cget("text").split(":")[0]
+                if label_name == "ir":
+                    message = label_name + ": " + str(state[0][label_name]).zfill(32)
+                else:
+                    message = label_name + ": " + str(state[0][label_name]).zfill(32) + " (" + str(mint(state[0][label_name])) + ")"
+                label.config(text=message)
+        except tk.TclError:
+            pass
         
             
 
@@ -378,38 +386,58 @@ class GUI:
     def update_clock_gui(self):
         if not self.clock_window_open:
             return
-        self.operation_label.config(text="Current Operation: " + self.controller.computer.clock.current_operation)
+        try: 
+            if self.operation_label.winfo_exists():
+                self.operation_label.config(text="Current Operation: " + self.controller.computer.clock.current_operation)
+        except tk.TclError:
+            pass
 
     # Aktualisiert das ALU Fenster
     def update_alu_gui(self, op, a, b, result):
         if not self.alu_window_open:
             return
-        self.alu_operand_a_label.config(text="Operand a: " + str(a) + " (" + str(mint(a)) + ")")
-        self.alu_operand_b_label.config(text="Operand b: " + str(b) + " (" + str(mint(b)) + ")")
-        self.alu_operation_label.config(text="Operation: " + op)
-        self.alu_result_label.config(text="Result: " + result + " (" + str(mint(result)) + ")")
+        
+        try:
+            if self.alu_operand_a_label.winfo_exists():
+                self.alu_operand_a_label.config(text="Operand a: " + str(a) + " (" + str(mint(a)) + ")")
+            if self.alu_operand_b_label.winfo_exists():
+                self.alu_operand_b_label.config(text="Operand b: " + str(b) + " (" + str(mint(b)) + ")")
+            if self.operation_label.winfo_exists():
+                self.alu_operation_label.config(text="Operation: " + op)
+            if self.alu_result_label.winfo_exists():
+                self.alu_result_label.config(text="Result: " + result + " (" + str(mint(result)) + ")")
+        except tk.TclError:
+            pass
 
     # Aktualisiert das RAM Fenster
     def update_ram_gui(self):
         if not self.ram_window_open:
             return
-        if self.current_ram_address == None:
-            self.ram_result_label.config(text="Result: Invalid Address")
-            return
-        self.new_ram_result = self.controller.computer.memory.read(self.current_ram_address)
-        self.ram_result_label.config(text="Result: " + str(self.new_ram_result) + " (" + str(mint(self.new_ram_result)) + ")")
+        try:
+            if self.current_ram_address == None:
+                if self.ram_result_label.winfo_exists():
+                    self.ram_result_label.config(text="Result: Invalid Address")
+                return
+            self.new_ram_result = self.controller.computer.memory.read(self.current_ram_address)
+            if self.ram_result_label.winfo_exists():
+                self.ram_result_label.config(text="Result: " + str(self.new_ram_result) + " (" + str(mint(self.new_ram_result)) + ")")
+        except tk.TclError:
+            pass
 
     # Aktualisiert das Log Fenster
     def update_log_gui(self):
         if not self.log_window_open:
             return
-        for widget in self.log_text_frame.winfo_children():
-            widget.destroy()
-        
-        for i, event in enumerate(self.new_events):
-            label = ttk.Label(self.log_text_frame, text=event, font=self.small_font)
-            label.grid(row=i, column=0, padx=self.padding_x, pady=self.padding_y, sticky="w")
-        self.log_text_frame.grid(row=1, column=0, pady=self.padding_y, padx=self.padding_x, sticky="w")
+        try: 
+            for widget in self.log_text_frame.winfo_children():
+                widget.destroy()
+            
+            for i, event in enumerate(self.new_events):
+                label = ttk.Label(self.log_text_frame, text=event, font=self.small_font)
+                label.grid(row=i, column=0, padx=self.padding_x, pady=self.padding_y, sticky="w")
+            self.log_text_frame.grid(row=1, column=0, pady=self.padding_y, padx=self.padding_x, sticky="w")
+        except tk.TclError:
+            pass
 
         
         self.new_events = []
