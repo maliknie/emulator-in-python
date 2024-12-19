@@ -1,7 +1,8 @@
 import threading
 
-# Vermittlerklass, die die Kommunikation zwischen GUI, Computer und Bildschirm steuert
+# Vermittlerklasse, die die Kommunikation zwischen GUI, Computer und Bildschirm steuert
 
+# get_cpu_state() als Beispiel für eine Methode, die Informationen aus dem Computer an die GUI weitergibt
 class AppController:
     def __init__(self, gui, computer, screen):
         self.gui = gui
@@ -45,15 +46,13 @@ class AppController:
     def add_event(self, event):
         self.gui.new_events.append(event)
     
-    def read_memory(self, address):
+    def read_memory(self, address, triggered_by_gui=False):
         if address.isdigit():
             address = int(address)
             self.gui.current_ram_address = address
-            self.gui.update_ram_gui()
+            self.gui.update_ram_gui(triggered_by_gui=triggered_by_gui)
             return
         
         self.gui.current_ram_address = None
         self.gui.update_ram_gui()
         return
-
-        

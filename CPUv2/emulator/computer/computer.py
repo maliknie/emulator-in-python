@@ -1,3 +1,5 @@
+# Hat wie in echt eine CPU, Memory und Clock, die zusammen einen Computer bilden
+
 class Computer:
     def __init__(self, controller, cpu, memory, clock) -> None:
         self.controller = controller

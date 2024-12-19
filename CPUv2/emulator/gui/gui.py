@@ -147,6 +147,8 @@ class GUI:
                 content = str(self.cpu_state[0][key])
                 if not key in ["ir", "flags"]:
                     message = key + ": " + content + " (" + str(mint(content)) + ")"
+                elif key == "ir":
+                    message = key + ": " + content + " (" + self.decode_instruction(content) + ") "
                 else:
                     message = key + ": " + content
 
@@ -272,7 +274,7 @@ class GUI:
         self.ram_entry_label.grid(row=1, column=0)
         self.ram_entry = ttk.Entry(self.ram_entry_frame)
         self.ram_entry.grid(row=1, column=1)
-        self.ram_entry_button = ttk.Button(self.ram_entry_frame, text="Read Memory", command=lambda: self.controller.read_memory(self.ram_entry.get()))
+        self.ram_entry_button = ttk.Button(self.ram_entry_frame, text="Read Memory", command=lambda: self.controller.read_memory(self.ram_entry.get(), triggered_by_gui=True))
         self.ram_entry_button.grid(row=1, column=2, padx=self.padding_x, pady=self.padding_y, sticky="w")
 
         self.ram_result_label = ttk.Label(self.ram_result_frame, text="Result: None", font=self.standard_font)
@@ -322,7 +324,7 @@ class GUI:
     
     # Wird ausgeführt, wenn das Clock Fenster geschlossen wird
     def clock_gui_destroyed(self):
-        self.cpu_window_open = False
+        self.clock_window_open = False
         self.clock_gui.destroy()
 
     # Wird ausgeführt, wenn das ALU Fenster geschlossen wird
@@ -373,7 +375,7 @@ class GUI:
                     continue
                 label_name = label.cget("text").split(":")[0]
                 if label_name == "ir":
-                    message = label_name + ": " + str(state[0][label_name]).zfill(32)
+                    message = label_name + ": " + str(state[0][label_name]).zfill(32) + " (" + self.decode_instruction(state[0][label_name]) + ")"
                 else:
                     message = label_name + ": " + str(state[0][label_name]).zfill(32) + " (" + str(mint(state[0][label_name])) + ")"
                 label.config(text=message)
@@ -410,7 +412,7 @@ class GUI:
             pass
 
     # Aktualisiert das RAM Fenster
-    def update_ram_gui(self):
+    def update_ram_gui(self, triggered_by_gui=False):
         if not self.ram_window_open:
             return
         try:
@@ -418,7 +420,10 @@ class GUI:
                 if self.ram_result_label.winfo_exists():
                     self.ram_result_label.config(text="Result: Invalid Address")
                 return
-            self.new_ram_result = self.controller.computer.memory.read(self.current_ram_address)
+            if triggered_by_gui:
+                self.new_ram_result = self.controller.computer.memory.read(self.current_ram_address, triggered_by_gui=True)
+            else:
+                self.new_ram_result = self.controller.computer.memory.read(self.current_ram_address)
             if self.ram_result_label.winfo_exists():
                 self.ram_result_label.config(text="Result: " + str(self.new_ram_result) + " (" + str(mint(self.new_ram_result)) + ")")
         except tk.TclError:
@@ -459,3 +464,73 @@ class GUI:
     
     def shutdown_computer(self):
         self.controller.shutdown_computer()
+
+    def decode_instruction(self, instruction):
+        reg_dict = self.controller.computer.cpu.registers
+        opcode = instruction[:8]
+        operand1 = instruction[8:12]
+        operand2 = instruction[12:16]
+        operand3 = instruction[16:32]
+        
+        match opcode:
+            case "00000000":
+                return "jmp #" + str(mint(operand3))
+            case "00000001":
+                return "jeq #" + str(mint(operand3))
+            case "00000010":
+                return "jne #" + str(mint(operand3))
+            case "00000011":
+                return "inc [" + str(mint(operand3)) + "]"
+            case "00000100":
+                return "dec [" + str(mint(operand3)) + "]"
+            case "00000101":
+                return "load #" + str(mint(operand3)) + ", " + reg_dict[operand1]
+            case "00000110":
+                return "load [" + str(mint(operand3)) + "], " + reg_dict[operand1]
+            case "00000111":
+                return "store " + reg_dict[operand1] + ", [" + str(mint(operand3)) + "]"
+            case "00001000":
+                return "jmp " + reg_dict[operand1]
+            case "00001001":
+                return "jeq " + reg_dict[operand1]
+            case "00001010":
+                return "jne " + reg_dict[operand1]
+            case "00001011":
+                return "store [" + reg_dict[operand1] + "], " + reg_dict[operand2]
+            case "00001100":
+                return "move " + reg_dict[operand1] + ", " + reg_dict[operand2]
+            case "00001101":
+                return "add " + reg_dict[operand1] + ", " + reg_dict[operand2]
+            case "00001110":
+                return "sub " + reg_dict[operand1] + ", " + reg_dict[operand2]
+            case "00001111":
+                return "mult " + reg_dict[operand1] + ", " + reg_dict[operand2]
+            case "00010000":
+                return "div " + reg_dict[operand1] + ", " + reg_dict[operand2]
+            case "00010001":
+                return "inc " + reg_dict[operand1]
+            case "00010010":
+                return "dec " + reg_dict[operand1]
+            case "00010011":
+                return "and " + reg_dict[operand1] + ", " + reg_dict[operand2]
+            case "00010100":
+                return "or " + reg_dict[operand1] + ", " + reg_dict[operand2]
+            case "00010101":
+                return "xor " + reg_dict[operand1] + ", " + reg_dict[operand2]
+            case "00010110":
+                return "not " + reg_dict[operand1]
+            case "00010111":
+                return "rol " + reg_dict[operand1] + ", #" + str(mint(operand2))
+            case "00011000":
+                return "ror " + reg_dict[operand1] + ", #" + str(mint(operand2))
+            case "00011001":
+                return "cmp " + reg_dict[operand1] + ", " + reg_dict[operand2]
+            case "00011010":
+                return "shl " + reg_dict[operand1] + ", #" + str(mint(operand2))
+            case "00011011":
+                return "shr " + reg_dict[operand1] + ", #" + str(mint(operand2))
+            case "11111111":
+                return "hlt"
+
+            case _:
+                return "None"

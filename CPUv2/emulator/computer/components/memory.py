@@ -6,9 +6,10 @@ class RAM:
     def reset(self):
         self.memory_cells = ["00000000" for _ in range(self.size)]
     
-    def read(self, address):
+    def read(self, address, triggered_by_gui=False):
         result = self.memory_cells[address]
-        self.computer.controller.add_event("RAM: Reading at address " + str(address) + " -> " + str(result))
+        if not triggered_by_gui:
+            self.computer.controller.add_event("RAM: Reading at address " + str(address) + " -> " + str(result))
         return result
     
     def write(self, address, data):

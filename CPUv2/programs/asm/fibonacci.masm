@@ -1,6 +1,6 @@
 load #1, r0 ; n-1
 load #1, r1 ; n-2
-load #24, r3
+load #5, r3 ; wievielte fibonacci Zahl?
 load #1, r4
 dec r3
 jmp >fib_loop
