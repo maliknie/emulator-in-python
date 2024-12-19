@@ -30,7 +30,7 @@ class PixelDisplay:
         screen = pygame.display.set_mode(display_size)
         clock = pygame.time.Clock()
         pygame.display.set_caption('Pixelbased Display')
-        pygame.display.set_icon(pygame.image.load("anderes/images/icon.png"))
+        pygame.display.set_icon(pygame.image.load("images/icon.png"))
         
         self.running = True
         while self.running:

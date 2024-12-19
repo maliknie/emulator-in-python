@@ -35,7 +35,7 @@ class GUI:
         self.root = tk.Tk()
         self.root.title("CPU Emulator")
         self.root.geometry("600x600")
-        self.root.iconphoto(True, tk.PhotoImage(file='anderes/images/tk.png'))
+        self.root.iconphoto(True, tk.PhotoImage(file='images/tk.png'))
 
         self.setup_ui()
         self.main_loop()
@@ -104,7 +104,7 @@ class GUI:
 
     # Startet die main Schleife des root Fensters
     def main_loop(self):
-        self.root.tk.call("source", "CPUv2/libraries/Azure-ttk-theme-main/azure.tcl")
+        self.root.tk.call("source", "libraries/Azure-ttk-theme-main/azure.tcl")
         self.root.tk.call("set_theme", "dark")
         self.root.mainloop()
 
@@ -173,7 +173,7 @@ class GUI:
         self.special_purpose_register_frame.grid(row=1, column=1, pady=self.padding_y, sticky="w")
         self.register_32_bit_frame.grid(row=2, column=0, pady=self.padding_y, sticky="w")
 
-        self.cpu_gui.tk.call("source", "CPUv2/libraries/Azure-ttk-theme-main/azure.tcl")
+        self.cpu_gui.tk.call("source", "libraries/Azure-ttk-theme-main/azure.tcl")
         self.cpu_gui.tk.call("set_theme", "dark")
         self.cpu_gui.mainloop()
     
@@ -204,7 +204,7 @@ class GUI:
         self.operation_and_tick_frame.grid(row=0, column=0, pady=self.padding_y, padx=self.padding_x, sticky="w")
         self.tick_mode_frame.grid(row=1, column=0, pady=self.padding_y, padx=self.padding_x, sticky="w")
 
-        self.clock_gui.tk.call("source", "CPUv2/libraries/Azure-ttk-theme-main/azure.tcl")
+        self.clock_gui.tk.call("source", "libraries/Azure-ttk-theme-main/azure.tcl")
         self.clock_gui.tk.call("set_theme", "dark")
         self.clock_gui.mainloop()
 
@@ -248,7 +248,7 @@ class GUI:
         self.alu_arrow_2_frame.grid(row=0, column=3, pady=self.padding_y, padx=self.padding_x, sticky="w")
         self.alu_result_frame.grid(row=0, column=4, pady=self.padding_y, padx=self.padding_x, sticky="w")
 
-        self.alu_gui.tk.call("source", "CPUv2/libraries/Azure-ttk-theme-main/azure.tcl")
+        self.alu_gui.tk.call("source", "libraries/Azure-ttk-theme-main/azure.tcl")
         self.alu_gui.tk.call("set_theme", "dark")
         self.alu_gui.mainloop()
 
@@ -285,7 +285,7 @@ class GUI:
         self.ram_result_frame.grid(row=2, column=0, pady=self.padding_y, padx=self.padding_x, sticky="w")
 
 
-        self.ram_gui.tk.call("source", "CPUv2/libraries/Azure-ttk-theme-main/azure.tcl")
+        self.ram_gui.tk.call("source", "libraries/Azure-ttk-theme-main/azure.tcl")
         self.ram_gui.tk.call("set_theme", "dark")
         self.ram_gui.mainloop()
 
@@ -312,7 +312,7 @@ class GUI:
         self.log_label_frame.grid(row=0, column=0, pady=self.padding_y, padx=self.padding_x, sticky="w")
         self.log_text_frame.grid(row=1, column=0, pady=self.padding_y, padx=self.padding_x, sticky="w")
 
-        self.log_gui.tk.call("source", "CPUv2/libraries/Azure-ttk-theme-main/azure.tcl")
+        self.log_gui.tk.call("source", "libraries/Azure-ttk-theme-main/azure.tcl")
         self.log_gui.tk.call("set_theme", "dark")
         self.log_gui.mainloop()
 
@@ -453,7 +453,7 @@ class GUI:
     def load_program(self):    
         name = self.load_program_entry.get()
         self.load_program_entry.delete(0, len(name))
-        path = "CPUv2/programs/bin/" + name + ".bin"
+        path = "programs/bin/" + name + ".bin"
         self.controller.load_program(path)
 
     def start_computer(self):

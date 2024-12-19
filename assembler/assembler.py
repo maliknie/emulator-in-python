@@ -1,39 +1,12 @@
-# ISA
-"""
-Core instructions and syntax:
-        32 bit:
-             jmp #imd: | 00000000 | padding with zeros (4 bits) | padding with zeros (4 bits) | immediate value (16 bits) | Description: imd -> pc
-             jeq #imd: | 00000001 | padding with zeros (4 bits) | padding with zeros (4 bits) | immediate value (16 bits) | Description: if zero flag = 1, imd -> pc
-             jne #imd: | 00000010 | padding with zeros (4 bits) | padding with zeros (4 bits) | immediate value (16 bits) | Description: if zero flag != 1, imd -> pc
-             inc [mem]: | 00000011 | padding with zeros (4 bits) | padding with zeros (4 bits) | memory address (16 bits) | Description: [mem] += 1
-             dec [mem]: | 00000100 | padding with zeros (4 bits) | padding with zeros (4 bits) | memory address (16 bits) | Description: [mem] -= 1
-             load #imd, reg : | 00000101 | reg1 (4 bits) | padding with zeros (4 bits) | immediate value (16 bits) | Description: imd -> reg1
-             load [mem], reg: | 00000110 | reg1 (4 bits) | padding with zeros (4 bits) | memory address (16 bits) | Description: [mem] -> reg1
-             store reg, [mem]: | 00000111 | reg1 (4 bits) | padding with zeros (4 bits) | memory address (16 bits) | Description: reg1 -> [mem] 
-        16 bit + 16 bit padding:
-             jmp reg: | 00001000 | reg1 (4 bits) | padding with zeros (4 bits) | padding with zeros (16 bits) | Description: reg1 -> pc
-             jeq reg: | 00001001 | reg1 (4 bits) | padding with zeros (4 bits) | padding with zeros (16 bits) | Description: if zero flag = 1, reg1 -> pc
-             jne reg: | 00001010 | reg1 (4 bits) | padding with zeros (4 bits) | padding with zeros (16 bits) | Description: if zero flag != 1, reg1 -> pc
-             store reg1, reg2: | 00001011 | reg1 (4 bits) | reg2 (4 bits) | padding with zeros (16 bits) | Description: reg2 -> [reg1]
-             move reg1, reg2: | 00001100 | reg1 (4 bits) | reg2 (4 bits) | padding with zeros (16 bits) | Description: reg2 -> reg1
-             add reg1, reg2: | 00001101 | reg1 (4 bits) | reg2 (4 bits) | padding with zeros (16 bits) | Description: reg2 + reg1 -> reg1
-             sub reg1, reg2: | 00001110 | reg1 (4 bits) | reg2 (4 bits) | padding with zeros (16 bits) | Description: reg2 - reg1 -> reg1
-             mult reg1, reg2: | 00001111 | reg1 (4 bits) | reg2 (4 bits) | padding with zeros (16 bits) | Description: reg2 * reg1 -> high 16 bits in reg1, low 16 bits in reg2
-             div reg1, reg2: | 00010000 | reg1 (4 bits) | reg2 (4 bits) | padding with zeros (16 bits) | Description: reg2 / reg1 -> result in reg1, mod in reg2
-             inc reg: | 00010001 | reg1 (4 bits) | padding with zeros (4 bits) | padding with zeros (16 bits) | Description: reg1 += 1
-             dec reg: | 00010010 | reg1 (4 bits) | padding with zeros (4 bits) | padding with zeros (16 bits) | Description: reg1 -= 1
-             and reg1, reg2: | 00010011 | reg1 (4 bits) | reg2 (4 bits) | padding with zeros (16 bits) | Description: reg2 & reg1 -> reg1
-             or reg1, reg2: | 00010100 | reg1 (4 bits) | reg2 (4 bits) | padding with zeros (16 bits) | Description: reg2 | reg1 -> reg1
-             xor reg1, reg2: | 00010101 | reg1 (4 bits) | reg2 (4 bits) | padding with zeros (16 bits) | Description: reg2 ^ reg1 -> reg1
-             not reg 1: | 00010110 | reg1 (4 bits) | padding with zeros (4 bits) | padding with zeros (16 bits) | Description: ~reg1 -> reg1
-             rol reg1, #imd: | 00010111 | reg1 (4 bits) | imd (4 bits) | padding with zeros (16 bits) | Description: reg1 << imd -> reg1
-             ror reg1, #imd: | 00011000 | reg1 (4 bits) | imd (4 bits) | padding with zeros (16 bits) | Description: reg1 >> imd -> reg1
-             cmp reg1, reg2: | 00011001 | reg1 (4 bits) | reg2 (4 bits) | padding with zeros (16 bits) | Description: reg2 - reg1 (only changes flags)
-"""
+# ***
+# Assembler is sometimes buggy, if it doesnt work, try to remove any empty lines or whitespace in the .masm file you're trying to assemble
+# If the assembler still doesnt work, try to remove any comments in the .masm file you're trying to assemble
+# ***
+
 import sys
 from pathlib import Path
 
-project_root = Path(__file__).resolve().parents[3]
+project_root = Path(__file__).resolve().parents[1]
 sys.path.append(str(project_root))
 
 from libraries.binary_lib import mbin, mint, set_flag, check_flag
@@ -411,8 +384,8 @@ def assemble(assembly):
             binary.append(byte)
     return binary
 
-DIRECTORY_INPUT = "CPUv2/programs/asm/"
-DIRECTORY_OUTPUT = "CPUv2/programs/bin/"
+DIRECTORY_INPUT = "programs/asm/"
+DIRECTORY_OUTPUT = "programs/bin/"
 
 def main():
     input_file = DIRECTORY_INPUT +  str(input("Enter the name of the file to assemble: ")) + ".masm"
