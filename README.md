@@ -82,7 +82,7 @@ This repository contains a custom-built emulator that simulates a simplified CPU
 
 1. Assemble your program:
    ```bash
-   python assembler.py
+   python assembler/assembler.py
    ```
 
 2. Run the emulator with the binary file:
