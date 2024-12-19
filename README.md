@@ -70,8 +70,7 @@ This repository contains a custom-built emulator that simulates a simplified CPU
 
 1. Clone the repository:
    ```bash
-   git clone <repository-url>
-   cd <repository-directory>
+   git clone https://github.com/maliknie/emulator-in-python
    ```
 
 2. Install required dependencies:
