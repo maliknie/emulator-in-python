@@ -147,7 +147,7 @@ class Instructions:
         value = cpu.access_register("1100")[24:]
         cpu.computer.memory.write(memory_address, value)
 
-    @staticmethod # load #imd reg
+    @staticmethod # load reg #imd
     def i00000101(cu, cpu, operand1, operand2, operand3):
         cu.cpu.computer.controller.add_event("CU: Executing load #" + str(mint(operand3)) + "," + cpu.registers[operand1])
 
@@ -155,7 +155,7 @@ class Instructions:
             operand3 = operand3.zfill(32)
         cpu.access_register(operand1, operand3)
 
-    @staticmethod # load [mem] reg
+    @staticmethod # load reg [mem]
     def i00000110(cu, cpu, operand1, operand2, operand3):
         cu.cpu.computer.controller.add_event("CU: Executing load [" + str(mint(operand3)) + "], " + cpu.registers[operand1])
 
@@ -165,7 +165,7 @@ class Instructions:
             value += cpu.computer.memory.read(memory_address + 2) + cpu.computer.memory.read(memory_address + 3)
         cpu.access_register(operand1, value)
 
-    @staticmethod # store reg [mem]
+    @staticmethod # store #imd reg
     def i00000111(cu, cpu, operand1, operand2, operand3):
         cu.cpu.computer.controller.add_event("CU: Executing store " + cpu.registers[operand1] + ", [" + str(mint(operand3)) + "]")
 

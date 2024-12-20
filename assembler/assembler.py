@@ -223,27 +223,27 @@ def get_instruction(tokens, i, labels: dict):
         case "load":
             if len(operands) != 2:
                 raise ValueError(f"Invalid number of operands for {mnemonic} at line {i+1}")
-            if operands[0].startswith("#"):
+            if operands[1].startswith("#"):
                 opcode_bin = "00000101"
+                operand1_bin = register_to_bin(operands[0])
+                operand2_bin = "0000"
+                operand3_bin = mbin(int(operands[1][1:]), 16, neg=False)
+            else:
+                opcode_bin = "00000110"
+                operand1_bin = register_to_bin(operands[0])
+                operand2_bin = "0000"
+                operand3_bin = mbin(int(operands[1][1:-1]), 16, neg=False)
+        case "store":
+            if len(operands) != 2:
+                raise ValueError(f"Invalid number of operands for {mnemonic} at line {i+1}")
+            if operands[0].startswith("#"):
+                opcode_bin = "00000111"
                 operand1_bin = register_to_bin(operands[1])
                 operand2_bin = "0000"
                 operand3_bin = mbin(int(operands[0][1:]), 16, neg=False)
             else:
-                opcode_bin = "00000110"
-                operand1_bin = register_to_bin(operands[1])
-                operand2_bin = "0000"
-                operand3_bin = mbin(int(operands[0][1:-1]), 16, neg=False)
-        case "store":
-            if len(operands) != 2:
-                raise ValueError(f"Invalid number of operands for {mnemonic} at line {i+1}")
-            if operands[1].startswith("[") and operands[1].endswith("]"):
-                opcode_bin = "00000111"
-                operand1_bin = register_to_bin(operands[0])
-                operand2_bin = "0000"
-                operand3_bin = mbin(int(operands[1][1:-1]), 16, neg=False)
-            else:
                 opcode_bin = "00001011"
-                operand1_bin = register_to_bin(operands[0])
+                operand1_bin = register_to_bin(operands[0][1:-1])
                 operand2_bin = register_to_bin(operands[1])
                 operand3_bin = "0000000000000000"
         case "move":

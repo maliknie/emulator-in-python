@@ -73,15 +73,21 @@ This document outlines the entire instruction set architecture (ISA) for the emu
 
 #### LOAD (Memory)
 - **Opcode:** `00000110`
-- **Description:** Loads the value from a memory address into a register.
+- **Description:** Loads the value from a memory address into a register. Depending on the register size (16 or 32 bit) 2 or 4 conscutive memory cells are loaded into the register.
 - **Assembly Format:** `LOAD <REGISTER>, [MEMORY]`
-- **Binary Example:** `00000110 0001 0000 0000000000010000` (Loads value from address 16 into `r1`)
+- **Binary Example:** `00000110 0001 0000 0000000000010000` (Loads value from address 16 and 17 into `r1`)
 
 #### STORE
 - **Opcode:** `00000111`
-- **Description:** Stores the value of a register into a memory address.
-- **Assembly Format:** `STORE <REGISTER>, [MEMORY]`
+- **Description:** Stores the value of a register into a specified memory address.
+- **Assembly Format:** `STORE <REGISTER>, <#IMMEDIATE>`
 - **Binary Example:** `00000111 0001 0000 0000000000010000` (Stores value in `r1` into address 16)
+
+#### STORE (Register)
+- **Opcode:** `00000111`
+- **Description:** Stores the value of a source register to the memory address stored in the destination register.
+- **Assembly Format:** `STORE [DST], <SRC>`
+- **Binary Example:** `00000111 0001 0010 0000000000000000` (Stores value in `r2` to the adress stored in `r1`)
 
 #### MOVE
 - **Opcode:** `00001100`
@@ -177,25 +183,25 @@ This document outlines the entire instruction set architecture (ISA) for the emu
 - **Opcode:** `00010111`
 - **Description:** Performs a bitwise left rotation by the specified immediate value.
 - **Assembly Format:** `ROL <REGISTER>, <#IMMEDIATE>`
-- **Binary Example:** `00010111 0001 0000 0000000000000010` (Rotates `r1` left by 2 bits)
+- **Binary Example:** `00010111 0001 0010 0000000000000000` (Rotates `r1` left by 2 bits)
 
 #### ROR
 - **Opcode:** `00011000`
 - **Description:** Performs a bitwise right rotation by the specified immediate value.
 - **Assembly Format:** `ROR <REGISTER>, <#IMMEDIATE>`
-- **Binary Example:** `00011000 0001 0000 0000000000000010` (Rotates `r1` right by 2 bits)
+- **Binary Example:** `00011000 0001 0010 0000000000000000` (Rotates `r1` right by 2 bits)
 
 #### SHL
 - **Opcode:** `00011010`
 - **Description:** Shifts the value in a register left by the specified immediate value.
 - **Assembly Format:** `SHL <REGISTER>, <#IMMEDIATE>`
-- **Binary Example:** `00011010 0001 0000 0000000000000010` (Shifts `r1` left by 2 bits)
+- **Binary Example:** `00011010 0001 0010 0000000000000000` (Shifts `r1` left by 2 bits)
 
 #### SHR
 - **Opcode:** `00011011`
 - **Description:** Shifts the value in a register right by the specified immediate value.
 - **Assembly Format:** `SHR <REGISTER>, <#IMMEDIATE>`
-- **Binary Example:** `00011011 0001 0000 0000000000000010` (Shifts `r1` right by 2 bits)
+- **Binary Example:** `00011011 0001 0010 0000000000000000` (Shifts `r1` right by 2 bits)
 
 ---
 
