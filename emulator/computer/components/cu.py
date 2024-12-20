@@ -93,6 +93,10 @@ class CU:
                 Instructions.i00011010(self, self.cpu, self.operand1, self.operand2, self.operand3)
             case "00011011":
                 Instructions.i00011011(self, self.cpu, self.operand1, self.operand2, self.operand3)
+            case "00011100":
+                Instructions.i00011100(self, self.cpu, self.operand1, self.operand2, self.operand3)
+            case "00011101":
+                Instructions.i00011101(self, self.cpu, self.operand1, self.operand2, self.operand3)
             case "11111111":
                 Instructions.i11111111(self, self.cpu, self.operand1, self.operand2, self.operand3)
             case "debuggin":
@@ -379,6 +383,53 @@ class Instructions:
         cu.callALU("shr", reg1, operand2, 16)
         shifted = cpu.access_register("1100")[16:]
         cpu.access_register(operand1, shifted)
+
+    @staticmethod # push reg
+    def i00011100(cu, cpu, operand1, operand2, operand3):
+        cu.cpu.computer.controller.add_event("CU: Executing push " + cpu.registers[operand1])
+        print("push")
+
+        reg1 = cpu.access_register(operand1)
+        reg1_high = reg1[:8]
+        reg1_low = reg1[8:]
+        sp = int(cpu.access_register("1010"), 2)
+        if sp - 2 < cpu.stack_lower_bound:
+            raise Exception("Stack overflow")
+
+        sp -= 2
+        sp_bin = mbin(sp, 16, neg=False)
+        cpu.access_register("1010", sp_bin)
+
+        cpu.computer.memory.write(sp, reg1_high)
+        cpu.computer.memory.write(sp + 1, reg1_low)
+    
+    @staticmethod # pop reg
+    def i00011101(cu, cpu, operand1, operand2, operand3):
+        cu.cpu.computer.controller.add_event("CU: Executing pop " + cpu.registers[operand1])
+        print("pop")
+
+        sp = int(cpu.access_register("1010"), 2)
+        if sp + 2 > cpu.stack_upper_bound:
+            raise Exception("Stack underflow")
+
+        sp += 2
+        sp_bin = mbin(sp, 16, neg=False)
+        cpu.access_register("1010", sp_bin)
+
+
+        reg1_high = cpu.computer.memory.read(sp - 2)
+        reg1_low = cpu.computer.memory.read(sp - 1)
+        reg1 = reg1_high + reg1_low
+        cpu.access_register(operand1, reg1)
+        print(reg1)
+        print(operand1)
+
+
+    @staticmethod # print reg
+    def iwritestdout(cu, cpu, operand1, operand2, operand3):
+        cu.cpu.computer.controller.add_event("CU: Executing print " + cpu.registers[operand1])
+        
+        #NEEDS IMPLEMENTATION
 
     @staticmethod # halt
     def i11111111(cu, cpu, operand1, operand2, operand3):

@@ -97,6 +97,22 @@ This document outlines the entire instruction set architecture (ISA) for the emu
 
 ---
 
+### Stack Operations
+
+#### PUSH
+- **Opcode:** `00011100`
+- **Description:** Pushes a register onto the stack.
+- **Assembly Format:** `PUSH <REGISTER>`
+- **Binary Example:** `00011100 0001 0000 0000000000000000` (Pushes the value in `r1`onto the stack)
+
+#### PUSH
+- **Opcode:** `00011101`
+- **Description:** Pops a value from the stack and stores it in a register.
+- **Assembly Format:** `POP <REGISTER>`
+- **Binary Example:** `00011101 0001 0000 0000000000000000` (Pops the top value from the stack and stores it in `r1`)
+
+---
+
 ### Arithmetic Operations
 
 #### ADD

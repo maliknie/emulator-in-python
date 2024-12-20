@@ -23,6 +23,7 @@ class GUI:
         self.alu_window_open = False
         self.ram_window_open = False
         self.log_window_open = False
+        self.stdout_window_open = False
 
         self.memory_address_entry = None
         self.new_ram_result = None
@@ -92,6 +93,7 @@ class GUI:
         self.alu_gui_button = ttk.Button(self.gui_buttons_button_frame, text="Open ALU", command=self.alu_loop)
         self.ram_gui_button = ttk.Button(self.gui_buttons_button_frame, text="Open RAM", command=self.ram_loop)
         self.log_gui_button = ttk.Button(self.gui_buttons_button_frame, text="Open Log", command=self.log_loop)
+        self.stdout_gui_button = ttk.Button(self.gui_buttons_button_frame, text="Open Stdout", command=self.stdout_loop)
 
         self.open_display_window_button.grid(row=1, column=0, padx=self.padding_x, pady=self.padding_y)  
         self.cpu_gui_button.grid(row=1, column=1, padx=self.padding_x, pady=self.padding_y)
@@ -99,6 +101,7 @@ class GUI:
         self.alu_gui_button.grid(row=2, column=0, padx=self.padding_x, pady=self.padding_y)
         self.ram_gui_button.grid(row=2, column=1, padx=self.padding_x, pady=self.padding_y)
         self.log_gui_button.grid(row=2, column=2, padx=self.padding_x, pady=self.padding_y)
+        self.stdout_gui_button.grid(row=3, column=0, padx=self.padding_x, pady=self.padding_y)
         self.gui_buttons_button_frame.grid(row=1, column=0, pady=10)
         self.gui_buttons_frame.grid(row=2, column=0)
 
@@ -315,6 +318,37 @@ class GUI:
         self.log_gui.tk.call("source", "libraries/Azure-ttk-theme-main/azure.tcl")
         self.log_gui.tk.call("set_theme", "dark")
         self.log_gui.mainloop()
+    
+    def stdout_loop(self):
+        if self.stdout_window_open:
+            return
+        
+        self.stdout_window_open = True
+
+        self.stdout_gui = tk.Tk()
+        self.stdout_gui.title("Stdout")
+        self.stdout_gui.geometry("800x300")
+        self.stdout_gui.protocol("WM_DELETE_WINDOW", self.stdout_gui_destroyed)
+
+        self.stdout_label_frame = ttk.Frame(self.stdout_gui)
+        self.stdout_text_frame = ttk.Frame(self.stdout_gui)
+
+        self.stdout_clear_button = ttk.Button(self.stdout_gui, text="Clear", command=lambda: self.update_stdout_gui("", clear=True))
+        self.stdout_test_button = ttk.Button(self.stdout_gui, text="Test", command=lambda: self.update_stdout_gui("a"))
+        self.stdout_label = ttk.Label(self.stdout_label_frame, text="Stdout: ", font=self.header_font)
+        self.stdout_text = ttk.Label(self.stdout_text_frame, text="", font=self.small_font)
+        self.stdout_test_button.grid(row=0, column=1, padx=self.padding_x, pady=self.padding_y, sticky="w")
+        self.stdout_clear_button.grid(row=0, column=2, padx=400, pady=self.padding_y, sticky="w")
+        self.stdout_label.grid(row=0, column=0, padx=self.padding_x, pady=self.padding_y, sticky="w")
+        self.stdout_text.grid(row=0, column=0, padx=self.padding_x, pady=self.padding_y, sticky="w")
+
+
+        self.stdout_label_frame.grid(row=0, column=0, pady=self.padding_y, padx=self.padding_x, sticky="w")
+        self.stdout_text_frame.grid(row=1, column=0, pady=self.padding_y, padx=self.padding_x, sticky="w")
+
+        self.stdout_gui.tk.call("source", "libraries/Azure-ttk-theme-main/azure.tcl")
+        self.stdout_gui.tk.call("set_theme", "dark")
+        self.stdout_gui.mainloop()
 
 
     # Wird ausgeführt, wenn das CPU Fenster geschlossen wird
@@ -341,6 +375,10 @@ class GUI:
     def log_gui_destroyed(self):
         self.log_window_open = False
         self.log_gui.destroy()
+    
+    def stdout_gui_destroyed(self):
+        self.stdout_window_open = False
+        self.stdout_gui.destroy()
     
 
     
@@ -446,6 +484,20 @@ class GUI:
 
         
         self.new_events = []
+    
+    def update_stdout_gui(self, char, clear=False):
+        if not self.stdout_window_open:
+            return
+        try: 
+            for widget in self.stdout_text_frame.winfo_children():
+                if clear:
+                    widget.config(text="")
+                else:
+                    current_text = widget.cget("text")
+                    widget.config(text=current_text +char)
+            self.stdout_text_frame.grid(row=1, column=0, pady=self.padding_y, padx=self.padding_x, sticky="w")
+        except tk.TclError:
+            pass
 
 
 
@@ -529,8 +581,12 @@ class GUI:
                 return "shl " + reg_dict[operand1] + ", #" + str(mint(operand2))
             case "00011011":
                 return "shr " + reg_dict[operand1] + ", #" + str(mint(operand2))
+            case "00011100":
+                return "push " + reg_dict[operand1]
+            case "00011101":
+                return "pop " + reg_dict[operand1]
             case "11111111":
-                return "hlt"
+                return "halt"
 
             case _:
                 return "None"

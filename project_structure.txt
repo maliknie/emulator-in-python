@@ -1,0 +1,199 @@
+.
+├── assembler
+│   └── assembler.py
+├── docs
+│   └── isa.md
+├── emulator
+│   ├── computer
+│   │   ├── components
+│   │   │   ├── alu.py
+│   │   │   ├── clock.py
+│   │   │   ├── cpu.py
+│   │   │   ├── cu.py
+│   │   │   ├── memory.py
+│   │   │   └── __pycache__
+│   │   │       ├── alu.cpython-311.pyc
+│   │   │       ├── clock.cpython-311.pyc
+│   │   │       ├── cpu.cpython-311.pyc
+│   │   │       ├── cu.cpython-311.pyc
+│   │   │       └── memory.cpython-311.pyc
+│   │   ├── computer.py
+│   │   └── __pycache__
+│   │       └── computer.cpython-311.pyc
+│   ├── controller.py
+│   ├── devices
+│   │   ├── __pycache__
+│   │   │   └── screen.cpython-311.pyc
+│   │   └── screen.py
+│   ├── gui
+│   │   ├── gui.py
+│   │   └── __pycache__
+│   │       └── gui.cpython-311.pyc
+│   ├── init.py
+│   ├── main.py
+│   └── __pycache__
+│       ├── controller.cpython-311.pyc
+│       └── init.cpython-311.pyc
+├── images
+│   ├── icon.png
+│   └── tk.png
+├── libraries
+│   ├── Azure-ttk-theme-main
+│   │   ├── azure.tcl
+│   │   ├── Dark screenshot.png
+│   │   ├── example.py
+│   │   ├── LICENSE
+│   │   ├── Light screenshot.png
+│   │   ├── README.md
+│   │   ├── screenshot.png
+│   │   └── theme
+│   │       ├── dark
+│   │       │   ├── box-accent.png
+│   │       │   ├── box-basic.png
+│   │       │   ├── box-hover.png
+│   │       │   ├── box-invalid.png
+│   │       │   ├── button-hover.png
+│   │       │   ├── card.png
+│   │       │   ├── check-accent.png
+│   │       │   ├── check-basic.png
+│   │       │   ├── check-hover.png
+│   │       │   ├── check-tri-accent.png
+│   │       │   ├── check-tri-basic.png
+│   │       │   ├── check-tri-hover.png
+│   │       │   ├── circle-accent.png
+│   │       │   ├── circle-basic.png
+│   │       │   ├── circle-hover.png
+│   │       │   ├── combo-button-basic.png
+│   │       │   ├── combo-button-focus.png
+│   │       │   ├── combo-button-hover.png
+│   │       │   ├── down-accent.png
+│   │       │   ├── down.png
+│   │       │   ├── empty.png
+│   │       │   ├── hor-accent.png
+│   │       │   ├── hor-basic.png
+│   │       │   ├── hor-hover.png
+│   │       │   ├── notebook.png
+│   │       │   ├── off-basic.png
+│   │       │   ├── on-accent.png
+│   │       │   ├── on-basic.png
+│   │       │   ├── outline-basic.png
+│   │       │   ├── outline-hover.png
+│   │       │   ├── radio-accent.png
+│   │       │   ├── radio-basic.png
+│   │       │   ├── radio-hover.png
+│   │       │   ├── radio-tri-accent.png
+│   │       │   ├── radio-tri-basic.png
+│   │       │   ├── radio-tri-hover.png
+│   │       │   ├── rect-accent-hover.png
+│   │       │   ├── rect-accent.png
+│   │       │   ├── rect-basic.png
+│   │       │   ├── rect-hover.png
+│   │       │   ├── right.png
+│   │       │   ├── scale-hor.png
+│   │       │   ├── scale-vert.png
+│   │       │   ├── separator.png
+│   │       │   ├── size.png
+│   │       │   ├── tab-basic.png
+│   │       │   ├── tab-disabled.png
+│   │       │   ├── tab-hover.png
+│   │       │   ├── tick-hor-accent.png
+│   │       │   ├── tick-hor-basic.png
+│   │       │   ├── tick-hor-hover.png
+│   │       │   ├── tick-vert-accent.png
+│   │       │   ├── tick-vert-basic.png
+│   │       │   ├── tick-vert-hover.png
+│   │       │   ├── tree-basic.png
+│   │       │   ├── tree-pressed.png
+│   │       │   ├── up-accent.png
+│   │       │   ├── up.png
+│   │       │   ├── vert-accent.png
+│   │       │   ├── vert-basic.png
+│   │       │   └── vert-hover.png
+│   │       ├── dark.tcl
+│   │       ├── light
+│   │       │   ├── box-accent.png
+│   │       │   ├── box-basic.png
+│   │       │   ├── box-hover.png
+│   │       │   ├── box-invalid.png
+│   │       │   ├── button-hover.png
+│   │       │   ├── card.png
+│   │       │   ├── check-accent.png
+│   │       │   ├── check-basic.png
+│   │       │   ├── check-hover.png
+│   │       │   ├── check-tri-accent.png
+│   │       │   ├── check-tri-basic.png
+│   │       │   ├── check-tri-hover.png
+│   │       │   ├── circle-accent.png
+│   │       │   ├── circle-basic.png
+│   │       │   ├── circle-hover.png
+│   │       │   ├── combo-button-basic.png
+│   │       │   ├── combo-button-focus.png
+│   │       │   ├── combo-button-hover.png
+│   │       │   ├── down-accent.png
+│   │       │   ├── down.png
+│   │       │   ├── empty.png
+│   │       │   ├── hor-accent.png
+│   │       │   ├── hor-basic.png
+│   │       │   ├── hor-hover.png
+│   │       │   ├── notebook.png
+│   │       │   ├── off-basic.png
+│   │       │   ├── off-hover.png
+│   │       │   ├── on-accent.png
+│   │       │   ├── on-basic.png
+│   │       │   ├── on-hover.png
+│   │       │   ├── outline-basic.png
+│   │       │   ├── outline-hover.png
+│   │       │   ├── radio-accent.png
+│   │       │   ├── radio-basic.png
+│   │       │   ├── radio-hover.png
+│   │       │   ├── radio-tri-accent.png
+│   │       │   ├── radio-tri-basic.png
+│   │       │   ├── radio-tri-hover.png
+│   │       │   ├── rect-accent-hover.png
+│   │       │   ├── rect-accent.png
+│   │       │   ├── rect-basic.png
+│   │       │   ├── rect-hover.png
+│   │       │   ├── right.png
+│   │       │   ├── scale-hor.png
+│   │       │   ├── scale-vert.png
+│   │       │   ├── separator.png
+│   │       │   ├── size.png
+│   │       │   ├── tab-basic.png
+│   │       │   ├── tab-disabled.png
+│   │       │   ├── tab-hover.png
+│   │       │   ├── tick-hor-accent.png
+│   │       │   ├── tick-hor-basic.png
+│   │       │   ├── tick-hor-hover.png
+│   │       │   ├── tick-vert-accent.png
+│   │       │   ├── tick-vert-basic.png
+│   │       │   ├── tick-vert-hover.png
+│   │       │   ├── tree-basic.png
+│   │       │   ├── tree-pressed.png
+│   │       │   ├── up-accent.png
+│   │       │   ├── up.png
+│   │       │   ├── vert-accent.png
+│   │       │   ├── vert-basic.png
+│   │       │   └── vert-hover.png
+│   │       └── light.tcl
+│   ├── binary_lib.py
+│   └── __pycache__
+│       └── binary_lib.cpython-311.pyc
+├── LICENSE
+├── programs
+│   ├── asm
+│   │   ├── add.masm
+│   │   ├── default.masm
+│   │   ├── fibonacci.masm
+│   │   ├── ips.masm
+│   │   └── pixel.masm
+│   └── bin
+│       ├── add.bin
+│       ├── default.bin
+│       ├── fibonacci.bin
+│       ├── ips.bin
+│       └── pixel.bin
+├── project_structure.txt
+├── README.md
+└── requirements.txt
+
+23 directories, 174 files

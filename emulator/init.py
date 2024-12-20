@@ -31,6 +31,9 @@ def initialize_system(ram_size):
 
     controller.computer = computer
 
+    cpu.stack_upper_bound = memory.size - 2048 - 1
+    cpu.stack_lower_bound = memory.size // 2
+
     screen = PixelDisplay(controller)
 
     gui = GUI(controller)

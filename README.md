@@ -6,8 +6,8 @@ This repository contains a custom-built emulator that simulates a simplified CPU
 
 - **Custom ISA:** Supports arithmetic, control flow, memory manipulation, and bitwise operations.
 - **Assembler:** Converts assembly programs into machine code executable by the emulator.
+- **Pixel-based Display:** Uses `pygame==2.6.1` to create a pixel-based display for graphical output.
 - **Example Programs:** Includes example programs like Fibonacci sequence generation.
-- **Pygame Integration:** Uses `pygame==2.6.1` for interactive visualizations (if applicable).
 
 ## File Structure
 

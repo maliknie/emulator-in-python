@@ -11,7 +11,7 @@ sys.path.append(str(project_root))
 
 from libraries.binary_lib import mbin, mint, set_flag, check_flag
 
-non_redundant_mnemonics = ["move", "add", "sub", "mult", "div", "and", "or", "xor", "not", "rol", "ror", "cmp"]
+non_redundant_mnemonics = ["move", "add", "sub", "mult", "div", "and", "or", "xor", "not", "rol", "ror", "cmp", "shl", "shr", "push", "pop"]
 non_redundant_mnemonics_opcodes = {
     "move": "00001100",
     "add": "00001101",
@@ -27,7 +27,10 @@ non_redundant_mnemonics_opcodes = {
     "cmp": "00011001",
     "shl": "00011010",
     "shr": "00011011",
+    "push": "00011100",
+    "pop": "00011101",
 }
+
 registers = {
             "r0": "0000",
             "r1": "0001",
@@ -339,6 +342,16 @@ def get_instruction(tokens, i, labels: dict):
             opcode_bin = non_redundant_mnemonics_opcodes[mnemonic]
             operand1_bin = register_to_bin(operands[0])
             operand2_bin = immediate_to_bin(operands[1][:1], 4)
+            operand3_bin = "0000000000000000"
+        case "push":
+            opcode_bin = non_redundant_mnemonics_opcodes[mnemonic]
+            operand1_bin = register_to_bin(operands[0])
+            operand2_bin = "0000"
+            operand3_bin = "0000000000000000"
+        case "pop":
+            opcode_bin = non_redundant_mnemonics_opcodes[mnemonic]
+            operand1_bin = register_to_bin(operands[0])
+            operand2_bin = "0000"
             operand3_bin = "0000000000000000"
         case "halt":
             opcode_bin = "11111111"

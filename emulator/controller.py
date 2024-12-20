@@ -45,6 +45,15 @@ class AppController:
     
     def add_event(self, event):
         self.gui.new_events.append(event)
+
+    # work in progress, everything should be encoded in UTF-16
+    def write_to_stdout(self, data):
+        data = int(data, 2)
+        try:
+            char = chr(data)
+        except:
+            raise ValueError("Invalid character in string: " + data)
+        print(char)
     
     def read_memory(self, address, triggered_by_gui=False):
         if address.isdigit():

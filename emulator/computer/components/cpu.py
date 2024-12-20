@@ -14,6 +14,9 @@ class CPU:
         self.running = False
         self.tick_mode = False
 
+        self.stack_upper_bound = None
+        self.stack_lower_bound = None
+
         # Allgemeine Register
         self.r0 = "0000000000000000"
         self.r1 = "0000000000000000"
@@ -85,12 +88,15 @@ class CPU:
             "00011001": "cmp",
             "00011010": "shl",
             "00011011": "shr",
+            "00011100": "push",
+            "00011101": "pop",
             "11111111": "halt"
         }
 
 
 
     def run(self):
+        self.sp = mbin(self.stack_upper_bound, 16, neg=False)
         self.computer.clock.run()
 
     def stop(self):

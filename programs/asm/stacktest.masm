@@ -1,0 +1,11 @@
+load r0, #65000
+push r0
+load r0, #64000
+push r0
+load r0, #63000
+push r0
+pop r1
+pop r2
+pop r3
+pop r4
+halt
