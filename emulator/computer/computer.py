@@ -10,7 +10,7 @@ class Computer:
     def run(self):
         self.cpu.run()
     
-    def shutdown(self):
-        self.cpu.stop()
-        self.memory.reset()
-        self.cpu.reset()
+    def reset(self):
+       self.cpu.reset()
+       self.memory.reset()
+       self.clock.reset()

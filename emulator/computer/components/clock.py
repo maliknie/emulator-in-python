@@ -43,3 +43,8 @@ class Clock():
 
     def tick_button_pressed(self):
         self.tick_event.set()
+    
+    def reset(self):
+        self.current_operation = "None"
+        self.tick_event = threading.Event()
+        

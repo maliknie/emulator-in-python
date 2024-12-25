@@ -30,18 +30,20 @@ class GUI:
         self.current_ram_address = None
         
         self.new_events = []
-        
-    # Startet das root Fenster
+
+
+
+### Manage Windows ###
+    # Root Window      
     def start(self):
         self.root = tk.Tk()
         self.root.title("CPU Emulator")
         self.root.geometry("600x600")
         self.root.iconphoto(True, tk.PhotoImage(file='images/tk.png'))
+        self.root.protocol("WM_DELETE_WINDOW", self.root_destroyed)
 
         self.setup_ui()
         self.main_loop()
-    
-    # Setzt das Layout des root Fensters
     def setup_ui(self):
         self.root.grid_rowconfigure(0, weight=1)
         self.root.grid_rowconfigure(1, weight=1)
@@ -75,7 +77,7 @@ class GUI:
         self.computer_buttons_button_frame = ttk.Frame(self.computer_buttons_frame)
         self.start_cpu_button = ttk.Button(self.computer_buttons_button_frame, text="Start Computer", command=self.start_computer)
         self.start_cpu_button.grid(row=1, column=0, padx=self.padding_x, pady=self.padding_y)
-        self.shutdown_cpu_button = ttk.Button(self.computer_buttons_button_frame, text="Shutdown Computer", command=self.shutdown_computer)
+        self.shutdown_cpu_button = ttk.Button(self.computer_buttons_button_frame, text="Reset", command=self.reset)
         self.shutdown_cpu_button.grid(row=1, column=1, padx=self.padding_x, pady=self.padding_y)
 
         self.computer_buttons_button_frame.grid(row=1, column=0, pady=self.padding_y, padx=self.padding_x)
@@ -104,16 +106,32 @@ class GUI:
         self.stdout_gui_button.grid(row=3, column=0, padx=self.padding_x, pady=self.padding_y)
         self.gui_buttons_button_frame.grid(row=1, column=0, pady=10)
         self.gui_buttons_frame.grid(row=2, column=0)
-
-    # Startet die main Schleife des root Fensters
     def main_loop(self):
         self.root.tk.call("source", "libraries/Azure-ttk-theme-main/azure.tcl")
         self.root.tk.call("set_theme", "dark")
         self.root.mainloop()
+    def root_destroyed(self):
+        window_methods = {
+            self.cpu_window_open: self.cpu_gui_destroyed,
+            self.clock_window_open: self.clock_gui_destroyed,
+            self.alu_window_open: self.alu_gui_destroyed,
+            self.ram_window_open: self.ram_gui_destroyed,
+            self.log_window_open: self.log_gui_destroyed,
+            self.stdout_window_open: self.stdout_gui_destroyed,
+            self.screen_destroyed: self.screen_destroyed
+        }
+        
+        # Iterate through the mapping and call methods where the window is open
+        for is_open, destroy_method in window_methods.items():
+            if is_open:
+                destroy_method()
 
 
+        self.screen_destroyed()
+        self.root.destroy()
+        sys.exit()
 
-    # Startet das CPU Fenster
+    # CPU Window
     def cpu_loop(self):
         if self.cpu_window_open:
             return
@@ -179,8 +197,59 @@ class GUI:
         self.cpu_gui.tk.call("source", "libraries/Azure-ttk-theme-main/azure.tcl")
         self.cpu_gui.tk.call("set_theme", "dark")
         self.cpu_gui.mainloop()
-    
-    # Startet das Clock Fenster
+    def cpu_gui_destroyed(self):
+        self.cpu_window_open = False
+        self.cpu_gui.destroy()
+    def update_cpu_gui(self):
+        if not self.cpu_window_open:
+            return
+        try:
+            state = self.controller.get_cpu_state()
+            
+
+            for label in self.all_purpose_register_labels:
+                if not label.winfo_exists():
+                    continue
+                label_name = label.cget("text").split(":")[0]
+                message = label_name + ": " + str(state[0][label_name]).zfill(16) + " (" + str(mint(state[0][label_name])) + ")"
+                label.config(text=message)
+            
+            for label in self.special_purpose_register_labels:
+                if not label.winfo_exists():
+                    continue
+                label_name = label.cget("text").split(":")[0]
+                if label_name == "flags":
+                    message = label_name + ": " + str(state[0][label_name]).zfill(16)
+                else:
+                    message = label_name + ": " + str(state[0][label_name]).zfill(16) + " (" + str(mint(state[0][label_name])) + ")"
+                label_name = label.cget("text").split(":")[0]
+                label.config(text=message)
+            
+            for label in self.register_32_bit_frame_labels:
+                if not label.winfo_exists():
+                    continue
+                label_name = label.cget("text").split(":")[0]
+                if label_name == "ir":
+                    message = label_name + ": " + str(state[0][label_name]).zfill(32) + " (" + self.decode_instruction(state[0][label_name]) + ")"
+                else:
+                    message = label_name + ": " + str(state[0][label_name]).zfill(32) + " (" + str(mint(state[0][label_name])) + ")"
+                label.config(text=message)
+        except tk.TclError:
+            pass 
+    def reset_cpu_gui(self):
+        if not self.cpu_window_open:
+            return
+        try:
+            for label in self.all_purpose_register_labels:
+                label.config(text=label.cget("text").split(":")[0] + ": " + "0000000000000000" + " (0)")
+            for label in self.special_purpose_register_labels:
+                label.config(text=label.cget("text").split(":")[0] + ": " + "0000000000000000" + " (0)")
+            for label in self.register_32_bit_frame_labels:
+                label.config(text=label.cget("text").split(":")[0] + ": " + "00000000000000000000000000000000" + " (0)")
+        except tk.TclError:
+            pass
+
+    # Clock Window
     def clock_loop(self):
         if self.clock_window_open:
             return
@@ -210,7 +279,19 @@ class GUI:
         self.clock_gui.tk.call("source", "libraries/Azure-ttk-theme-main/azure.tcl")
         self.clock_gui.tk.call("set_theme", "dark")
         self.clock_gui.mainloop()
+    def clock_gui_destroyed(self):
+        self.clock_window_open = False
+        self.clock_gui.destroy()
+    def update_clock_gui(self):
+        if not self.clock_window_open:
+            return
+        try: 
+            if self.operation_label.winfo_exists():
+                self.operation_label.config(text="Current Operation: " + self.controller.computer.clock.current_operation)
+        except tk.TclError:
+            pass
 
+    # ALU Window
     def alu_loop(self):
         if self.alu_window_open:
             return
@@ -254,7 +335,29 @@ class GUI:
         self.alu_gui.tk.call("source", "libraries/Azure-ttk-theme-main/azure.tcl")
         self.alu_gui.tk.call("set_theme", "dark")
         self.alu_gui.mainloop()
+    def alu_gui_destroyed(self):
+        self.alu_window_open = False
+        self.alu_gui.destroy()
+    def update_alu_gui(self):
+        if not self.alu_window_open:
+            return
+        op = self.controller.computer.cpu.alu.current_operation
+        a = self.controller.computer.cpu.alu.operand_a
+        b = self.controller.computer.cpu.alu.operand_b
+        result = self.controller.computer.cpu.alu.result
+        try:
+            if self.alu_operand_a_label.winfo_exists():
+                self.alu_operand_a_label.config(text="Operand a: " + str(a) + " (" + str(mint(a)) + ")")
+            if self.alu_operand_b_label.winfo_exists():
+                self.alu_operand_b_label.config(text="Operand b: " + str(b) + " (" + str(mint(b)) + ")")
+            if self.alu_operation_label.winfo_exists():
+                self.alu_operation_label.config(text="Operation: " + op)
+            if self.alu_result_label.winfo_exists():
+                self.alu_result_label.config(text="Result: " + result + " (" + str(mint(result)) + ")")
+        except tk.TclError:
+            pass
 
+    # RAM Window
     def ram_loop(self):
         if self.ram_window_open:
             return
@@ -291,7 +394,27 @@ class GUI:
         self.ram_gui.tk.call("source", "libraries/Azure-ttk-theme-main/azure.tcl")
         self.ram_gui.tk.call("set_theme", "dark")
         self.ram_gui.mainloop()
+    def ram_gui_destroyed(self):
+        self.ram_window_open = False
+        self.ram_gui.destroy()
+    def update_ram_gui(self, triggered_by_gui=False):
+        if not self.ram_window_open:
+            return
+        try:
+            if self.current_ram_address == None:
+                if self.ram_result_label.winfo_exists():
+                    self.ram_result_label.config(text="Result: Invalid Address")
+                return
+            if triggered_by_gui:
+                self.new_ram_result = self.controller.computer.memory.read(self.current_ram_address, triggered_by_gui=True)
+            else:
+                self.new_ram_result = self.controller.computer.memory.read(self.current_ram_address)
+            if self.ram_result_label.winfo_exists():
+                self.ram_result_label.config(text="Result: " + str(self.new_ram_result) + " (" + str(mint(self.new_ram_result)) + ")")
+        except tk.TclError:
+            pass
 
+    # Log Window
     def log_loop(self):
         if self.log_window_open:
             return
@@ -318,156 +441,9 @@ class GUI:
         self.log_gui.tk.call("source", "libraries/Azure-ttk-theme-main/azure.tcl")
         self.log_gui.tk.call("set_theme", "dark")
         self.log_gui.mainloop()
-    
-    def stdout_loop(self):
-        if self.stdout_window_open:
-            return
-        
-        self.stdout_window_open = True
-
-        self.stdout_gui = tk.Tk()
-        self.stdout_gui.title("Stdout")
-        self.stdout_gui.geometry("800x300")
-        self.stdout_gui.protocol("WM_DELETE_WINDOW", self.stdout_gui_destroyed)
-
-        self.stdout_label_frame = ttk.Frame(self.stdout_gui)
-        self.stdout_text_frame = ttk.Frame(self.stdout_gui)
-
-        self.stdout_clear_button = ttk.Button(self.stdout_gui, text="Clear", command=lambda: self.update_stdout_gui("", clear=True))
-        self.stdout_test_button = ttk.Button(self.stdout_gui, text="Test", command=lambda: self.update_stdout_gui("a"))
-        self.stdout_label = ttk.Label(self.stdout_label_frame, text="Stdout: ", font=self.header_font)
-        self.stdout_text = ttk.Label(self.stdout_text_frame, text="", font=self.small_font)
-        self.stdout_test_button.grid(row=0, column=1, padx=self.padding_x, pady=self.padding_y, sticky="w")
-        self.stdout_clear_button.grid(row=0, column=2, padx=400, pady=self.padding_y, sticky="w")
-        self.stdout_label.grid(row=0, column=0, padx=self.padding_x, pady=self.padding_y, sticky="w")
-        self.stdout_text.grid(row=0, column=0, padx=self.padding_x, pady=self.padding_y, sticky="w")
-
-
-        self.stdout_label_frame.grid(row=0, column=0, pady=self.padding_y, padx=self.padding_x, sticky="w")
-        self.stdout_text_frame.grid(row=1, column=0, pady=self.padding_y, padx=self.padding_x, sticky="w")
-
-        self.stdout_gui.tk.call("source", "libraries/Azure-ttk-theme-main/azure.tcl")
-        self.stdout_gui.tk.call("set_theme", "dark")
-        self.stdout_gui.mainloop()
-
-
-    # Wird ausgeführt, wenn das CPU Fenster geschlossen wird
-    def cpu_gui_destroyed(self):
-        self.cpu_window_open = False
-        self.cpu_gui.destroy()
-    
-    # Wird ausgeführt, wenn das Clock Fenster geschlossen wird
-    def clock_gui_destroyed(self):
-        self.clock_window_open = False
-        self.clock_gui.destroy()
-
-    # Wird ausgeführt, wenn das ALU Fenster geschlossen wird
-    def alu_gui_destroyed(self):
-        self.alu_window_open = False
-        self.alu_gui.destroy()
-    
-    # Wird ausgeführt, wenn das RAM Fenster geschlossen wird
-    def ram_gui_destroyed(self):
-        self.ram_window_open = False
-        self.ram_gui.destroy()
-    
-    # Wird ausgeführt, wenn das Log Fenster geschlossen wird
     def log_gui_destroyed(self):
         self.log_window_open = False
         self.log_gui.destroy()
-    
-    def stdout_gui_destroyed(self):
-        self.stdout_window_open = False
-        self.stdout_gui.destroy()
-    
-
-    
-    # Aktualisiert das CPU Fenster
-    def update_cpu_gui(self):
-        if not self.cpu_window_open:
-            return
-        try:
-            state = self.controller.get_cpu_state()
-            
-
-            for label in self.all_purpose_register_labels:
-                if not label.winfo_exists():
-                    continue
-                label_name = label.cget("text").split(":")[0]
-                message = label_name + ": " + str(state[0][label_name]).zfill(16) + " (" + str(mint(state[0][label_name])) + ")"
-                label.config(text=message)
-            
-            for label in self.special_purpose_register_labels:
-                if not label.winfo_exists():
-                    continue
-                label_name = label.cget("text").split(":")[0]
-                if label_name == "flags":
-                    message = label_name + ": " + str(state[0][label_name]).zfill(16)
-                else:
-                    message = label_name + ": " + str(state[0][label_name]).zfill(16) + " (" + str(mint(state[0][label_name])) + ")"
-                label_name = label.cget("text").split(":")[0]
-                label.config(text=message)
-            
-            for label in self.register_32_bit_frame_labels:
-                if not label.winfo_exists():
-                    continue
-                label_name = label.cget("text").split(":")[0]
-                if label_name == "ir":
-                    message = label_name + ": " + str(state[0][label_name]).zfill(32) + " (" + self.decode_instruction(state[0][label_name]) + ")"
-                else:
-                    message = label_name + ": " + str(state[0][label_name]).zfill(32) + " (" + str(mint(state[0][label_name])) + ")"
-                label.config(text=message)
-        except tk.TclError:
-            pass
-        
-            
-
-    # Aktualisiert das Clock Fenster
-    def update_clock_gui(self):
-        if not self.clock_window_open:
-            return
-        try: 
-            if self.operation_label.winfo_exists():
-                self.operation_label.config(text="Current Operation: " + self.controller.computer.clock.current_operation)
-        except tk.TclError:
-            pass
-
-    # Aktualisiert das ALU Fenster
-    def update_alu_gui(self, op, a, b, result):
-        if not self.alu_window_open:
-            return
-        
-        try:
-            if self.alu_operand_a_label.winfo_exists():
-                self.alu_operand_a_label.config(text="Operand a: " + str(a) + " (" + str(mint(a)) + ")")
-            if self.alu_operand_b_label.winfo_exists():
-                self.alu_operand_b_label.config(text="Operand b: " + str(b) + " (" + str(mint(b)) + ")")
-            if self.operation_label.winfo_exists():
-                self.alu_operation_label.config(text="Operation: " + op)
-            if self.alu_result_label.winfo_exists():
-                self.alu_result_label.config(text="Result: " + result + " (" + str(mint(result)) + ")")
-        except tk.TclError:
-            pass
-
-    # Aktualisiert das RAM Fenster
-    def update_ram_gui(self, triggered_by_gui=False):
-        if not self.ram_window_open:
-            return
-        try:
-            if self.current_ram_address == None:
-                if self.ram_result_label.winfo_exists():
-                    self.ram_result_label.config(text="Result: Invalid Address")
-                return
-            if triggered_by_gui:
-                self.new_ram_result = self.controller.computer.memory.read(self.current_ram_address, triggered_by_gui=True)
-            else:
-                self.new_ram_result = self.controller.computer.memory.read(self.current_ram_address)
-            if self.ram_result_label.winfo_exists():
-                self.ram_result_label.config(text="Result: " + str(self.new_ram_result) + " (" + str(mint(self.new_ram_result)) + ")")
-        except tk.TclError:
-            pass
-
-    # Aktualisiert das Log Fenster
     def update_log_gui(self):
         if not self.log_window_open:
             return
@@ -484,39 +460,119 @@ class GUI:
 
         
         self.new_events = []
-    
-    def update_stdout_gui(self, char, clear=False):
+
+    # Stdout Window
+    def stdout_loop(self):
+        if self.stdout_window_open:
+            return
+        
+        self.stdout_window_open = True
+
+        self.stdout_gui = tk.Tk()
+        self.stdout_gui.title("Stdout")
+        self.stdout_gui.geometry("800x300")
+        self.stdout_gui.protocol("WM_DELETE_WINDOW", self.stdout_gui_destroyed)
+
+        self.stdout_label_frame = ttk.Frame(self.stdout_gui)
+        self.stdout_text_frame = ttk.Frame(self.stdout_gui)
+        self.stdout_button_frame = ttk.Frame(self.stdout_gui)
+
+        # Buttons
+        self.stdout_clear_button = ttk.Button(
+            self.stdout_button_frame,
+            text="Clear",
+            command=lambda: self.controller.write_to_stdout("")
+        )
+
+        # Label
+        self.stdout_label = ttk.Label(self.stdout_label_frame, text="Stdout: ", font=self.header_font)
+
+        # Text widget with horizontal and vertical scrollbars
+        self.stdout_text = tk.Text(self.stdout_text_frame, wrap="none", font=self.small_font, height=10, width=80, state="disabled")
+        self.stdout_text_scrollbar_x = ttk.Scrollbar(self.stdout_text_frame, orient="horizontal", command=self.stdout_text.xview)
+        self.stdout_text_scrollbar_y = ttk.Scrollbar(self.stdout_text_frame, orient="vertical", command=self.stdout_text.yview)
+        self.stdout_text.configure(xscrollcommand=self.stdout_text_scrollbar_x.set, yscrollcommand=self.stdout_text_scrollbar_y.set)
+
+        # Grid layout
+        self.stdout_label.grid(row=0, column=0, padx=self.padding_x, pady=self.padding_y, sticky="w")
+        self.stdout_text.grid(row=0, column=0, padx=self.padding_x, pady=self.padding_y, sticky="nsew")
+        self.stdout_text_scrollbar_x.grid(row=1, column=0, padx=self.padding_x, pady=0, sticky="ew")
+        self.stdout_text_scrollbar_y.grid(row=0, column=1, padx=0, pady=self.padding_y, sticky="ns")
+        self.stdout_clear_button.grid(row=0, column=1, padx=5, pady=5, sticky="w")
+
+        # Frames layout
+        self.stdout_label_frame.grid(row=0, column=0, pady=self.padding_y, padx=self.padding_x, sticky="w")
+        self.stdout_text_frame.grid(row=1, column=0, pady=self.padding_y, padx=self.padding_x, sticky="nsew")
+        self.stdout_button_frame.grid(row=2, column=0, pady=self.padding_y, padx=self.padding_x, sticky="w")
+
+        # Allow resizing of the text frame
+        self.stdout_gui.grid_rowconfigure(1, weight=1)  # Allow row 1 (text frame) to expan
+
+        self.stdout_gui.tk.call("source", "libraries/Azure-ttk-theme-main/azure.tcl")
+        self.stdout_gui.tk.call("set_theme", "dark")
+        self.stdout_gui.mainloop()
+    def stdout_gui_destroyed(self):
+        self.stdout_window_open = False
+        self.stdout_gui.destroy()  
+    def update_stdout_gui(self):
         if not self.stdout_window_open:
             return
-        try: 
-            for widget in self.stdout_text_frame.winfo_children():
-                if clear:
-                    widget.config(text="")
-                else:
-                    current_text = widget.cget("text")
-                    widget.config(text=current_text +char)
-            self.stdout_text_frame.grid(row=1, column=0, pady=self.padding_y, padx=self.padding_x, sticky="w")
-        except tk.TclError:
-            pass
+
+        clear = False
+        data = self.data
+        char = "None"
+
+        if data:
+            try:
+                data = int(data, 2)
+                char = chr(data)
+            except ValueError:
+                raise ValueError(f"Invalid character in binary string: {self.data}")
+        else:
+            clear = True
+
+        try:
+            # Enable editing for updates
+            self.stdout_text.config(state="normal")
+            
+            if clear:
+                # Clear the text widget
+                self.stdout_text.delete("1.0", "end")
+            else:
+                # Append the new character to the text widget
+                self.stdout_text.insert("end", char)
+            
+            # Disable editing after updates
+            self.stdout_text.config(state="disabled")
+        except tk.TclError as e:
+            print(f"Error updating stdout GUI: {e}")
+        
+        # Reset data after processing
+        self.data = ""
+
+    # Screen Window
+    def start_screen(self):
+        self.controller.start_screen()
+    def screen_destroyed(self):
+        self.screen_window_open = False
+        self.controller.destroy_screen()
 
 
 
-
+### Computer controlls ###
     def load_program(self):    
         name = self.load_program_entry.get()
         self.load_program_entry.delete(0, len(name))
         path = "programs/bin/" + name + ".bin"
         self.controller.load_program(path)
-
     def start_computer(self):
         self.controller.start_computer()
+    def reset(self):
+        self.controller.reset()
+   
 
-    def start_screen(self):
-        self.controller.start_screen()
-    
-    def shutdown_computer(self):
-        self.controller.shutdown_computer()
 
+### Helpers ###
     def decode_instruction(self, instruction):
         reg_dict = self.controller.computer.cpu.registers
         opcode = instruction[:8]
@@ -585,6 +641,10 @@ class GUI:
                 return "push " + reg_dict[operand1]
             case "00011101":
                 return "pop " + reg_dict[operand1]
+            case "00011110":
+                return "call #" + str(mint(operand3))
+            case "00011111":
+                return "ret"
             case "11111111":
                 return "halt"
 

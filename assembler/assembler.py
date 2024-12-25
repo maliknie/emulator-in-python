@@ -11,7 +11,7 @@ sys.path.append(str(project_root))
 
 from libraries.binary_lib import mbin, mint, set_flag, check_flag
 
-non_redundant_mnemonics = ["move", "add", "sub", "mult", "div", "and", "or", "xor", "not", "rol", "ror", "cmp", "shl", "shr", "push", "pop"]
+non_redundant_mnemonics = ["move", "add", "sub", "mult", "div", "and", "or", "xor", "not", "rol", "ror", "cmp", "shl", "shr", "push", "pop", "call", "ret"]
 non_redundant_mnemonics_opcodes = {
     "move": "00001100",
     "add": "00001101",
@@ -29,6 +29,8 @@ non_redundant_mnemonics_opcodes = {
     "shr": "00011011",
     "push": "00011100",
     "pop": "00011101",
+    "call": "00011110",
+    "ret": "00011111"
 }
 
 registers = {
@@ -353,6 +355,29 @@ def get_instruction(tokens, i, labels: dict):
             operand1_bin = register_to_bin(operands[0])
             operand2_bin = "0000"
             operand3_bin = "0000000000000000"
+        case "call":
+            if len(operands) != 1:
+                raise ValueError(f"Invalid number of operands for {mnemonic} at line {i+1}")
+            if operands[0].startswith("#"):
+                opcode_bin = "00000000"
+                operand1_bin = "0000"
+                operand2_bin = "0000"
+                operand3_bin = mbin(int(operands[0][1:]), 16, neg = False)
+            elif operands[0].startswith(">"):
+                if not str(operands[0]) + ":" in labels:
+                    print("_________________________")
+                    print("Error causing label: " + operands[0])
+                    print("labels:", labels)
+                    raise ValueError(f"Label {operands[0]} isn't defined at line {i+1}")
+                opcode_bin = "00000000"
+                operand1_bin = "0000"
+                operand2_bin = "0000"
+                operand3_bin = labels[operands[0] + ":"]
+        case "ret":
+            opcode_bin = non_redundant_mnemonics_opcodes[mnemonic]
+            operand1_bin = "0000"
+            operand2_bin = "0000"
+            operand3_bin = "0000000000000000"
         case "halt":
             opcode_bin = "11111111"
             operand1_bin = "0000"
@@ -365,7 +390,7 @@ def get_instruction(tokens, i, labels: dict):
             operand3_bin = "0000000000000000"
         case _:
             if not mnemonic.endswith(":"):
-                raise ValueError(f"Invalid mnemonic {mnemonic} at line {i+1}")
+                raise ValueError(f"Invalid mnemonic '{mnemonic}' at line {i+1}")
 
     instruction = opcode_bin + operand1_bin + operand2_bin + operand3_bin
     return instruction

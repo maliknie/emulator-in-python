@@ -56,6 +56,10 @@ class PixelDisplay:
             sleep(0.1)
         pygame.quit()
         sys.exit()
+    
+    def stop(self):
+        self.running = False
+        pygame.quit()
 
     @staticmethod
     def color_picker(string: str):

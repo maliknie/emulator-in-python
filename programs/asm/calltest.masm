@@ -1,0 +1,11 @@
+load r0, #1
+jmp main
+
+adding:
+    add r0, r0
+    ret
+;;;;; hello 
+main: ;; hello
+    call adding
+    call adding
+    halt ; hello

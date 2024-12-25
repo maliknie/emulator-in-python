@@ -10,6 +10,10 @@ from libraries.binary_lib import mbin, mint, set_flag, check_flag
 class ALU:
     def __init__(self, cpu):
         self.cpu = cpu
+        self.operand_a = "0000000000000000"
+        self.operand_b = "0000000000000000"
+        self.current_operation = "None"
+        self.result = "00000000000000000000000000000000"
         self.high = "0000000000000000"
         self.low = "0000000000000000"
         
@@ -18,6 +22,10 @@ class ALU:
         self.low = "0000000000000000"
 
     def execute(self, op, a, b, bit_length = 16):
+        self.operand_a = a
+        self.operand_b = b
+        self.current_operation = op
+
         match op:
             case "add":
                 self.high, self.low = "0000000000000000", Operations.add(a, b, bit_length)
@@ -45,8 +53,10 @@ class ALU:
                 self.high, self.low = "0000000000000000", Operations.shr(a, b, bit_length)
             case _:
                 raise ValueError("Invalid operation: " + op)
+        
+        self.result = self.high.zfill(16) + self.low.zfill(16)
             
-        self.cpu.computer.controller.gui.update_alu_gui(op, a, b, self.high.zfill(16) + self.low.zfill(16))
+        self.cpu.computer.controller.gui.update_alu_gui()
 
         self.cpu.computer.controller.add_event("ALU: Executing " + a + " " + op + " " + b + " -> " + self.high.zfill(16) + self.low.zfill(16))
 

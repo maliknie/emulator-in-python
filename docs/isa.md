@@ -61,6 +61,18 @@ This document outlines the entire instruction set architecture (ISA) for the emu
 - **Assembly Format:** `JNE <REGISTER>`
 - **Binary Example:** `00001010 0001 0000 0000000000000000` (Jumps to address in `r1` if zero flag is 0)
 
+#### CALL 
+- **Opcode:** `0001111`
+- **Description:** Jumps to the specified address and pushes the program counter onto the stack.
+- **Assembly Format:** `CALL <#IMMEDIATE>`
+- **Binary Example:** `00011110 0000 0000 0000000000001000` (Jumps to address 8 and pushes the program counter onto the stack)
+
+#### RET 
+- **Opcode:** `00011111`
+- **Description:** Pops the top element of the stack into the program counter.
+- **Assembly Format:** `RET`
+- **Binary Example:** `00011111 0000 0000 0000000000000000` (Pops the top element of the stack into the program counter)
+
 ---
 
 ### Memory Operations
@@ -199,25 +211,25 @@ This document outlines the entire instruction set architecture (ISA) for the emu
 - **Opcode:** `00010111`
 - **Description:** Performs a bitwise left rotation by the specified immediate value.
 - **Assembly Format:** `ROL <REGISTER>, <#IMMEDIATE>`
-- **Binary Example:** `00010111 0001 0010 0000000000000000` (Rotates `r1` left by 2 bits)
+- **Binary Example:** `00010111 0001 0000 0000000000000010` (Rotates `r1` left by 2 bits)
 
 #### ROR
 - **Opcode:** `00011000`
 - **Description:** Performs a bitwise right rotation by the specified immediate value.
 - **Assembly Format:** `ROR <REGISTER>, <#IMMEDIATE>`
-- **Binary Example:** `00011000 0001 0010 0000000000000000` (Rotates `r1` right by 2 bits)
+- **Binary Example:** `00011000 0001 0000 0000000000000010` (Rotates `r1` right by 2 bits)
 
 #### SHL
 - **Opcode:** `00011010`
 - **Description:** Shifts the value in a register left by the specified immediate value.
 - **Assembly Format:** `SHL <REGISTER>, <#IMMEDIATE>`
-- **Binary Example:** `00011010 0001 0010 0000000000000000` (Shifts `r1` left by 2 bits)
+- **Binary Example:** `00011010 0001 0000 0000000000000010` (Shifts `r1` left by 2 bits)
 
 #### SHR
 - **Opcode:** `00011011`
 - **Description:** Shifts the value in a register right by the specified immediate value.
 - **Assembly Format:** `SHR <REGISTER>, <#IMMEDIATE>`
-- **Binary Example:** `00011011 0001 0010 0000000000000000` (Shifts `r1` right by 2 bits)
+- **Binary Example:** `00011011 0001 0000 0000000000000010` (Shifts `r1` right by 2 bits)
 
 ---
 

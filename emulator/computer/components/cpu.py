@@ -90,6 +90,8 @@ class CPU:
             "00011011": "shr",
             "00011100": "push",
             "00011101": "pop",
+            "00011110": "call",
+            "00011111": "ret",
             "11111111": "halt"
         }
 
@@ -125,6 +127,7 @@ class CPU:
         self.mdr = "0000000000000000"
 
         self.alu.reset()
+        self.cu.reset()
 
     
     # Wird benutzt um von Register zu lesen und hinein zu schreiben

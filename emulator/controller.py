@@ -2,7 +2,6 @@ import threading
 
 # Vermittlerklasse, die die Kommunikation zwischen GUI, Computer und Bildschirm steuert
 
-# get_cpu_state() als Beispiel für eine Methode, die Informationen aus dem Computer an die GUI weitergibt
 class AppController:
     def __init__(self, gui, computer, screen):
         self.gui = gui
@@ -16,8 +15,10 @@ class AppController:
         self.computer_thread = threading.Thread(target=self.computer.run, daemon=True)
         self.computer_thread.start()
     
-    def shutdown_computer(self):
-        self.computer.shutdown()
+    def reset(self):
+        self.computer.reset()
+        self.gui.new_events = []
+        self.update_gui()
 
     def start_screen(self):
         self.screen_thread = threading.Thread(target=self.screen.run, daemon=True)
@@ -41,6 +42,9 @@ class AppController:
     def update_gui(self):
         self.gui.update_cpu_gui()
         self.gui.update_clock_gui()
+        self.gui.update_ram_gui()
+        self.gui.update_alu_gui()
+        self.gui.update_stdout_gui()
         self.gui.update_log_gui()
     
     def add_event(self, event):
@@ -48,12 +52,8 @@ class AppController:
 
     # work in progress, everything should be encoded in UTF-16
     def write_to_stdout(self, data):
-        data = int(data, 2)
-        try:
-            char = chr(data)
-        except:
-            raise ValueError("Invalid character in string: " + data)
-        print(char)
+        self.gui.data = data
+        self.gui.update_stdout_gui()
     
     def read_memory(self, address, triggered_by_gui=False):
         if address.isdigit():
@@ -65,3 +65,6 @@ class AppController:
         self.gui.current_ram_address = None
         self.gui.update_ram_gui()
         return
+    
+    def destroy_screen(self):
+        self.screen.stop()

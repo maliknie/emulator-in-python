@@ -97,6 +97,10 @@ class CU:
                 Instructions.i00011100(self, self.cpu, self.operand1, self.operand2, self.operand3)
             case "00011101":
                 Instructions.i00011101(self, self.cpu, self.operand1, self.operand2, self.operand3)
+            case "00011110":
+                Instructions.i00011110(self, self.cpu, self.operand1, self.operand2, self.operand3)
+            case "00011111":
+                Instructions.i00011111(self, self.cpu, self.operand1, self.operand2, self.operand3)
             case "11111111":
                 Instructions.i11111111(self, self.cpu, self.operand1, self.operand2, self.operand3)
             case "debuggin":
@@ -104,13 +108,20 @@ class CU:
             case _:
                 raise ValueError("Invalid opcode: " + self.opcode + "\n" + "Program counter: " + str(int(self.cpu.pc, 2)))
 
+
+    def reset(self):
+        self.opcode = "00000000"
+        self.operand1 = "0000000000000000"
+        self.operand2 = "0000000000000000"
+        self.operand3 = "0000000000000000"
+
     def callALU(self, op, a, b, bit_length = 16):
         self.cpu.alu.execute(op, a, b, bit_length)
 
 # Implementation der Instruktionen
 class Instructions:
 
-    @staticmethod # jump #imd
+    @staticmethod # jmp #imd
     def i00000000(cu, cpu, operand1, operand2, operand3):
         cu.cpu.computer.controller.add_event("CU: Executing jmp #" + str(mint(operand3)))
 
@@ -169,7 +180,7 @@ class Instructions:
             value += cpu.computer.memory.read(memory_address + 2) + cpu.computer.memory.read(memory_address + 3)
         cpu.access_register(operand1, value)
 
-    @staticmethod # store #imd reg
+    @staticmethod # store [mem] reg
     def i00000111(cu, cpu, operand1, operand2, operand3):
         cu.cpu.computer.controller.add_event("CU: Executing store " + cpu.registers[operand1] + ", [" + str(mint(operand3)) + "]")
 
@@ -342,7 +353,7 @@ class Instructions:
         cu.cpu.computer.controller.add_event("CU: Executing rol " + cpu.registers[operand1] + ", #" + str(mint(operand2)))
 
         reg1 = cpu.access_register(operand1)
-        cu.callALU("rol", reg1, operand2, 16)
+        cu.callALU("rol", reg1, operand3, 16)
         rolled = cpu.access_register("1100")[16:]
         cpu.access_register(operand1, rolled)
 
@@ -351,7 +362,7 @@ class Instructions:
         cu.cpu.computer.controller.add_event("CU: Executing ror " + cpu.registers[operand1] + ", #" + str(mint(operand2)))
 
         reg1 = cpu.access_register(operand1)
-        cu.callALU("ror", reg1, operand2, 16)
+        cu.callALU("ror", reg1, operand3, 16)
         rolled = cpu.access_register("1100")[16:]
         cpu.access_register(operand1, rolled)
 
@@ -371,7 +382,7 @@ class Instructions:
         cu.cpu.computer.controller.add_event("CU: Executing shl " + cpu.registers[operand1] + ", #" + str(mint(operand2)))
 
         reg1 = cpu.access_register(operand1)
-        cu.callALU("shl", reg1, operand2, 16)
+        cu.callALU("shl", reg1, operand3, 16)
         shifted = cpu.access_register("1100")[16:]
         cpu.access_register(operand1, shifted)
     
@@ -380,14 +391,13 @@ class Instructions:
         cu.cpu.computer.controller.add_event("CU: Executing shr " + cpu.registers[operand1] + ", #" + str(mint(operand2)))
 
         reg1 = cpu.access_register(operand1)
-        cu.callALU("shr", reg1, operand2, 16)
+        cu.callALU("shr", reg1, operand3, 16)
         shifted = cpu.access_register("1100")[16:]
         cpu.access_register(operand1, shifted)
 
     @staticmethod # push reg
     def i00011100(cu, cpu, operand1, operand2, operand3):
         cu.cpu.computer.controller.add_event("CU: Executing push " + cpu.registers[operand1])
-        print("push")
 
         reg1 = cpu.access_register(operand1)
         reg1_high = reg1[:8]
@@ -406,7 +416,6 @@ class Instructions:
     @staticmethod # pop reg
     def i00011101(cu, cpu, operand1, operand2, operand3):
         cu.cpu.computer.controller.add_event("CU: Executing pop " + cpu.registers[operand1])
-        print("pop")
 
         sp = int(cpu.access_register("1010"), 2)
         if sp + 2 > cpu.stack_upper_bound:
@@ -421,8 +430,20 @@ class Instructions:
         reg1_low = cpu.computer.memory.read(sp - 1)
         reg1 = reg1_high + reg1_low
         cpu.access_register(operand1, reg1)
-        print(reg1)
-        print(operand1)
+    
+    @staticmethod # call #imd (label)
+    def i00011110(cu, cpu, operand1, operand2, operand3):
+        cu.cpu.computer.controller.add_event("CU: Executing call " + cpu.registers[operand1])
+
+        Instructions.i00011100(cu, cpu, "1000", "0000", "0000000000000000")
+        Instructions.i00000000(cu, cpu, "0000", "0000", operand3)
+
+    @staticmethod # ret
+    def i00011111(cu, cpu, operand1, operand2, operand3):
+        cu.cpu.computer.controller.add_event("CU: Executing ret")
+
+        Instructions.i00011101(cu, cpu, "1000", "0000", "0000000000000000")
+
 
 
     @staticmethod # print reg
