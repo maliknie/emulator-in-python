@@ -34,80 +34,13 @@ class CU:
         print("Operand3: ", self.operand3, mint(self.operand3))
         print("_________________________")"""
     
-    # Führt die Instruktion aus
     def execute(self):
-        match self.opcode:
-            case "00000000":
-                Instructions.i00000000(self, self.cpu, self.operand1, self.operand2, self.operand3)
-            case "00000001":
-                Instructions.i00000001(self, self.cpu, self.operand1, self.operand2, self.operand3)
-            case "00000010":
-                Instructions.i00000010(self, self.cpu, self.operand1, self.operand2, self.operand3)
-            case "00000011":
-                Instructions.i00000011(self, self.cpu, self.operand1, self.operand2, self.operand3)
-            case "00000100":
-                Instructions.i00000100(self, self.cpu, self.operand1, self.operand2, self.operand3)
-            case "00000101":
-                Instructions.i00000101(self, self.cpu, self.operand1, self.operand2, self.operand3)
-            case "00000110":
-                Instructions.i00000110(self, self.cpu, self.operand1, self.operand2, self.operand3)
-            case "00000111":
-                Instructions.i00000111(self, self.cpu, self.operand1, self.operand2, self.operand3)
-            case "00001000":
-                Instructions.i00001000(self, self.cpu, self.operand1, self.operand2, self.operand3)
-            case "00001001":
-                Instructions.i00001001(self, self.cpu, self.operand1, self.operand2, self.operand3)
-            case "00001010":
-                Instructions.i00001010(self, self.cpu, self.operand1, self.operand2, self.operand3)
-            case "00001011":
-                Instructions.i00001011(self, self.cpu, self.operand1, self.operand2, self.operand3)
-            case "00001100":
-                Instructions.i00001100(self, self.cpu, self.operand1, self.operand2, self.operand3)
-            case "00001101":
-                Instructions.i00001101(self, self.cpu, self.operand1, self.operand2, self.operand3)
-            case "00001110":
-                Instructions.i00001110(self, self.cpu, self.operand1, self.operand2, self.operand3)
-            case "00001111":
-                Instructions.i00001111(self, self.cpu, self.operand1, self.operand2, self.operand3)
-            case "00010000":
-                Instructions.i00010000(self, self.cpu, self.operand1, self.operand2, self.operand3)
-            case "00010001":
-                Instructions.i00010001(self, self.cpu, self.operand1, self.operand2, self.operand3)
-            case "00010010":
-                Instructions.i00010010(self, self.cpu, self.operand1, self.operand2, self.operand3)
-            case "00010011":
-                Instructions.i00010011(self, self.cpu, self.operand1, self.operand2, self.operand3)
-            case "00010100":
-                Instructions.i00010100(self, self.cpu, self.operand1, self.operand2, self.operand3)
-            case "00010101":
-                Instructions.i00010101(self, self.cpu, self.operand1, self.operand2, self.operand3)
-            case "00010110":
-                Instructions.i00010110(self, self.cpu, self.operand1, self.operand2, self.operand3)
-            case "00010111":
-                Instructions.i00010111(self, self.cpu, self.operand1, self.operand2, self.operand3)
-            case "00011000":
-                Instructions.i00011000(self, self.cpu, self.operand1, self.operand2, self.operand3)
-            case "00011001":
-                Instructions.i00011001(self, self.cpu, self.operand1, self.operand2, self.operand3)
-            case "00011010":
-                Instructions.i00011010(self, self.cpu, self.operand1, self.operand2, self.operand3)
-            case "00011011":
-                Instructions.i00011011(self, self.cpu, self.operand1, self.operand2, self.operand3)
-            case "00011100":
-                Instructions.i00011100(self, self.cpu, self.operand1, self.operand2, self.operand3)
-            case "00011101":
-                Instructions.i00011101(self, self.cpu, self.operand1, self.operand2, self.operand3)
-            case "00011110":
-                Instructions.i00011110(self, self.cpu, self.operand1, self.operand2, self.operand3)
-            case "00011111":
-                Instructions.i00011111(self, self.cpu, self.operand1, self.operand2, self.operand3)
-            case "11111111":
-                Instructions.i11111111(self, self.cpu, self.operand1, self.operand2, self.operand3)
-            case "debuggin":
-                Instructions.print_registers(self, self.cpu, self.operand1, self.operand2, self.operand3)
-            case _:
-                raise ValueError("Invalid opcode: " + self.opcode + "\n" + "Program counter: " + str(int(self.cpu.pc, 2)))
-
+        try:
+            Instructions.instruction_dict[self.opcode](self, self.cpu, self.operand1, self.operand2, self.operand3)
+        except KeyError:
+            self.cpu.computer.controller.add_event("CU: Unknown instruction " + self.opcode)
+            self.cpu.computer.controller.add_event("Computer crashed")
+            sys.exit(1)
 
     def reset(self):
         self.opcode = "00000000"
@@ -120,7 +53,7 @@ class CU:
 
 # Implementation der Instruktionen
 class Instructions:
-
+    
     @staticmethod # jmp #imd
     def i00000000(cu, cpu, operand1, operand2, operand3):
         cu.cpu.computer.controller.add_event("CU: Executing jmp #" + str(mint(operand3)))
@@ -462,3 +395,41 @@ class Instructions:
     @staticmethod
     def print_registers(cu, cpu, operand1, operand2, operand3):
         cu.cpu.print_registers()
+
+    instruction_dict = {
+        "00000000": i00000000,
+        "00000001": i00000001,
+        "00000010": i00000010,
+        "00000011": i00000011,
+        "00000100": i00000100,
+        "00000101": i00000101,
+        "00000110": i00000110,
+        "00000111": i00000111,
+        "00001000": i00001000,
+        "00001001": i00001001,
+        "00001010": i00001010,
+        "00001011": i00001011,
+        "00001100": i00001100,
+        "00001101": i00001101,
+        "00001110": i00001110,
+        "00001111": i00001111,
+        "00010000": i00010000,
+        "00010001": i00010001,
+        "00010010": i00010010,
+        "00010011": i00010011,
+        "00010100": i00010100,
+        "00010101": i00010101,
+        "00010110": i00010110,
+        "00010111": i00010111,
+        "00011000": i00011000,
+        "00011001": i00011001,
+        "00011010": i00011010,
+        "00011011": i00011011,
+        "00011100": i00011100,
+        "00011101": i00011101,
+        "00011110": i00011110,
+        "00011111": i00011111,
+        "11111111": i11111111,
+        "debuggin": print_registers,
+        "writestd": iwritestdout          
+    }
