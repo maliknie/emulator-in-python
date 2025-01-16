@@ -16,6 +16,8 @@ class ALU:
         self.result = "00000000000000000000000000000000"
         self.high = "0000000000000000"
         self.low = "0000000000000000"
+
+        self.compare_op = False
         
     def reset(self):
         self.high = "0000000000000000"
@@ -35,6 +37,9 @@ class ALU:
                 self.high, self.low = Operations.mult(a, b, bit_length)[:bit_length//2], Operations.mult(a, b, bit_length)[bit_length//2:]
             case "div":
                 self.high, self.low = Operations.div(a, b, bit_length)[:bit_length//2], Operations.div(a, b, bit_length)[bit_length//2:]
+            case "cmp":
+                self.high, self.low = "0000000000000000", Operations.cmp(a, b, bit_length)
+                self.compare_op = True
             case "and":
                 self.high, self.low = "0000000000000000", Operations.and_(a, b, bit_length)
             case "or":
@@ -74,10 +79,8 @@ class ALU:
 
 
         # Wenn die cmp-Flag 1 ist, wird sie auf 0 gesetzt und das Ergebnis der Operation wird nicht in den Akkumulator geschrieben
-        if not self.cpu == None and check_flag(self.cpu.access_register("1101"), 14):
-            flags = self.cpu.access_register("1101")
-            flags = set_flag(flags, "0", 14)
-            self.cpu.access_register("1101", flags)
+        if not self.cpu == None and self.compare_op:
+            self.compare_op = False
 
         # Wenn die cmp-Flag 0 ist, wird das Ergebnis der Operation in den Akkumulator geschrieben
         else:
@@ -122,6 +125,14 @@ class Operations:
         result = ((result + mod//2) % mod) - mod//2
         mod = a % b
         return mbin(mod, bit_length).zfill(bit_length) + mbin(result, bit_length).zfill(bit_length)
+    @staticmethod
+    def cmp(a, b, bit_length = 16):
+        mod = 2**bit_length
+        a = mint(a)
+        b = mint(b)
+        result = a - b
+        result = ((result + mod//2) % mod) - mod//2
+        return mbin(result, bit_length).zfill(bit_length)
     @staticmethod
     def and_(a, b, bit_length = 16):
         a = mint(a)
