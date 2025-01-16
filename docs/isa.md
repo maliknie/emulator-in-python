@@ -21,6 +21,32 @@ This document outlines the entire instruction set architecture (ISA) for the emu
 
 ---
 
+## Flags
+
+The CPU maintains a 16-bit flags register to store the outcomes of various operations. Each bit in the register represents a specific condition. The flags are indexed from 0 to 15, with the following notable flags:
+
+### Zero Flag (Index 15)
+- **Description:** Set to `1` if the result of the previous arithmetic or logical operation is zero. Otherwise, it is set to `0`.
+- **Affected Instructions:** All arithmetic and logical operations (e.g., `ADD`, `SUB`, `AND`, `OR`, etc.).
+- **Example:** 
+  - `SUB r1, r2` (if `r1 - r2 = 0`, the zero flag is set to `1`).
+
+### Carry Flag (Index 14)
+- **Description:** Set to `1` if the result of an addition operation exceeds the register size and wraps around. Otherwise, it is set to `0`.
+- **Affected Instructions:** `ADD`
+- **Example:**
+  - `ADD r1, r2` (if the sum of `r1` and `r2` is greater than the maximum value the register can hold, the carry flag is set to `1`).
+
+### Borrow Flag (Index 13)
+- **Description:** Set to `1` if the result of a subtraction operation is negative and wraps around. Otherwise, it is set to `0`.
+- **Affected Instructions:** `SUB`
+- **Example:**
+  - `SUB r1, r2` (if `r2` is greater than `r1`, causing a wrap-around, the borrow flag is set to `1`).
+
+Other bits in the flags register may be reserved for future use or not implemented. For the purposes of this ISA, only the zero, carry, and borrow flags are actively utilized.
+
+---
+
 ## Instruction Set
 
 ### Control Flow
