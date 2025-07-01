@@ -21,6 +21,27 @@ This document outlines the entire instruction set architecture (ISA) for the emu
 
 ---
 
+## Registers
+
+### General Purpose Registers
+
+Registers `r0-r7` are 16-bit general purpose registers that can be used when writing code for the emulator.
+
+### Special Registers
+
+- `pc`: program counter (16-bit)
+- `ir`: instruction register (32-bit)
+- `sp`: stack pointer (16-bit)
+- `bp`: base pointer (16-bit)
+- `acc`: accumulator (32-bit)
+- `flags`: register containing 16 flags (16-bit)
+- `mar`: memory adress register (16-bit)
+- `mdr`: memory data register (16-bit)
+
+Take note that:
+1. `mar` and `mdr`aren't correctly implemented yet
+2. technically all registers - even special registers - can be used when writing code although this may result in crashes if you don't know what you're doing 
+
 ## Flags
 
 The CPU maintains a 16-bit flags register to store the outcomes of various operations. Each bit in the register represents a specific condition. The flags are indexed from 0 to 15, with the following notable flags:
