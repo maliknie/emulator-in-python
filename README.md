@@ -41,7 +41,7 @@ This repository contains a custom-built emulator that simulates a simplified CPU
 
 ### Writing Your Own Programs
 
-1. Write your program in assembly using the custom ISA. (You can find supported instruction in docs/isa.md)
+1. Write your program in assembly using the custom ISA. (You can find supported instruction in [docs/isa.md](docs/isa.md))
 2. Save the program in the `programs/asm/` directory.
 3. Assemble and execute it using the steps above.
 
