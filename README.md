@@ -2,6 +2,9 @@
 
 This repository contains a custom-built emulator that simulates a simplified CPU architecture. The project includes a custom instruction set architecture (ISA), an assembler, and example programs to demonstrate functionality.
 
+# Blog
+If you're curious to learn more about this project you can read more about it on my [blog](https://malik.lilo.page/posts/grH24N8Lll/).
+
 ## Features
 
 - [**Custom ISA:**](docs/isa.md) Supports arithmetic, control flow, memory manipulation, and bitwise operations.
